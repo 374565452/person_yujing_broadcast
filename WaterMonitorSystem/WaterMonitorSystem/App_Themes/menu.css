@@ -1,0 +1,91 @@
+BODY {
+}
+UL {
+	LIST-STYLE-TYPE: none;
+	padding:0px;
+	margin:0px;
+}
+LI {
+	FONT-SIZE: 15px; 
+	COLOR: #333; 
+	LINE-HEIGHT: 1.5em; 
+	FONT-FAMILY: "ËÎÌו", Arial, Verdana;
+}
+.hide {
+	DISPLAY: none
+}
+#mainmenu_top UL LI .menuhover
+{
+    color: #0000FF;
+}
+#mainmenu_top UL LI A {
+	MARGIN-TOP: 2px;
+	CURSOR: pointer;
+	PADDING-TOP: 8px;
+	HEIGHT: 20px;
+	text-decoration: none;
+}
+#mainmenu_top { 
+	width:100%;
+	HEIGHT: 74px; 
+	display:block;
+	overflow:hidden;
+}
+#mainmenu_top UL { float :right}
+#mainmenu_top UL LI {FLOAT: left}
+#mainmenu_top UL LI A {
+ 	WIDTH: 100px;
+	height:auto;
+	DISPLAY: block;
+	COLOR: #000000; 
+	TEXT-ALIGN: center; 
+	FONT-WEIGHT: bold; 
+	
+}
+#mainmenu_bottom {
+	height:32px;
+	line-height:32px;
+	display:block;
+	overflow:hidden;
+	
+}
+#mainmenu_bottom .mainmenu_rbg {
+	HEIGHT: 32px;
+	COLOR: #fff;
+	PADDING: 0px 0px 0px 5px;
+	text-align:center;
+	
+}
+#mainmenu_bottom UL {}
+#mainmenu_bottom UL LI {
+	PADDING-RIGHT: 15px; 
+	FLOAT: left; 
+	HEIGHT: 32px;
+}
+#mainmenu_bottom UL LI.se {
+	FLOAT: left; 
+	MARGIN-LEFT: 7px; 
+	HEIGHT: 32px;
+	PADDING-LEFT: 8px; 
+	
+}
+#mainmenu_bottom UL LI A {
+	COLOR: #000000; 
+	LINE-HEIGHT: 35px;
+	DISPLAY: block;
+	text-decoration: none;
+	
+}
+
+#mainmenu_bottom UL LI A:hover {
+	
+	color: #0033FF;
+}
+#mainmenu_bottom UL LI A.se {
+	COLOR: #fff; 
+	LINE-HEIGHT: 32px;
+	PADDING-RIGHT: 18px; 
+	DISPLAY: block; 
+	
+}
+

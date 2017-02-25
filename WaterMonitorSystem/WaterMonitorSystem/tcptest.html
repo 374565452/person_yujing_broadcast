@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>tcp测试</title>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#span1").css("color", "blue");
+            $("#span1").html("正在获取设备序号列表");
+            $.ajax({
+                type: "GET",
+                url: "tcpSend.ashx",
+                data: {
+                    method: "getAllDeviceNo"
+                },
+                cache: false,
+                dataType: "json",
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#span1").css("color", "red");
+                    $("#span1").html("获取设备列表失败!");
+                    alert(XMLHttpRequest.status);
+                    alert(XMLHttpRequest.readyState);
+                    alert(textStatus);
+                },
+                success: function (data) {
+                    if (data.Result) {
+                        //$("#TextArea1").val(data.Message);
+                        var ss = data.Message.split(",");
+                        $("#Select1").empty();
+                        if (ss.length > 0) {
+                            $("#Select1").append("<option value=''>-请选择-</option>");
+                            for (var i = 0; i < ss.length; i++) {
+                                $("#Select1").append("<option value='" + ss[i] + "'>" + ss[i] + "</option>");
+                            }
+
+                            $("#Select1").change(function () {
+                                $("#Text2").val($("#Select1").val());
+                            });
+                        }
+                        $("#span1").html("");
+                    } else {
+                        $("#span1").css("color", "red");
+                        $("#span1").html("获取设备列表失败!");
+                    }
+                }
+            });
+        });
+
+        function send(k) {
+            $("#spanResult").css("color", "blue");
+            $("#spanResult").html("正在发送");
+            $("#TextArea1").val("");
+            var DeviceNo = $.trim($("#Text2").val());
+            if (DeviceNo.length == 0) {
+                $("#spanResult").css("color", "red");
+                $("#spanResult").html("设备编号不能为空！");
+                return;
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "tcpSend.ashx",
+                data: {
+                    method: "getDeviceNo",
+                    DeviceNo: DeviceNo
+                },
+                cache: false,
+                dataType: "json",
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#spanResult").css("color", "red");
+                    $("#spanResult").html("发送失败!");
+                    alert(XMLHttpRequest.status);
+                    alert(XMLHttpRequest.readyState);
+                    alert(textStatus);
+                },
+                success: function (data) {
+                    if (data.Result) {
+                        var content = $.trim($("#Text1").val());
+                        var DeviceTime = $.trim($("#Text3").val());
+                        var YearExploitation = $.trim($("#Text5").val());
+                        var SerialNumber = $.trim($("#Text7").val());
+                        var Range = $.trim($("#Text8").val());
+                        var LineLength = $.trim($("#Text9").val());
+
+                        $.ajax({
+                            type: "GET",
+                            url: "tcpSend.ashx",
+                            data: {
+                                method: "send",
+                                DeviceNo: DeviceNo,
+                                k: k,
+                                content: content,
+                                DeviceTime: DeviceTime,
+                                YearExploitation: YearExploitation,
+                                SerialNumber: SerialNumber,
+                                Range: Range,
+                                LineLength: LineLength
+                            },
+                            cache: false,
+                            dataType: "json",
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                $("#spanResult").css("color", "red");
+                                $("#spanResult").html("发送失败!");
+                                alert(XMLHttpRequest.status);
+                                alert(XMLHttpRequest.readyState);
+                                alert(textStatus);
+                            },
+                            success: function (data) {
+                                if (data.Result) {
+                                    $("#spanResult").css("color", "green");
+                                    $("#spanResult").html("发送成功");
+                                    $("#TextArea1").val(data.Message);
+                                } else {
+                                    $("#spanResult").css("color", "red");
+                                    $("#spanResult").html("发送失败!");
+                                    $("#TextArea1").val(data.Message);
+                                }
+                            }
+                        });
+                    } else {
+                        $("#spanResult").css("color", "red");
+                        $("#spanResult").html("此设备编号不存在!");
+                        $("#TextArea1").val(data.Message);
+                    }
+                }
+            });
+        }
+    </script>
+    <style type="text/css">
+        div {
+            padding: 2px;
+        }
+    </style>
+
+</head>
+<body>
+    <div>选择设备：<select id="Select1"></select><span id="span1"></span></div>
+    <div>设备编号：<input id="Text2" type="text" /></div>
+    <div style="display: none;">发送内容：<input id="Text1" type="text" /></div>
+    <div>返回结果：<textarea id="TextArea1" cols="30" rows="3" style="width: 400px;"></textarea></div>
+    <div><span id="spanResult"></span></div>
+    <div style="display: none;">
+        <input id="Button1" type="button" value="发送" onclick="send(0)" />
+    </div>
+    <div>
+        设置时钟：<input id="Text3" type="text" onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+        <input id="Button2" type="button" value="发送" onclick="send(1)" />
+    </div>
+    <div>
+        查询时钟：<input id="Text4" type="text" />
+        <input id="Button3" type="button" value="发送" onclick="send(2)" />
+    </div>
+    <div>
+        设置年度可开采水量：<input id="Text5" type="text" />
+        <input id="Button4" type="button" value="发送" onclick="send(3)" />
+    </div>
+    <div>
+        查询年度可开采水量：<input id="Text6" type="text" />
+        <input id="Button5" type="button" value="发送" onclick="send(4)" />
+    </div>
+    <div>
+        <input id="Button6" type="button" value="开泵" onclick="send(5)" />
+        <input id="Button7" type="button" value="关泵" onclick="send(6)" />
+        <input id="Button8" type="button" value="设置射频地址" onclick="send(7)" />
+        <input id="Button14" type="button" value="状态查询" onclick="send(13)" />
+    </div>
+    <div>
+        卡序列号：<input id="Text7" type="text" />
+        <input id="Button9" type="button" value="屏蔽" onclick="send(8)" />
+        <input id="Button10" type="button" value="解除屏蔽" onclick="send(9)" />
+    </div>
+    <div>
+        水位计量程：<input id="Text8" type="text" />
+        投入线长：<input id="Text9" type="text" />
+        <input id="Button11" type="button" value="参数设置" onclick="send(10)" />
+        <input id="Button12" type="button" value="参数查询" onclick="send(11)" />
+    </div>
+    <div>
+        <input id="Button13" type="button" value="水位查询" onclick="send(12)" />
+    </div>
+</body>
+</html>

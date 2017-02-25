@@ -1,0 +1,347 @@
+﻿<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <title>水资源管理平台</title>
+    <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" media="screen" />
+    <link rel="stylesheet" type="text/css" href="App_Themes/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="App_Themes/easyui/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="css/base.css">
+    <link rel="stylesheet" type="text/css" href="css/animate.min.css">
+    <style type="text/css">
+        #divMask {
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #333333;
+            z-index: 1001;
+            -moz-opacity: 0.5;
+            opacity: .50;
+            filter: alpha(opacity=50);
+        }
+
+        #divShowMsg {
+            font-size: 15px;
+            text-align: center;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200px;
+            line-height: 30px;
+            padding: 8px;
+            border: 2px solid #E8E9F7;
+            background-color: white;
+            z-index: 1002;
+            border-radius: 15px;
+        }
+
+            #divShowMsg #divMaskOK {
+                text-align: center;
+                padding: 5px;
+            }
+
+            #divShowMsg .btnMaskOK {
+                width: 100px;
+                border: #0186d1 1px solid;
+                background: #0186d1;
+                color: #FFF;
+                cursor: pointer;
+                transition: all 0.3s linear;
+                -webkit-transition: all 0.3s linear;
+                border-radius: 5px;
+            }
+
+        #imgList {
+            height: 100%;
+            width: 100%;
+            background-color: #eeeeee;
+        }
+
+            #imgList img {
+                height: 100%;
+                width: 100%;
+                display: none;
+            }
+
+        #divCC {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: #ffffff;
+            z-index: 888;
+            left: 0;
+            top: 0;
+            filter: alpha(opacity:0);
+            opacity: 0;
+        }
+
+        #shade {
+            background-color: #000;
+            position: absolute;
+            z-index: 1002;
+            display: none;
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+            filter: alpha(opacity=60);
+            -moz-opacity: 0.6;
+            margin: 0px;
+            left: 0px;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+        }
+
+        #ZZDiv {
+            height: 250px;
+            width: 450px;
+            border: 5px solid #999;
+            margin-right: auto;
+            margin-left: auto;
+            margin-top: 200px;
+            z-index: 1003;
+            display: none;
+            position: relative;
+            background-color: #FFF;
+        }
+
+    </style>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/easyui/jquery.easyui.min.js"></script>
+    <script src="js/CheckBrowser.js"></script>
+    <script src="js/wow.min.js"></script>
+    <script type="text/javascript" src="js/PSExtend.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script type="text/javascript">
+        if (browser.mobile) {
+            location.href = 'm/';
+        }
+        /*
+        检查浏览器是否支持
+        */
+        var isIE = !!window.ActiveXObject;
+        var isIE6 = isIE && !window.XMLHttpRequest;
+        if (isIE6) {
+            window.location.href = "Error/Browser.html";
+        }
+        //回车键
+        document.onkeydown = function (e) {
+            if (!e) e = window.event; //火狐中是 window.event
+            if ((e.keyCode || e.which) == 13) {
+                var btlogin = document.getElementById("btlogin");
+                btlogin.focus();
+                btlogin.click();
+            }
+        }
+
+        //正在登录
+        var isLogging = false;
+
+        function LoginInfo() {
+            if (isLogging) {
+                return;
+            }
+            isLogging = true;
+            var userName = $("#txtaccount").val();
+            var password = $("#txtpassword").val();
+            var vcode = "";
+            if (userName.trim() == "") {
+                //alert("请输入用户名");
+                $.messager.alert("提示信息", "请输入用户名");
+                isLogging = false;
+                $("#txtaccount").focus();
+                return;
+            }
+
+            //ShowMsg('<div style="background:url(Images/loading.gif) no-repeat 10px center;">正在登录请等待...</div>', true, false);
+            $.ShowMask("<div style=\"background:url(Images/loading.gif) no-repeat 10px center;\">正在登录，请稍等……</div>");
+            setTimeout(function () {
+                $.ajax(
+                {
+                    url: "WebServices/UserAdminService.asmx/LoginEx",
+                    type: "POST",
+                    data: { "LoginName": userName, "LoginPwd": password, "ValidateCode": vcode },
+                    dataType: "text",
+                    cache: false,
+                    success: function (responseText) {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result)//登录成功
+                        {
+                            $.HideMask();
+                            $.cookie("psbsLogin", data.Guid, { expires: 7, path: '/' });
+                            $.cookie("uname", userName);
+                            location.href = "MainNew.html";
+                        } else {
+                            if (data.Message == "系统未注册") {
+                                $.HideMask();
+                                location.href = "SysReg.aspx";
+                            } else {
+                                //ShowMsg('登录失败<br />' + data.Message, false, true);
+                                $.HideMask();
+                                $.messager.alert("提示信息", "登录失败" + "<br/>" + data.Message);
+                            }
+                        }
+                        isLogging = false;
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //ShowMsg('登录失败<br />' + XMLHttpRequest.responseText, false, true);
+                        isLogging = false;
+                        $.HideMask();
+                        $.messager.alert("提示信息", "登录失败" + "<br/>" + XMLHttpRequest.responseText);
+                    }
+                });
+            }, 100);
+        }
+    </script>
+
+    <script type="text/javascript">
+        function ShowMsg(msg, isMask, isOk) {
+            HideMsg();
+
+            if (isMask) {
+                if (!($("#divMask").length > 0)) {
+                    $(document.body).append("<div id=\"divMask\"></div>")
+                }
+            }
+
+            if (!($("#divShowMsg").length > 0)) {
+                $(document.body).append("<div id=\"divShowMsg\"></div>")
+            }
+
+            $("#divShowMsg").css("top", ($(window).height() - $("#divShowMsg").height()) / 2 - 50);
+            $("#divShowMsg").css("left", ($(window).width() - $("#divShowMsg").width()) / 2);
+
+            $("#divShowMsg").html(msg);
+            if (isOk) {
+                $("#divShowMsg").append("<div id=\"divMaskOK\"><input type=\"button\" class=\"btnMaskOK\" value=\"确定\"></div>");
+                $(".btnMaskOK").click(function () {
+                    HideMsg();
+                });
+            }
+            $("#divMask").show();
+            $("#divShowMsg").show();
+        }
+
+        function HideMsg() {
+            $("#divMask").remove();
+            $("#divShowMsg").remove();
+        }
+
+        $(function () {
+            setTimeout(function () {
+                $.ajax(
+                {
+                    url: "WebServices/GlobalAppService.asmx/GetState",
+                    type: "POST",
+                    data: { },
+                    dataType: "text",
+                    cache: false,
+                    success: function (responseText) {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result)//登录成功
+                        {
+                        } else {
+                            if (data.Message == "系统未注册") {
+                                location.href = "SysReg.aspx";
+                            } else {
+                                //ShowMsg('' + data.Message, false, true);
+                            }
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //ShowMsg('' + XMLHttpRequest.responseText, false, true);
+                    }
+                });
+            }, 100);
+
+            if (!placeholderSupport()) {
+                $('[placeholder]').focus(function () {
+                    var input = $(this);
+                    if (input.val() == input.attr('placeholder')) {
+                        input.val('');
+                        input.removeClass('placeholder');
+                    }
+                }).blur(function () {
+                    var input = $(this);
+                    if (input.val() == '' || input.val() == input.attr('placeholder')) {
+                        input.addClass('placeholder');
+                        input.val(input.attr('placeholder'));
+                    }
+                }).blur();
+            };
+
+            showImg(0);
+        });
+
+        function showImg(k) {
+            var imgs = $("#imgList img");
+            imgs.hide();
+            if (k >= imgs.length) k = 0;
+
+            imgs.eq(k).show();
+
+            setTimeout(function () {
+                showImg(k + 1);
+            }, 5000)
+        }
+
+        function placeholderSupport() { 
+            return 'placeholder' in document.createElement('input');
+        }
+    </script>
+</head>
+
+<body>
+    <div id="shade"></div>
+    <div id="ZZDiv">
+        <span id="ZZSpan"></span>
+    </div>
+
+    <div id="imgList">
+        <img src="images/第一.jpg" />
+    </div>
+    <div id="divCC"></div>
+    <!--内容-->
+    <div class="bubblingLT wow zoomIn" data-wow-duration="1s" data-wow-delay="1s">
+        <div class="wrapper">
+            <div class="logo" style=" width:210px">
+                <img class="wow fadeInLeft" data-wow-duration="1.5s" data-wow-delay="1s" src="images/mkhy.png" alt="" style="width:200px">
+            </div>
+            <h2 class="wow zoomIn" data-wow-duration="1.5s" data-wow-delay="1.5s">水资源管理平台</h2>
+        </div>
+    </div>
+
+    <script>
+        if (!(/msie [6|7|8|9]/i.test(navigator.userAgent))) {
+            new WOW().init();
+        };
+    </script>
+
+    <div class="copyright "></div>
+
+    <!--输入框-->
+    <div class="lo" style="height: 60px; width: 800px; left: 50%; margin-left: -420px;">
+        <div class="enter" style="background-color: transparent;">
+            <h1 style="display: none">水资源管理平台</h1>
+            <div class="box" style="margin: 0; width: 800px;">
+                <p style="float: left; margin: 10px;">
+                    <input type="text" id="txtaccount" class="ico" placeholder="账户">
+                </p>
+                <p style="float: left; margin: 10px;">
+                    <input type="password" id="txtpassword" class="ico1" placeholder="密码">
+                </p>
+                <p style="float: left; margin: 10px;">
+                    <input type="button" id="btlogin" class="btn" value="登录" onclick="LoginInfo()">
+                </p>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

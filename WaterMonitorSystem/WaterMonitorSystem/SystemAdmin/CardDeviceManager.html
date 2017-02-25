@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>设备卡管理</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css" />
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/SystemAdmin/CardDeviceManager.js?3"></script>
+</head>
+<body style="margin: 0; overflow: hidden">
+    <div id="userContainer" class="easyui-layout" data-options="fit:true" style="width: 100%; height: 400px;">
+        <div id="userLeft" title="设备卡列表" data-options="region:'west',border:true,split:true"
+            style="width: 210px; padding: 0 0 0 0;">
+            <div id="VillageTree" class="easyui-tree">
+            </div>
+        </div>
+        <div id="userCenter" title="设备卡信息列表" data-options="region:'center',split:true,border:true">
+            <div class="easyui-layout" data-options="fit:true">
+                <div data-options="region:'center',border:false">
+                    <table id="tbCardDeviceInfos" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20"
+                        style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                        <thead>
+                            <tr style="height: 24px">
+                                <th data-options="field:'Id',width:30,hidden:true">ID</th>
+                                <th data-options="field:'SerialNumber',width:80">卡序列号</th>
+                                <th data-options="field:'DeviceNo',width:100">设备编号</th>
+                                <th data-options="field:'YearExploitation',width:120">年可开采水量</th>
+                                <th data-options="field:'AlertAvailableWater',width:120">可用水量提醒值</th>
+                                <th data-options="field:'AlertAvailableElectric',width:120">可用电量提醒值</th>
+                                <th data-options="field:'StationType',width:80">站点类型</th>
+                                <th data-options="field:'StationCode',width:80">地址码</th>
+                                <th data-options="field:'OpenTime',width:120">开卡时间</th>
+                                <th data-options="field:'Edit',width:50">查看</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="toolbar">
+                        <span style="margin-left: 10px">设备编号：</span>
+                        <input id="cbb_DeviceNoCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'"
+                            style="width: 150px" />
+                        <!--<span style="margin-left: 10px">户号：</span>
+                        <input id="cbb_UserNumCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:100px" />-->
+                        <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                            plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                        <!-- <a id="btn_Export" href="javascript:void(0)"
+                                class="easyui-linkbutton" iconcls="icon-excel" plain="true" onclick="Btn_Excel_Click();">导出</a>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ShowCardDeviceData" class="easyui-dialog" data-options="iconCls:'icon-save',buttons: '#auwd-buttons',closed:true,modal:true"
+        style="width: 550px; height: 450px; padding: 5px">
+        <fieldset style="height: 215px">
+            <legend>设备卡信息</legend>
+            <table id="tbUserWater">
+                <tr height="30px">
+                    <td align="right" width="100px">
+                        <span>卡序列号：</span>
+                    </td>
+                    <td>
+                        <span id="txt_SerialNumber"></span>
+                    </td>
+                    <td align="right" width="100px">
+                        <span>设备编号：</span>
+                    </td>
+                    <td>
+                        <span id="txt_DeviceNo"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="100px">
+                        <span>年可开采水量：</span>
+                    </td>
+                    <td>
+                        <span id="txt_YearExploitation"></span>
+                    </td>
+                    <td align="right" width="100px">
+                        <span>可用水量提醒值：</span>
+                    </td>
+                    <td>
+                        <span id="txt_AlertAvailableWater"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="100px">
+                        <span>可用电量提醒值：</span>
+                    </td>
+                    <td>
+                        <span id="txt_AlertAvailableElectric"></span>
+                    </td>
+                    <td align="right" width="100px">
+                        <span>电表脉冲数：</span>
+                    </td>
+                    <td>
+                        <span id="txt_MeterPulse"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="100px">
+                        <span>水位报警值：</span>
+                    </td>
+                    <td>
+                        <span id="txt_AlertWaterLevel"></span>
+                    </td>
+                    <td align="right" width="100px">
+                        <span>流量计类型：</span>
+                    </td>
+                    <td>
+                        <span id="txt_TypeCode"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="100px">
+                        <span>站点类型：</span>
+                    </td>
+                    <td>
+                        <span id="txt_StationType"></span>
+                    </td>
+                    <td align="right" width="100px">
+                        <span>地址码：</span>
+                    </td>
+                    <td>
+                        <span id="txt_StationCode"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="100px">
+                        <span>开卡时间：</span>
+                    </td>
+                    <td>
+                        <span id="txt_OpenTime"></span>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div id="auwd-buttons" style="width: 100%; text-align: center">
+        <a href="javascript:void(0)" class="easyui-linkbutton" style="width: 48px;" onclick="$('#ShowCardDeviceData').dialog({ closed: true });">确定</a>
+    </div>
+</body>
+</html>

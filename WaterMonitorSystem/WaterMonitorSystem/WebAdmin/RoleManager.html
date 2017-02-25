@@ -1,0 +1,134 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>角色管理</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+    
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/json2.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/WebAdmin/RoleManager.js?14"></script>
+    <style>
+        #MenuList .menuM {
+            line-height:20px; height:20px; margin:5px 10px; padding:2px 10px; background-color:#dddddd; font-weight:bold;
+        }
+
+        #MenuList .menuS {
+            margin:5px 30px;
+        }
+
+        #MenuList .menuS .item {
+            float:left; width:100px; line-height:20px; height:20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px;
+        height: 600px;">
+        <div id="divCenter" title="缓存列表" data-options="region:'center',border:true" style="overflow-y: hidden">
+            <table id="tbUserInfos" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true"
+                style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                <thead>
+                    <tr style="height: 24px">
+                        <th data-options="field:'Id',width:40,hidden:true">
+                            角色ID
+                        </th>
+                        <th data-options="field:'RoleName',width:300">
+                            角色名称
+                        </th>
+                        <th data-options="field:'UserCount',width:300">
+                            用户数量
+                        </th>
+                        <th data-options="field:'editMenu',width:40,fixed:true,align:'center'">
+                            权限
+                        </th>
+                        <th data-options="field:'editRole',width:40,fixed:true,align:'center'">
+                            编辑
+                        </th>
+                        <th data-options="field:'deleteRole',width:40,fixed:true,align:'center'">
+                            删除
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            <div id="toolbar">
+                <a id="btn_Add" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-add"
+                    plain="true" onclick="btn_Add_Click();">添加</a>&nbsp; 
+            </div>
+
+            <div id="dlgRole" class="easyui-dialog" title="编辑角色信息" data-options="iconCls:'icon-save',buttons: '#dlg-buttons',closed:true,modal:true"
+                style="width: 320px; height: 222px; padding: 5px">
+                <div id="divDeviceTabs" class="easyui-tabs" data-options="fit:true,border:false,showHeader:false">
+                    <div title="角色信息">
+                        <fieldset style="height: 120px;">
+                            <legend>角色信息</legend>
+                            <table id="tbUser">
+                                <tr height="30px" style="display: none;">
+                                    <td align="right" width="75px">
+                                        <span>ID：</span>
+                                    </td>
+                                    <td>
+                                        <input id="txt_ID" class="easyui-validatebox textbox" style="height: 21px" />
+                                    </td>
+                                    <td>
+                                        <span>*</span>
+                                    </td>
+                                </tr>
+                                <tr height="30px">
+                                    <td align="right" width="75px">
+                                        <span>角色名称：</span>
+                                    </td>
+                                    <td>
+                                        <input id="txt_RoleName" class="easyui-textbox" style="height: 21px;" />
+                                    </td>
+                                    <td>
+                                        <span>*</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div id="dlg-buttons" style="width: 100%; text-align: center">
+                <a id="btn_OK" href="javascript:void(0)" class="easyui-linkbutton" style="width: 48px"
+                    onclick="javascript:btn_OK_Click()">确定</a> <a id="btn_Cancel" href="javascript:void(0)"
+                        class="easyui-linkbutton" style="width: 48px" onclick="javascript:$('#dlgRole').dialog('close')">
+                        取消 </a>
+            </div>
+
+            <div id="dlgMenu" class="easyui-dialog" title="编辑权限信息" data-options="iconCls:'icon-save',buttons: '#dlgMenu-buttons',closed:true,modal:true"
+                style="width: 600px; height: 550px; padding: 5px">
+                <div id="div2" class="easyui-tabs" data-options="fit:true,border:false,showHeader:false">
+                    <div title="权限列表">
+                        <fieldset style="height: 450px;">
+                            <legend>权限列表</legend>
+                            <div id="MenuList">
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div id="dlgMenu-buttons" style="width: 100%; text-align: center">
+                <a href="javascript:void(0)" class="easyui-linkbutton" style="width: 48px"
+                    onclick="javascript:btnMenu_OK_Click()">确定</a> <a href="javascript:void(0)"
+                        class="easyui-linkbutton" style="width: 48px" onclick="javascript:$('#dlgMenu').dialog('close')">
+                        取消 </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

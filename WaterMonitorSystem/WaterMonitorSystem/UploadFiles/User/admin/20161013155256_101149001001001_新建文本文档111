@@ -1,0 +1,34 @@
+516319505
+
+水站电话：
+15094349220
+0516-66656663
+
+达茂远程登录的地址：61.138.105.226:6001；用户名：Administrator;  密码：dmsw@zteshyj123
+
+远程登陆地址：61.138.106.110:6001；用户名：administrator;密码：sgsw@zteshyj123
+sql数据库用户名：sa，密码：sgsw@htkj159753
+
+ST_RSVR_R 当前水位
+ST_RIVER_R 当前水位
+ST_PPTN_R 降雨量 5分钟一次？？
+ST_PPTN_R_HOUR 日降雨量（每小时一次）
+ST_PPTN_R_DAY 日降雨量
+
+[ST_PPTN_R_REAL] 实时记录表
+TM 雨量来报时间
+DRP 时段雨量
+INTV 降雨时长
+DYP 日降雨量
+CDRP 当日降雨量
+ALLDRP 累计雨量
+
+ST_ETMP_INFO_R 实时电压
+ST_ETMP_INFO_H 历史电压？
+
+
+
+
+
+
+

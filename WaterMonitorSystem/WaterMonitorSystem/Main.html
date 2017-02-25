@@ -1,0 +1,210 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>水资源管理平台</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    
+    <link rel="stylesheet" type="text/css" href="App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="App_Themes/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="App_Themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="App_Themes/menu.css">
+    <style type="text/css">
+        a
+        {
+            color: Black;
+            text-decoration: none;
+        }
+        .ctr
+        {
+            font-size:13px;
+            vertical-align: middle;
+            margin-top: 78px;
+            height: 24px;
+            text-align: right;
+            float: right;
+        }
+        .ctr li
+        {
+            float: left;
+            height: 24px;
+            line-height:24px;
+            list-style: none;
+        }
+        .zi
+        {
+            /*在1.4版本中修改*/
+            background-image: url(images/beijing.gif);
+            background-repeat: repeat-x;
+            padding-top: 2px;
+            padding-right: 6px;
+            padding-left: 3px;
+        }
+        
+        .tdTitle
+        {
+            width:70px;
+            text-align:right;
+        }
+        .tdInput
+        {
+            text-align:left;
+        }
+        .modifyPwdIcon
+        {
+            background:url('images/modify.png') no-repeat center center;
+        }
+    </style>
+    
+    <script language="javascript" type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script>
+    <script language="javascript" type="text/javascript" src="js/easyui/easyui-lang-zh_CN.js"></script>
+    <script language="javascript" type="text/javascript" src="js/PSExtend.js"></script>
+    <script language="javascript" type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script language="javascript" type="text/javascript" src="js/Page/GlobalAlarm.js?1"></script>
+    <script language="javascript" type="text/javascript" src="js/Page/Main.js?6"></script>
+    
+</head>
+<body scroll="no" style="margin: 0 0 0 0;">
+    <div id="divContainer" class="easyui-layout" style="width: 800px; height:600px;">
+        <div data-options="region:'north',minHeight:'108px',maxHeight:'108px'" class="ui-background-color" style="height: 82px; padding: 0 0 0 0; background-image: url(Images/B.jpg);
+            background-repeat:repeat-x; overflow-y: hidden;">
+            <div id="mainTitle" style="float:left;padding: 0 0 0 0; margin: 0 0 0 0;width:500px ">
+                <img alt="" src="images/mainTitle.jpg" style="height: 74px; margin: 0 0 0 0; left: 0px;
+                    top: 0px" />
+            </div>
+            <div id="mainMenu" style="display:none;">
+                <div id="mainmenu_body">
+                    <div id="mainmenu_top">
+                    </div>
+                </div>
+                <div id="mainmenu_bottom" >
+                    <div id="mainmenu_child" class="mainmenu_rbg"></div>
+                </div>
+            </div>
+            <div id="mainctrl" style="position:absolute;top:0px; margin-top:0px;">
+                <div class="ctr">
+                        <li>
+                            <img src="images/yuanjiao.png" alt="" /></li>
+                        <li><a href="#">
+                            <img src="images/mimaxiugai.gif" alt="" border="0" /></a></li>
+                        <li class="zi"><a href="#" class="ChangePassword" onclick="ShowModifyPwd();" >修改密码</a></li>
+                        <li><a href="#">
+                            <img src="images/anquantuichu.gif" alt="" border="0" /></a></li>
+                        <li class="zi"><a href="#" id="loginOut" onclick='LogoutSystem()'>安全退出</a></li>
+                </div>
+            </div>
+        </div>
+        <div id="divCenter" data-options="region:'center'" style="overflow-y:hidden">
+            <div id="tabs" class="easyui-tabs" fit="true" border="false">
+            </div>
+        </div>
+        <div data-options="region:'south',split:true,minHeight:'30px',maxHeight:'30px'" style="height: 30px; overflow-y:hidden">
+            <table style="float:left">
+                <tr>
+                    <td style="width: 10px">
+                    </td>
+                    <td id="td_CurrentUser" style="width: 200px;font-size: 10pt;">
+                    </td>
+                    <td id="td_State" style="width: 200px; font-size: 10pt;">
+                    </td>
+                    <td style="width: 200px; height: 20px">
+                        <div style="width: 110px; font-size: 10pt; cursor: pointer; white-space: nowrap"
+                            onclick="ShowAndHideGlobalAlarm();">
+                            全局报警：<span id="alarmText" style="color: Green">正常</span><img id="AlarmImg" src="Images/测压点报警.gif"
+                                style="height: 15px; width: 15px; display: none; float: right;" /></div>
+                    </td>
+                </tr>
+            </table>
+            <div style="float:right;display:none">
+                <span style="font-size:10pt;line-height:26px; vertical-align:middle">主题：</span><select id="cb-theme" style="width:65px"></select>
+            </div>
+        </div>
+    </div>
+    <div id="divAlarmContainer" style="visibility:hidden; position:absolute;">
+        <div id="divAlarm" class="easyui-panel" title="全局报警" style="width:598px;height:290px; overflow:hidden;"
+			    data-options="closable:true,tools:'#divAlarmTool',footer:'#divAlarmFooter',onBeforeClose:function(){HideGlobalAlarm();return false;}">
+            <table id="tbAlarm" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,checkOnSelect:false,fitColumns:true,border:false" style="font-size: 10pt; width: 598px;height:232px;">
+                <thead>
+                    <tr style="height:24px">
+                        <th data-options="field:'checkAlarm',checkbox:true,width:'25px',fixed:true">
+                        </th>
+                        <th data-options="field:'mnName',width:40">
+                            <span id="unitName">单位名称</span></th>
+                        <th data-options="field:'devName',width:40">
+                            <span id="devName">测点名称</span></th>
+                        <th data-options="field:'alarmTime',width:'125px',fixed:true">
+                            报警时间</th>
+                        <th data-options="field:'alarmType',hidden:true">
+                            报警类型</th>
+                        <th data-options="field:'alarmDesc',width:100">
+                            报警描述</th>
+                        <th data-options="field:'disposeAlarm',width:'35px',fixed:true,align:'center'">
+                            处理</th>
+                    </tr>
+                </thead>
+            </table>
+	    </div>
+	    <div id="divAlarmTool" >
+		        <table style="float:left; font-size:10pt; margin-top:-4px">
+		            <tr>
+		                <td><input id='isUseAlarm' type="checkbox" checked="checked" name="useAlarm" value='true'
+                            onclick="UseAlarmClick();" /></td>
+		                <td><span>启用报警</span></td>
+		                <td><input id='isPlaySound' type="checkbox" checked="checked" name="playSound" value="true"
+                            onclick="AlarmSoundClick();" /></td>
+		                <td><span>启用声音</span></td>
+		                <td><input id='isAutoShow' type="checkbox" checked="checked" name="autoShow" value="true"
+                            onclick="AutoShowClick();" /></td>
+		                <td><span>自动弹出&nbsp;&nbsp;</span></td>
+		            </tr>
+		        </table>
+	    </div>
+	    <div id="divAlarmFooter">
+		    <table width="100%" style="font-size: 10pt; height: 22px;">
+                <tr valign="bottom">
+                    <td style="width: 16px" align="right">
+                        <input id="checkAllTR" type="checkbox" onclick="checkAll();" /></td>
+                    <td><span style="line-height:20px; vertical-align:middle">全选</span></td>
+                    <td style="float: right; height: 22px;" align="right">
+                        <a id="btnDelCheckedTR" class="easyui-linkbutton" style="height:21px" href="#" onclick="DelCheckedTR();return false;">处理选中</a></td>
+                </tr>
+            </table>
+	    </div>
+	    <div id="mm" class="easyui-menu" style="width: 150px;">
+            <div id="mm-tabupdate">
+                刷新</div>
+            <div class="menu-sep">
+            </div>
+            <div id="mm-tabclose">
+                关闭</div>
+        </div>
+	    <div id="myWindow"></div>
+    </div>
+    
+    <div id="dlgModifyPwd" class="easyui-dialog" title="修改密码" data-options="iconCls:'modifyPwdIcon',buttons: '#dlg-buttons',closed:true,modal:true" style="text-align:center;width:290px;height:250px;padding:5px" align="center">
+        <fieldset style="width:240px;font-size:13px;">
+            <legend>用户：<span id="UserName"></span></legend>
+            <table style="width:230px;height:130px">
+                <tr>
+                    <td class="tdTitle">旧密码：</td>
+                    <td class="tdInput"><input id="txt_OldPassword" type="password" /></td>
+                </tr>
+                <tr>
+                    <td class="tdTitle">新密码：</td>
+                    <td class="tdInput"><input id="txt_NewPassword" type="password" /></td>
+                </tr>
+                <tr>
+                    <td class="tdTitle">确认密码：</td>
+                    <td class="tdInput"><input id="txt_ConfirmPassword" type="password" /></td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div id="dlg-buttons" style="width:100%; text-align:center">
+        <a id="btn_OK" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="width:75px" onclick="jjavascript:ModifyPwd()">修改</a>
+        <a id="btn_Cancel" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" style="width:75px" onclick="javascript:ClearPwd()">清空</a>
+    </div>
+</body>
+</html>

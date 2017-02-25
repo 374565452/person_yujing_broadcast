@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F2066A4E-68BB-4BB5-8026-03FA58965A73}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DTUGateWay</RootNamespace>
+    <AssemblyName>DTUGateWay</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common">
+      <HintPath>..\..\WaterMonitorSystem\Common\bin\Debug\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="DBUtility">
+      <HintPath>..\..\WaterMonitorSystem\DBHelper\bin\Debug\DBUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="IrisSkin4, Version=2006.3.22.45, Culture=neutral, PublicKeyToken=127be25a6db25e07, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IrisSkin4.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\WaterMonitorSystem\Model\bin\Debug\Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Module, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\WaterMonitorSystem\Module\bin\Debug\Module.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DtuMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DtuMain.Designer.cs">
+      <DependentUpon>DtuMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileHelper.cs" />
+    <Compile Include="frmCache.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCache.Designer.cs">
+      <DependentUpon>frmCache.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConfig.Designer.cs">
+      <DependentUpon>frmConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmCS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCS.Designer.cs">
+      <DependentUpon>frmCS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmCS1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCS1.Designer.cs">
+      <DependentUpon>frmCS1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLog.Designer.cs">
+      <DependentUpon>frmLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmReg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmReg.Designer.cs">
+      <DependentUpon>frmReg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SysInfo.cs" />
+    <Compile Include="XmlHelper.cs" />
+    <EmbeddedResource Include="DtuMain.resx">
+      <DependentUpon>DtuMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmCache.resx">
+      <DependentUpon>frmCache.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmConfig.resx">
+      <DependentUpon>frmConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmCS.resx">
+      <DependentUpon>frmCS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmCS1.resx">
+      <DependentUpon>frmCS1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLog.resx">
+      <DependentUpon>frmLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmReg.resx">
+      <DependentUpon>frmReg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="bin\Debug\Skins\Calmness.ssk" />
+    <None Include="bin\Debug\Skins\CalmnessColor1.ssk" />
+    <None Include="bin\Debug\Skins\CalmnessColor2.ssk" />
+    <None Include="bin\Debug\Skins\DeepCyan.ssk" />
+    <None Include="bin\Debug\Skins\DeepGreen.ssk" />
+    <None Include="bin\Debug\Skins\DeepOrange.ssk" />
+    <None Include="bin\Debug\Skins\DiamondBlue.ssk" />
+    <None Include="bin\Debug\Skins\DiamondGreen.ssk" />
+    <None Include="bin\Debug\Skins\DiamondOlive.ssk" />
+    <None Include="bin\Debug\Skins\DiamondPurple.ssk" />
+    <None Include="bin\Debug\Skins\DiamondRed.ssk" />
+    <None Include="bin\Debug\Skins\Eighteen.ssk" />
+    <None Include="bin\Debug\Skins\EighteenColor1.ssk" />
+    <None Include="bin\Debug\Skins\EighteenColor2.ssk" />
+    <None Include="bin\Debug\Skins\Emerald.ssk" />
+    <None Include="bin\Debug\Skins\EmeraldColor1.ssk" />
+    <None Include="bin\Debug\Skins\EmeraldColor2.ssk" />
+    <None Include="bin\Debug\Skins\EmeraldColor3.ssk" />
+    <None Include="bin\Debug\Skins\GlassBrown.ssk" />
+    <None Include="bin\Debug\Skins\GlassGreen.ssk" />
+    <None Include="bin\Debug\Skins\GlassOrange.ssk" />
+    <None Include="bin\Debug\Skins\Longhorn.ssk" />
+    <None Include="bin\Debug\Skins\MacOS.ssk" />
+    <None Include="bin\Debug\Skins\Midsummer.ssk" />
+    <None Include="bin\Debug\Skins\MidsummerColor1.ssk" />
+    <None Include="bin\Debug\Skins\MidsummerColor2.ssk" />
+    <None Include="bin\Debug\Skins\MidsummerColor3.ssk" />
+    <None Include="bin\Debug\Skins\mp10.ssk" />
+    <None Include="bin\Debug\Skins\mp10green.ssk" />
+    <None Include="bin\Debug\Skins\mp10maroon.ssk" />
+    <None Include="bin\Debug\Skins\mp10mulberry.ssk" />
+    <None Include="bin\Debug\Skins\mp10pink.ssk" />
+    <None Include="bin\Debug\Skins\mp10purple.ssk" />
+    <None Include="bin\Debug\Skins\MSN.ssk" />
+    <None Include="bin\Debug\Skins\office2007.ssk" />
+    <None Include="bin\Debug\Skins\OneBlue.ssk" />
+    <None Include="bin\Debug\Skins\OneCyan.ssk" />
+    <None Include="bin\Debug\Skins\OneGreen.ssk" />
+    <None Include="bin\Debug\Skins\OneOrange.ssk" />
+    <None Include="bin\Debug\Skins\Page.ssk" />
+    <None Include="bin\Debug\Skins\PageColor1.ssk" />
+    <None Include="bin\Debug\Skins\PageColor2.ssk" />
+    <None Include="bin\Debug\Skins\RealOne.ssk" />
+    <None Include="bin\Debug\Skins\Silver.ssk" />
+    <None Include="bin\Debug\Skins\SilverColor1.ssk" />
+    <None Include="bin\Debug\Skins\SilverColor2.ssk" />
+    <None Include="bin\Debug\Skins\SportsBlack.ssk" />
+    <None Include="bin\Debug\Skins\SportsBlue.ssk" />
+    <None Include="bin\Debug\Skins\SportsCyan.ssk" />
+    <None Include="bin\Debug\Skins\SportsGreen.ssk" />
+    <None Include="bin\Debug\Skins\SportsOrange.ssk" />
+    <None Include="bin\Debug\Skins\SteelBlack.ssk" />
+    <None Include="bin\Debug\Skins\SteelBlue.ssk" />
+    <None Include="bin\Debug\Skins\vista1.ssk" />
+    <None Include="bin\Debug\Skins\vista1_green.ssk" />
+    <None Include="bin\Debug\Skins\Vista2_color1.ssk" />
+    <None Include="bin\Debug\Skins\Vista2_color2.ssk" />
+    <None Include="bin\Debug\Skins\Vista2_color3.ssk" />
+    <None Include="bin\Debug\Skins\Vista2_color4.ssk" />
+    <None Include="bin\Debug\Skins\Vista2_color5.ssk" />
+    <None Include="bin\Debug\Skins\Vista2_color6.ssk" />
+    <None Include="bin\Debug\Skins\Vista2_color7.ssk" />
+    <None Include="bin\Debug\Skins\Warm.ssk" />
+    <None Include="bin\Debug\Skins\WarmColor1.ssk" />
+    <None Include="bin\Debug\Skins\WarmColor2.ssk" />
+    <None Include="bin\Debug\Skins\WarmColor3.ssk" />
+    <None Include="bin\Debug\Skins\Wave.ssk" />
+    <None Include="bin\Debug\Skins\WaveColor1.ssk" />
+    <None Include="bin\Debug\Skins\WaveColor2.ssk" />
+    <None Include="bin\Debug\Skins\XPBlue.ssk" />
+    <None Include="bin\Debug\Skins\XPGreen.ssk" />
+    <None Include="bin\Debug\Skins\XPOrange.ssk" />
+    <None Include="bin\Debug\Skins\XPSilver.ssk" />
+    <None Include="Config\log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\IrisSkin4.dll" />
+    <Content Include="setup.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DTU.GateWay.Protocol\DTU.GateWay.Protocol.csproj">
+      <Project>{680570b2-5fa7-4053-ad24-781913cc79f7}</Project>
+      <Name>DTU.GateWay.Protocol</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Server.Core\Server.Core.csproj">
+      <Project>{12c4994b-cc81-431d-84fe-712bd1052865}</Project>
+      <Name>Server.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Server.Data.Bridge\Server.Data.Bridge.csproj">
+      <Project>{3898ac93-fd8c-4b33-b9c8-c9e3c9886937}</Project>
+      <Name>Server.Data.Bridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Server.Util\Server.Util.csproj">
+      <Project>{834a2221-1730-42ee-90d3-831fa95f9028}</Project>
+      <Name>Server.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Server.Web\Server.Web.csproj">
+      <Project>{0b3814b2-5079-4a8a-832f-bdb4948a7e3c}</Project>
+      <Name>Server.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

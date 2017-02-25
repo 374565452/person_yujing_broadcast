@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>水资源管理平台 设备地图</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link href="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet" />
+    <script src="../js/jquery-1.11.1.min.js"></script>
+    <script src="../js/jquery.cookie.js"></script>
+    <script src="../js/CheckBrowser.js"></script>
+    <script src="../js/PSExtend.js"></script>
+    <script language="javascript" type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ndUzBpyp7u4Dr6gBVZLhEIGs"></script>
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="js/base.js?4"></script>
+    <script src="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/menu.js?6"></script>
+    <style type="text/css">
+        .anchorBL {
+            display: none;
+        }
+    </style>
+    <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            overflow: auto;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript">
+        //带有经纬度的设备信息
+        var deviceInfo;
+        var deviceInfos = {};
+        //用于存储选中的设备ID
+        var allDevIds = "";
+
+        var mapDataInfo;
+        var map;
+        var mnId = "";
+        //从服务器取得系统运行状态信息
+        function GetSystemInfo() {
+            $.ajax(
+            {
+                url: "../WebServices/SystemService.asmx/GetSystemStateInfo",
+                type: "GET",
+                data: { "loginIdentifer": $.cookie("psbsLogin") },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        mnId = data.SysStateInfo.当前登录操作员管理ID;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    ShowMsg(errorThrown + "\r\n" + XMLHttpRequest.responseText, false, true);
+                }
+            });
+        }
+
+        $(window).resize(function () {
+            $("#allmap").height($(window).height() - $("#pageoneHeader").height() - 10);
+            $("#allmap").width($(window).width());
+        });
+
+        var k = false
+        $(document).on("pagecreate", function (event) {
+            //alert("触发 pagecreate 事件！");
+            var t = getUrlParam('t');
+            if (t != null && t != "") {
+                $("#pageoneHeader").height(0);
+                $("#pageoneHeader").hide();
+            }
+
+            if (!k) {
+                GetSystemInfo();
+
+                $("#allmap").height($(window).height() - $("#pageoneHeader").height() - 50);
+                $("#allmap").width($(window).width());
+
+                $.ajax(
+                {
+                    url: "../WebServices/GlobalViewService.asmx/GetMapConfig",
+                    type: "GET",
+                    data: {},
+                    dataType: "text",
+                    cache: false,
+                    success: function (responseText) {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result) {
+                            mapDataInfo = data.MapConfig;
+                            var mapBaseConfig = data.MapConfig.基本设置;
+                            var centerPoint = mapBaseConfig.中心坐标.split("|");
+                            var initZoom = mapBaseConfig.初始缩放级别;
+                            var minZoom = mapBaseConfig.最小缩放级别;
+                            var maxZoom = mapBaseConfig.最大缩放级别;
+                            // 创建Map实例
+                            map = new BMap.Map("allmap", { 'minZoom': minZoom, 'maxZoom': maxZoom, mapType: BMAP_HYBRID_MAP });
+                            map.centerAndZoom(new BMap.Point(centerPoint[0], centerPoint[1]), initZoom);
+                            map.enableScrollWheelZoom();
+                            map.addControl(new BMap.NavigationControl());
+                            map.addControl(new BMap.MapTypeControl());
+
+                            InitDeviceInfo();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        map = new BMap.Map("allmap");            // 创建Map实例
+                        map.centerAndZoom(new BMap.Point(118.18, 39.65), 13);
+                        map.enableScrollWheelZoom();
+                        map.addControl(new BMap.NavigationControl());
+                        map.addControl(new BMap.MapTypeControl());
+                        alert(errorThrown + "\r\n" + XMLHttpRequest.responseText);
+                    }
+                });
+
+                k = true;
+            }
+        });
+
+        //获取此登录用户所能看到的设备信息
+        function InitDeviceInfo() {
+            $.ajax({
+                url: "../WebServices/DeviceNodeService.asmx/GetDeviceNodeInfosByLoginUser",
+                type: "GET",
+                data: { "loginIdentifer": $.cookie("psbsLogin") },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        deviceInfo = data.DeviceNodes;
+                        deviceInfos = {};
+                        allDevIds = "";
+                        for (var i = 0; i < deviceInfo.length; i++) {
+                            deviceInfos[deviceInfo[i].ID] = deviceInfo[i];
+                            if (i > 0) {
+                                allDevIds += ",";
+                            }
+                            allDevIds += deviceInfo[i].ID;
+                        }
+                        DrawPoint();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown + "\r\n" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+        function DrawPoint() {
+            //循环deviceInfo中的所有测点
+            var devIdStr = allDevIds;
+
+            $.ajax({
+                url: "../WebServices/DeviceMonitorService.asmx/GetDeviceRealTimeDatas",
+                type: "GET",
+                data: { "loginIdentifer": $.cookie("psbsLogin"), "devIDs": devIdStr },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        //======================向地图中添点开始======================//
+                        var deviceData = data.DevDatas;
+                        var baseData = [];
+                        for (var i = 0; i < deviceData.length; i++) {
+                            //用于存储弹出窗的html脚本;
+                            var htmlStr = "<table class='pstbl' cellpadding='0' cellspacing='0' style='font-size:10pt;width:260px'>";
+                            var _devId = deviceData[i].操作.Value;
+                            //var templateId = deviceInfos[_devId].用户站参数;
+                            var templateId = 1;
+                            //通讯状态默认值
+                            var commState = "未知";
+                            //设备状态默认值
+                            var devState = "未知";
+                            //用于存储地图上点的状态图片
+                            var devImg = "大圈灰.gif";
+                            for (var j = 0; j < mapDataInfo.用户模板.length; j++) {
+                                if (mapDataInfo.用户模板[j].ID == templateId) {
+                                    var xmlStateValue = mapDataInfo.用户模板[j].状态量;
+                                    var valueName = mapDataInfo.用户模板[j].采集量.split(',');
+                                    var rowIndex = 2;
+                                    var tdIndex = 0;
+                                    var htmlNew = "";
+                                    for (var k = 0; k < valueName.length; k++) {
+                                        var currentValName = valueName[k];
+                                        if (deviceData[i][currentValName] != null) {
+                                            var currentValVal = deviceData[i][currentValName].Value;
+                                            if (k == 0) {
+                                                var commStateImg = "中断.png";
+                                                var devStateImg = "中断.png";
+                                                commState = deviceData[i].通讯状态.Value;
+                                                devState = deviceData[i].运行状态.Value;
+                                                if (commState == "全部正常") {
+                                                    commStateImg = "正常.png";
+                                                }
+                                                htmlStr += "<tr><td class='alt' style='width:120px;text-align:left;'>通讯状态</td><td style='width:130px'><Img style='height:20px;widht:20px;' src='../images/" + commStateImg +
+                                                         "'/></td></tr><tr><td class='alt' style='width:120px;text-align:left;'>运行状态</td><td style='width:130px'>" + devState + "</tr>";
+                                            }
+
+                                            if (currentValName != "经纬度" && currentValName != "用户剩余水量报警" && currentValName != "用户剩余电量报警") {
+                                                htmlStr += "<tr><td class='alt' style='width:120px;text-align:left;'>" + currentValName + "</td><td style='width:130px'>" + currentValVal + "</td></tr>";
+                                            }
+                                        }//循环valueName结束
+                                        if (deviceData[i].运行状态.Value == "水泵工作") {
+                                            devImg = "大圈绿.gif";
+                                        } else if (deviceData[i].运行状态.Value == "水泵停机") {
+                                            devImg = "大圈红.gif";
+                                        } else {
+                                            devImg = "大圈灰.gif";
+                                        }
+                                    }
+                                }
+                            }//循环mapDataInfo结束
+                            htmlStr += "</table>";
+                            //组织JSon数据存入baseData中（格式：var BASEDATA = [{title:"aa",content:"bb",point:"经度|纬度",isOpen:0,icon:{图片路径或图片大小等信息}},{}]）
+                            var pointObj = {};
+                            pointObj['title'] = deviceInfos[_devId].名称;
+                            pointObj['iwTitle'] = deviceInfos[_devId].管理名称 + "(" + deviceInfos[_devId].名称 + ")";
+                            pointObj['commState'] = deviceData[i].通讯状态.Value;
+                            pointObj['devState'] = deviceData[i].运行状态.Value;
+                            pointObj['ID'] = _devId;
+                            //pointObj['TemplateID']=deviceInfos[_devId].模板信息ID;
+                            pointObj['TemplateID'] = 1;
+                            pointObj['content'] = htmlStr;
+                            pointObj['point'] = deviceInfos[_devId].LON + "|" + deviceInfos[_devId].LAT;
+                            pointObj['isOpen'] = 0;
+                            pointObj['icon'] = "../Images/" + devImg;
+                            baseData.push(pointObj);
+                        }
+                        //添点
+                        addMarker(baseData);//向地图中添加marker
+                        //======================向地图中添点结束======================//
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown + "\r\n" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+        window.addMarker = function (data) {
+            map.clearOverlays();
+            for (var i = 0; i < data.length; i++) {
+                var json = data[i];
+                var p0 = json.point.split("|")[0];
+                var p1 = json.point.split("|")[1];
+                var point = new BMap.Point(p0, p1);
+                var iconImg = new BMap.Icon(json.icon, new BMap.Size(15, 15));
+                iconImg.setImageSize(new BMap.Size(15, 15))
+                var marker = new BMap.Marker(point, { icon: iconImg });
+                var iw = createInfoWindow(i);
+                var nameLength = json.title.length;
+                document.getElementById("titleDiv").innerHTML = json.title;
+                var py = $("#titleDiv").width();
+                var label = new BMap.Label(json.title, { "offset": new BMap.Size(-(py / 2 - 9), -20) });
+                marker.setLabel(label);
+                map.addOverlay(marker);
+                label.setStyle({
+                    borderColor: "#808080",
+                    color: "#333",
+                    cursor: "pointer"
+                });
+
+                (function () {
+                    var _json = json;
+                    var _iw = createInfoWindow(_json);
+                    var _marker = marker;
+                    _marker.addEventListener("click", function () {
+                        this.openInfoWindow(_iw);
+                    });
+                    _iw.addEventListener("open", function () {
+                        _marker.getLabel().hide();
+                    })
+                    _iw.addEventListener("close", function () {
+                        _marker.getLabel().show();
+                    })
+                    label.addEventListener("click", function () {
+                        _marker.openInfoWindow(_iw);
+                    })
+                    if (!!json.isOpen) {
+                        label.hide();
+                        _marker.openInfoWindow(_iw);
+                    }
+                    _marker.addEventListener("dblclick", function () {
+                        pointDoubleClick(_json.TemplateID, _json.ID);
+                    });
+                })()
+            }
+        }
+
+        //创建InfoWindow
+        function createInfoWindow(json) {
+            var iw = new BMap.InfoWindow("<b class='iw_poi_title' title='" + json.iwTitle + "详细信息'><span style='color:blue;font-size:10pt;'>" + json.iwTitle + "</span><span style='font-size:10pt;'>详细信息</span></b><div class='iw_poi_content' style='padding:5px;'>" + json.content + "</div>", { enableMessage: false });
+            return iw;
+        }
+    </script>
+</head>
+<body>
+    <div data-role="page" id="pageone">
+        <div id="pageoneHeader" data-role="header" data-position="fixed" data-tap-toggle="false">
+            <a href="#" data-role="button" class="ui-btn-left showMenu" data-icon="grid">菜单</a>
+            <h1>设备地图</h1>
+            <!--<a href="menu.html?2" data-role="button" class="ui-btn-right" data-icon="grid">菜单</a>-->
+        </div>
+        <div id="pageoneContent" data-role="content" style="padding: 0; overflow: hidden;">
+            <div id="allmap">
+            </div>
+
+            <div id="titleDiv" style="position: absolute; left: 0px; top: 0px; display: none;"></div>
+        </div>
+    </div>
+
+    <div id="menu" style="position:absolute; background-color:white; overflow: hidden;">
+        <iframe src="menu1.html" style="width:196px; height:98%; border:2px solid #999999; overflow:auto;" ></iframe>
+    </div>
+</body>
+</html>

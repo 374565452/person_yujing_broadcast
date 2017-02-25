@@ -1,0 +1,110 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../js/PSExtend.js"></script>
+    <script type="text/javascript" src="http://maps.google.cn/maps/api/js?sensor=false"></script> 
+    <script type="text/javascript" src="GPSConvert.js"></script>
+    <script type="text/javascript" src="map_B2G_G2B_4.js"></script>
+
+    <title>谷歌地图</title>
+    <style type="text/css">
+        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;}
+    </style>
+    <style type="text/css">
+        .anchorBL {
+            display: none;
+        }
+    </style>
+</head>
+<body onload="InitGoogleMap();">
+    <div id="allmap" style="background-color:Transparent; overflow:hidden;">
+    </div>
+<div id="titleDiv" style="position:absolute; left:0px; top:0px; display:none;"></div>
+</body>
+</html>
+<script type="text/javascript">
+    //----------------------变量--------------------
+    var map;
+    //地图xml数据
+    var mapDataInfo;
+
+    function InitGoogleMap() {
+        $.ajax(
+        {
+            url: "../WebServices/GlobalViewService.asmx/GetMapConfig",
+            type: "GET",
+            data: {},
+            dataType: "text",
+            cache: false,
+            success: function (responseText) {
+                var data = eval("(" + $.xml2json(responseText) + ")");
+                if (data.Result) {
+                    mapDataInfo = data.MapConfig;
+                    var mapBaseConfig = data.MapConfig.基本设置;
+                    var centerPoint = mapBaseConfig.中心坐标.split("|");
+                    var initZoom = mapBaseConfig.初始缩放级别;
+                    var minZoom = mapBaseConfig.最小缩放级别;
+                    var maxZoom = mapBaseConfig.最大缩放级别;
+
+                    var centerpointGGStr = GPS.gcj_encrypt(parseFloat(centerPoint[1]), parseFloat(centerPoint[0]));
+
+                    var centerPointGGLat = centerpointGGStr.lat; //中心纬度Google
+                    var centerPointGGLng = centerpointGGStr.lon; //中心经度
+
+                    var centerPointGG = new google.maps.LatLng(centerPointGGLat, centerPointGGLng);
+
+                    // 创建Map实例
+                    var myOptions = {
+                        zoom: parseInt(initZoom) - 1,
+                        center: centerPointGG,
+                        disableDefaultUI: false,
+                        panControl: true,
+                        zoomControl: true,
+                        zoomControlOptions: { style: google.maps.ZoomControlStyle.LARGE, position: google.maps.ControlPosition.LEFT_TOP },                        streetViewControlOptions: { position: google.maps.ControlPosition.LEFT_TOP },                        scaleControl: true,
+                        mapTypeControl: true,
+                        mapTypeControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP },
+                        mapTypeId: google.maps.MapTypeId.HYBRID
+                    };
+                    map = new google.maps.Map(document.getElementById("allmap"), myOptions);
+
+                    google.maps.event.addListener(map, "click", function (e) {
+                        var point_WGS = GPS.gcj_decrypt(e.latLng.lat(), e.latLng.lng());
+                        parent.document.getElementById("TextBox_Longitude").value = point_WGS.lon.toFixed(6);
+                        parent.document.getElementById("TextBox_Latitude").value = point_WGS.lat.toFixed(6);
+                    });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                var centerPointGG = new google.maps.LatLng(39.65, 118.18);
+
+                // 创建Map实例
+                var myOptions = {
+                    zoom: 12,
+                    center: centerPointGG,
+                    disableDefaultUI: false,
+                    panControl: true,
+                    zoomControl: true,
+                    zoomControlOptions: { style: google.maps.ZoomControlStyle.LARGE, position: google.maps.ControlPosition.LEFT_TOP },                    streetViewControlOptions: { position: google.maps.ControlPosition.LEFT_TOP },                    scaleControl: true,
+                    mapTypeControl: true,
+                    mapTypeControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP },
+                    mapTypeId: google.maps.MapTypeId.HYBRID
+                };
+                map = new google.maps.Map(document.getElementById("allmap"), myOptions);
+                
+                google.maps.event.addListener(map, "click", function (e) {
+                    var point_WGS = GPS.gcj_decrypt(e.latLng.lat(), e.latLng.lng());
+                    parent.document.getElementById("TextBox_Longitude").value = point_WGS.lon.toFixed(6);
+                    parent.document.getElementById("TextBox_Latitude").value = point_WGS.lat.toFixed(6);
+                });
+
+                //alert(errorThrown + "\r\n" + XMLHttpRequest.responseText);
+            }
+        });
+
+    }
+</script>

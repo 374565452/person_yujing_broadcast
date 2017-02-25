@@ -1,0 +1,239 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>设备用水图表</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+    <style type="text/css">
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+    </style>
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/json2.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/DataReport/VillageWaterChart2.js?6"></script>
+
+    <script src="../js/Highcharts-4.2.4/highcharts.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var e = new Date();
+            $("#txt_StartTime").val(e.DateAdd('m', -1).Format("yyyy-MM-01"));
+            $("#txt_EndTime").val(e.DateAdd('d', -e.getDay()).Format("yyyy-MM-dd"));
+        });
+
+        $(window).resize(function () {
+            //$('#Div1').highcharts().reflow();
+            //$('#Div2').highcharts().reflow();
+        });
+
+        function Btn_QueryChart_Click() {
+            if (currentSelManageId == "" || currentSelManageId == null) {
+                $.messager.alert("提示信息", "请选择一个村庄！");
+                return;
+            }
+
+            var startTime = $("#txt_StartTime").val();
+            var endTime = $("#txt_EndTime").val() + " 23:59:59";
+            if (!$.CheckTime(startTime, endTime)) {
+                return;
+            }
+
+            $.ShowMask("数据加载中，请稍等……");
+            $.ajax(
+            {
+                url: "../WebServices/DataReportService.asmx/GetDeviceDataByVillage",
+                type: "GET",
+                data: { 'loginIdentifer': loginIdentifer, 'villageID': currentSelManageId, 'startTime': startTime, 'endTime': endTime },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    //$.messager.alert("提示信息", responseText);
+                    if (data.Result) {
+                        var dataWater = data.村用水;
+                        if (dataWater.length == 0) {
+                            $.messager.alert("提示信息", "查询完成！查询结果为空");
+                            return;
+                        }
+
+                        var xAxis_categories = [];
+                        var series_data = [];
+                        var max = 0;
+                        for (var i = 0; i < dataWater.length; i++) {
+                            xAxis_categories.push(dataWater[i].DeviceName);
+                            series_data.push(parseFloat(dataWater[i].YearWaterUsed));
+                            if (parseFloat(dataWater[i].YearWaterUsed) > max) max = parseFloat(dataWater[i].YearWaterUsed);
+                        }
+
+                        var tickInterval = Math.ceil(max / 100) * 10;
+                        max = tickInterval * 11;
+                        if (max < 10) { max = 10; tickInterval = 5; }
+
+                        var series_data_pie = [];
+                        for (var i = 0; i < dataWater.length; i++) {
+                            var series_data_pie_sub = [];
+                            series_data_pie_sub.push(dataWater[i].DeviceName);
+                            series_data_pie_sub.push(parseFloat(dataWater[i].YearWaterUsed));
+                            series_data_pie.push(series_data_pie_sub);
+                        }
+
+                            $('#Div1').highcharts({
+                                chart: {
+                                    type: 'column'
+                                },
+                                title: {
+                                    text: $("#villagename").text() + " " + startTime + " 至 " + endTime + " 用水统计"
+                                },
+                                xAxis: {
+                                    categories: xAxis_categories,
+                                    title: {
+                                        text: null
+                                    }
+                                },
+                                yAxis: {
+                                    tickInterval: tickInterval,  //自定义刻度  
+                                    min: 0,
+                                    max: max,
+                                    title: {
+                                        text: ''
+                                    },
+                                    labels: { formatter: function () { return this.value + '吨' } }
+                                },
+                                tooltip: {
+                                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                                        '<td style="padding:0"><b>{point.y:.1f} 吨</b></td></tr>',
+                                    footerFormat: '</table>',
+                                    shared: true,
+                                    useHTML: true
+                                },
+                                plotOptions: {
+                                    column: {
+                                        pointPadding: 0.05,
+                                        borderWidth: 0
+                                    }
+                                },
+                                credits: {
+                                    enabled: false
+                                },
+                                series: [{
+                                    name: "用水",
+                                    data: series_data
+                                }]
+                            });
+                            $('#Div2').highcharts({
+                                //图表区选项
+                                chart: {
+                                    plotBackgroundColor: null,
+                                    plotBorderWidth: null,
+                                    plotShadow: false
+                                },
+                                //标题选项
+                                title: {
+                                    //text: $("#villagename").text() + " " + startTime + " 至 " + endTime + " 用水统计"
+                                    text:""
+                                },
+                                //数据点提示框
+                                tooltip: {
+                                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                                },
+                                //数据点选项
+                                plotOptions: {
+                                    pie: {
+                                        allowPointSelect: true,
+                                        cursor: 'pointer',
+                                        dataLabels: {
+                                            enabled: true,
+                                            color: '#000000',
+                                            connectorColor: '#000000',
+                                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                        }
+                                    }
+                                },
+                                credits: {
+                                    enabled: false
+                                },
+                                //数据列选项
+                                series: [{
+                                    type: 'pie',
+                                    name: '用水',
+                                    data: series_data_pie
+                                }]
+
+                            });
+                        $.HideMask();
+                    }
+                    else {
+                        $.HideMask();
+                        $.messager.alert("提示信息", data.Message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.HideMask();
+                    $.messager.alert("提示信息", errorThrown + "<br />" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+    </script>
+
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px; height: 600px;">
+        <div id="divLeft" title="乡镇列表" data-options="region:'west',border:true,split:true"
+            style="width: 210px; padding: 0 0 0 0;">
+
+            <div id="divAreaTree" class="easyui-tree">
+            </div>
+        </div>
+        <div id="divRechargeQuery" title="设备用水图表" data-options="region:'center',border:true" style="overflow-y: hidden; height: 100%;">
+            <div class="easyui-layout" data-options="fit:true" style="width: 800px; height: 600px;">
+                <div data-options="region:'north',border:false">
+                    <span style="margin-left: 10px;">当前选择村庄：</span>
+                    <span id="spanTownName" style="margin-left: 0;"></span>
+                    <span id="villagename" style="margin-left: 10px;"></span>
+                    
+                    <span style="margin-left: 10px">起始时间：</span>
+                    <input id="txt_StartTime" type="text" style="width: 110px" maxlength="19" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+                    <span style="margin-left: 10px">结束时间：</span>
+                    <input id="txt_EndTime" maxlength="19" style="width: 110px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                        type="text" />
+                    <a id="btn_QueryChart" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                        plain="true" onclick="Btn_QueryChart_Click();">查询</a>&nbsp;
+                    <span style="color:red; vertical-align:middle;">请选择一个村庄！</span>
+                    <span style="color:black; vertical-align:middle; display:none;">
+                        <input id="Radio1" type="radio" name="radio" value="1" checked="checked"/><label for="Radio1">柱状图</label>
+                        <input id="Radio2" type="radio" name="radio" value="2" /><label for="Radio2">饼图</label>
+                    </span>
+                </div>
+                <div id="container" data-options="region:'center'" style="border: solid 1px #cccccc; overflow: auto;">
+                    <div id="Div1" style=" width:98%; border: solid 1px #cccccc;">
+                    </div>
+                    <div id="Div2" style=" width:98%; border: solid 1px #cccccc;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

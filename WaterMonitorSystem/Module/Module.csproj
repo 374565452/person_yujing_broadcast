@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C1A08AA9-0401-4025-A157-FC96BA558936}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Module</RootNamespace>
+    <AssemblyName>Module</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseModule.cs" />
+    <Compile Include="CardClearLogModule.cs" />
+    <Compile Include="CardClearModule.cs" />
+    <Compile Include="CardDeviceLogModule.cs" />
+    <Compile Include="CardDeviceModule.cs" />
+    <Compile Include="CardNetSetLogModule.cs" />
+    <Compile Include="CardNetSetModule.cs" />
+    <Compile Include="CardReadLogModule.cs" />
+    <Compile Include="CardReadModule.cs" />
+    <Compile Include="CardUserLogModule.cs" />
+    <Compile Include="CardUserModule.cs" />
+    <Compile Include="CardUserRechargeLogModule.cs" />
+    <Compile Include="CardUserWaterLogModule.cs" />
+    <Compile Include="CropModule.cs" />
+    <Compile Include="DBManageModule.cs" />
+    <Compile Include="DeviceAlarmModule.cs" />
+    <Compile Include="DeviceEventModule.cs" />
+    <Compile Include="DeviceLogModule.cs" />
+    <Compile Include="DeviceModule.cs" />
+    <Compile Include="DeviceOperationModule.cs" />
+    <Compile Include="DeviceTypeCodeModule.cs" />
+    <Compile Include="DistrictModule.cs" />
+    <Compile Include="DistrictYearExploitationModule.cs" />
+    <Compile Include="LevelInfo.cs" />
+    <Compile Include="MenuModule.cs" />
+    <Compile Include="PriceInfo.cs" />
+    <Compile Include="PriceModule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoleModule.cs" />
+    <Compile Include="SysLogModule.cs" />
+    <Compile Include="SysUserConfigModule.cs" />
+    <Compile Include="SysUserModule.cs" />
+    <Compile Include="T_GroundWaterModule.cs" />
+    <Compile Include="T_RainFallModule.cs" />
+    <Compile Include="WaterUserLogModule.cs" />
+    <Compile Include="WaterUserModule.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{3fe103d3-8cad-41bd-93b3-baec29833592}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DBHelper\DBUtility.csproj">
+      <Project>{7d7ea676-6b3c-452a-9258-02209f33f01d}</Project>
+      <Name>DBUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{ebaf5c13-e067-4aac-bd71-43c7ff1a63d2}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>报警数据查询</title>
+    <meta HTTP-EQUIV="pragma" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+    <meta HTTP-EQUIV="expires" CONTENT="0">
+
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+    <!--    <script language="javascript" type="text/javascript" src="../js/Page/DataQuery/DataQuery.js"></script>
+    -->
+    <script language="javascript" type="text/javascript" src="../js/Page/DataQuery/AlarmDataQuery.js"></script>
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        table, caption, tbody, tfoot, thead, tr, th, td {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font-size: 100%;
+            vertical-align:middle;
+            background: transparent;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .pstbl {
+            /*width: 100%;*/
+        }
+
+            .pstbl tbody {
+                /*width: 100%;*/
+            }
+
+            .pstbl tr td,
+            .pstbl tr th {
+                border: solid 1px #888;
+                margin: 0;
+                padding: 0 0 0 0;
+                vertical-align: middle;
+            }
+
+            .pstbl tr td {
+                text-align: center;
+                background-color: #fff;
+                color: #444;
+                vertical-align: middle;
+            }
+
+            .pstbl tbody tr.alt td {
+                background-color: #e4ecf7;
+            }
+
+            .pstbl tbody tr td.alt {
+                width:60px;
+                text-align:left;
+                background-color: #A3C2EA;
+            }
+
+            .pstbl tr.hover td,
+            .pstbl tbody tr.alt.hover td {
+                background-color: #bcd4ec;
+                color: #000;
+            }
+    </style>
+</head>
+<body style="margin:0; overflow:hidden">
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 100%; height:400px;">
+        <div data-options="region:'west',split:true,border:true" title="设备列表" style="overflow-y: hidden;
+            width: 210px;">
+            <div title="区域" data-options="closable:false">
+                <ul id="areaTree" class="easyui-tree"></ul>
+            </div>
+        </div>
+        <div id="divCenter" title="报警记录列表" data-options="region:'center',split:true,border:true">
+            <table id="tbOperateInfos" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20,onLoadSuccess:BindOnSelectPage"
+                   style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar"></table>
+            <div id="toolbar">
+                <span id="wellname" style="margin-left: 10px">设备</span>名称：
+                <input id="cbb_DevCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />
+                <span style="margin-left: 10px">起始时间：</span>
+                <input id="txt_StartTime" type="text" style="width: 110px" maxlength="19" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" />
+                <span style="margin-left: 10px">结束时间：</span>
+                <input id="txt_EndTime" maxlength="19" style="width: 110px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"
+                       type="text" />
+                <span style="margin-left: 10px">报警类型：</span>
+                <input id="AlarmType" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:120px" />
+                <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                   plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                <a id="btn_Export" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel" plain="true" onclick="Btn_Excel_Click();">导出</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="divDetailData" class="easyui-dialog" title="详细数据" data-options="closed:true,modal:true" style="width:570px;">
+        <div id="divDataList" style="overflow-y:auto;">
+        </div>
+    </div>
+</body>
+</html>

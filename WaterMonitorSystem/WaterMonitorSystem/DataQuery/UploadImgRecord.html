@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html >
+<html>
+<head>
+    <title>水文仪器图片</title>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="0" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css" />
+    <style type="text/css">
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+    </style>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../js/PSExtend.js"></script>
+    <script type="text/javascript">
+        //当前登录操作员管理ID
+        var mnId = "";
+
+        $(document).ready(function () {
+            var defaultTheme = $.cookie("psbsTheme");
+            if (defaultTheme != null && defaultTheme != "default") {
+                var link = $(document).find('link:first');
+                link.attr('href', '../App_Themes/easyui/themes/' + defaultTheme + '/easyui.css');
+            }
+            GetSystemInfo();
+        });
+
+        //从服务器取得系统运行状态信息
+        function GetSystemInfo() {
+            $.ajax(
+            {
+                url: "../WebServices/SystemService.asmx/GetSystemStateInfo",
+                type: "GET",
+                data: { "loginIdentifer": window.parent.guid },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        mnId = data.SysStateInfo.当前登录操作员管理ID;
+                        LoadCbbDevice(mnId);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+        //加载测点combobox
+        function LoadCbbDevice(mid) {
+            $.ajax(
+            {
+                url: "../WebServices/DataQueryNewService.asmx/GetDeviceRemoteStationsByMnId",
+                type: "GET",
+                data: { "loginIdentifer": window.parent.guid, "mnID": mid },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    deviceJson = data.RemoteStation;
+
+                    //指定Json数组
+                    $("#cbb_DevCombobox").combobox({ data: deviceJson, textField: 'RemoteStation', valueField: 'RemoteStation' });
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+
+        //查询的按钮事件
+        function Btn_Query_Click() {
+            var _stationID = $("#cbb_DevCombobox").combobox('getValue');
+            if ($.trim(_stationID) == "") {
+                $.messager.alert("提示信息", "设备编号不能为空！");
+                return;
+            }
+
+            $.ajax(
+            {
+                url: "../WebServices/DataQueryNewService.asmx/GetFileList",
+                data: { "loginIdentifer": window.parent.guid, "stationID": $.trim(_stationID) },
+                type: "GET",
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    $.HideMask();
+                    if (data.Result) {
+                        $("#divQuery").empty();
+                        for (var i = 0; i < data.List.length; i++) {
+                            var fn = data.List[i].fn;
+                            var fp = data.List[i].fp;
+                            var fW = data.List[i].fW;
+                            var fH = data.List[i].fH;
+                            var fWD = fW / 200.0;
+                            var fHD = fH / 150.0;
+
+                            var mt = 0;
+                            if (fWD > 1) {
+                                if (fWD > fHD) {
+                                    fW = 200;
+                                    mt = ((150 - 150.0 / fWD) / 2).toFixed(0);
+                                }
+                                else {
+                                    fW = (fW / fHD).toFixed(0);
+                                }
+                            }
+                            else {
+                                if (fHD > 1) {
+                                    fW = (fW / fHD).toFixed(0);
+                                }
+                                else {
+                                    mt = ((150 - fH) / 2).toFixed(0);
+                                }
+                            }
+
+                            var mts = "";
+                            if (mt > 0) {
+                                mts = " margin-top:" + mt + "px;";
+                            }
+
+                            $("#divQuery").append("<div class=\"imgDivList\"><div class=\"itemImg\"><img style=\"border: none; width:" + fW + "px;" + mts + "\" src=\"../" + fp + "\" /></div><div class=\"itemTitle\">" + fn + "</div></div>");
+                        }
+                    } else {
+                        $.messager.alert("提示信息", data.Message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.HideMask();
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+    </script>
+    <style type="text/css">
+        .imgDivList {
+            float: left;
+            width: 212px;
+            height: 185px;
+            text-align: center;
+            background-color: white;
+            overflow: hidden;
+        }
+
+            .imgDivList .itemImg {
+                width: 200px;
+                height: 150px;
+                margin: 5px;
+                border: 1px solid #999999;
+                overflow: hidden;
+            }
+
+                .imgDivList .itemImg img {
+                    border: none;
+                }
+
+            .imgDivList .itemTitle {
+                width: 200px;
+                height: 20px;
+                line-height: 20px;
+                margin-left: 5px;
+                margin-bottom: 5px;
+                overflow: hidden;
+                font-weight: bolder;
+            }
+    </style>
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px; height: 600px;">
+        <div id="toolbar" data-options="region:'north',border:true" style="overflow-y: hidden; height: 30px; line-height: 30px;">
+            <span style="margin-left: 20px">设备编号：</span>
+            <input id="cbb_DevCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width: 150px" />
+            <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search" plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+        </div>
+        <div id="divQuery" title="图片列表" data-options="region:'center',border:true" style="overflow-x: hidden; overflow-y: auto; height: 99%;">
+        </div>
+    </div>
+</body>
+</html>

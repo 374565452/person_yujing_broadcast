@@ -1,0 +1,117 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>作物类型</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/json2.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/SystemAdmin/CropManager.js?3"></script>
+
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px;
+        height: 600px;">
+        <div id="divCenter" title="作物类型列表" data-options="region:'center',border:true" style="overflow-y: hidden">
+            <table id="tbAgroType" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20"
+                   style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                <thead>
+                    <tr style="height: 24px">
+                        <th data-options="field:'agrotypeID',width:40,hidden:true">
+                            作物类型ID
+                        </th>
+                        <th data-options="field:'agroType',width:40">
+                            作物类型
+                        </th>
+                        <th data-options="field:'waterNum',width:40">
+                            亩均用水量(吨)
+                        </th>
+                        <th data-options="field:'editAgro',width:30,align:'center'">
+                            编辑
+                        </th>
+                        <th data-options="field:'removeAgro',width:30,align:'center'">
+                            删除
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            <div id="toolbar">
+                <span style="margin-left:10px">作物类型：</span>
+                <input id="cbb_DevCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />&nbsp;
+                <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                   plain="true" onclick="btn_Query_Click();">查询</a>&nbsp;
+                <a id="btn_Add" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-add"
+                   plain="true" onclick="btn_Add_Click();">添加</a>
+            </div>
+            <div id="dlgAgro" class="easyui-dialog" title="编辑作物类型信息" data-options="iconCls:'icon-save',buttons: '#dlg-buttons',closed:true,modal:true"
+                 style="width: 320px; height: 200px; padding: 5px">
+                <div id="divDeviceTabs" class="easyui-tabs" data-options="fit:true,border:false,showHeader:false">
+                    <div title="作物类型信息">
+                        <fieldset style="height: 80px">
+                            <legend>作物类型信息</legend>
+                            <table id="tbAgroType">
+                                <tr height="30px" style="display: none;">
+                                    <td align="right" width="75px">
+                                        <span>ID：</span>
+                                    </td>
+                                    <td>
+                                        <input id="txt_ID" class="easyui-validatebox textbox" style="height: 21px" />
+                                    </td>
+                                    <td>
+                                        <span>*</span>
+                                    </td>
+                                </tr>
+                                <tr height="30px">
+                                    <td align="right" width="100px" id="testtd">
+                                        <span>作物类型：</span>
+                                    </td>
+                                    <td>
+                                        <input id="txt_AgroTypeName" class="easyui-validatebox textbox" data-options="required:true,validType:'length[1,25]'"
+                                               style="height: 21px" />
+                                    </td>
+                                    <td>
+                                        <span>*</span>
+                                    </td>
+                                </tr>
+                                <tr height="30px">
+                                    <td align="right" width="100px">
+                                        <span>亩均用水量(吨)：</span>
+                                    </td>
+                                    <td>
+                                        <input id="txt_waterNum" class="easyui-validatebox textbox" data-options="required:true"
+                                               style="height: 21px" />
+                                    </td>
+                                    <td>
+                                        <span>*</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div id="dlg-buttons" style="width: 100%; text-align: center">
+                <a id="btn_OK" href="javascript:void(0)" class="easyui-linkbutton" style="width: 48px"
+                   onclick="javascript:btn_OK_Click()">确定</a> <a id="btn_Cancel" href="javascript:void(0)"
+                                                                 class="easyui-linkbutton" style="width: 48px" onclick="javascript: $('#dlgAgro').dialog('close')">
+                    取消
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

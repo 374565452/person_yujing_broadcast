@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>水资源管理平台 移动平台</title>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="0" />
+    <script src="../js/jquery-1.11.1.min.js"></script>
+    <script src="../js/jquery.cookie.js"></script>
+    <script src="../js/CheckBrowser.js"></script>
+    <script src="../js/PSExtend.js"></script>
+    <link href="css/style.css" rel="stylesheet" />
+    <style type="text/css">
+        .AdnroidDown {
+            position:absolute; left:10px; top:10px; height:25px; line-height:25px; width:80px; background-color:#EEEEEE; font-size:14px; text-align:center;
+        }
+            .AdnroidDown a {
+                color:blue;
+            }
+    </style>
+    <script src="js/base.js?4"></script>
+    <script type="text/javascript">
+        function resizeWindow(e) {
+            if ($(window).width() - $(".enter").width() > 0) {
+                $(".enter").css("marginLeft", ($(window).width() - $(".enter").width()) / 2);
+            }
+            else {
+                $(".enter").css("marginLeft", 0);
+            }
+            if ($(window).height() - $(".enter").height() > 100) {
+                $(".enter").css("marginTop", ($(window).height() - $(".enter").height()) / 2 - 20);
+            } else {
+                $(".enter").css("marginTop", 40);
+            }
+
+            $("#main").height($(window).height());
+            $("#main").width($(window).width());
+            $("#main").show();
+        }
+
+        $(function () {
+            resizeWindow();
+
+            $(window).bind("resize", resizeWindow);
+
+            var a = getUrlParam('a');
+            var b = getUrlParam('b');
+            var c = getUrlParam('c');
+
+            if (a != null && a != "") {
+                $("#txtaccount").val(a);
+            }
+
+            if (b != null && b != "") {
+                $("#txtpassword").val(b);
+            }
+
+            if (c != null && c != "") {
+                $("#main").hide();
+                login();
+            }
+        });
+
+        function login() {
+            var userName = $("#txtaccount").val();
+            var password = $("#txtpassword").val();
+            var vcode = "";
+            if (userName.trim() == "") {
+                ShowMsg('请输入用户名', false, true);
+                $("#txtaccount").focus();
+                return;
+            }
+
+            ShowMsg('正在登录请等待...', true, false);
+            $.ajax(
+            {
+                url: "../WebServices/UserAdminService.asmx/LoginEx",
+                type: "POST",
+                data: { "LoginName": userName, "LoginPwd": password, "ValidateCode": vcode },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        $.cookie("psbsLogin", data.Guid, { expires: 7, path: '/' });
+                        $("#txtaccount").val("");
+                        $("#txtpassword").val("");
+                        HideMsg();
+                        var t = getUrlParam('t');
+                        if (t != null && t != "") {
+                            location.href = "WellMap.html?" + Math.random() + "&t=1";
+                        } else {
+                            location.href = "WellMap.html?" + Math.random();
+                        }
+                    }
+                    else {
+                        $("#main").show();
+                        ShowMsg('登录失败！' + data.Message, false, true);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    ShowMsg(XMLHttpRequest.responseText, false, true);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="main">
+        <div class="enter">
+            <div class="logo">
+                <img src="../Images/mkhy.png" style="width:150px; margin:5px 0 0 20px;" />
+            </div>
+            <div>
+                <h1>水资源管理平台</h1>
+            </div>
+            <div class="box">
+                <p>
+                    <input type="text" id="txtaccount" class="ico" placeholder="账户" />
+                </p>
+                <p>
+                    <input type="password" id="txtpassword" class="ico1" placeholder="密码" />
+                </p>
+                <p>
+                    <input type="button" id="btlogin" class="btn" value="登录" onclick="login();" />
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

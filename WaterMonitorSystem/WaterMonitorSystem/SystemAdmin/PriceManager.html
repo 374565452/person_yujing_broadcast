@@ -1,0 +1,140 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>价格管理</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/SystemAdmin/PriceManager.js?6"></script>
+
+</head>
+<body>
+    <div class="easyui-tabs" id="priceTabs" fit="true">
+        <div title="水价管理">
+            <table class="easyui-datagrid" id="waterTab"  toolbar="#watertool" data-options="fitColumns:true,singleSelect:true"
+                rownumbers="true">
+            </table>
+            <div id="watertool">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true"
+                    onclick="Btn_WaterAdd_Click()">添加</a> 
+                &nbsp;&nbsp;&nbsp;&nbsp;<span>价格单位：元/吨</span>
+            </div>
+        </div>
+        <div title="电价管理">
+            <table class="easyui-datagrid" id="powerTab" toolbar="#powertool" data-options="fitColumns:true,singleSelect:true" rownumbers="true">
+            </table>
+            <div id="powertool">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="Btn_PowerAdd_Click()">添加</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span>价格单位：元/度</span>
+            </div>
+        </div>
+    </div>
+    <div id="waterDialog" class="easyui-dialog" title="添加水价价格信息" style="width: 350px; height: 250px;"
+        data-options="resizable:true,modal:true,closed:true,buttons:'#dlg-waterButtons'">
+        <div title="水价价格信息">
+        <fieldset  id="waterFieldset">
+          <legend>水价价格信息</legend>
+        <table align="center">
+            <tr>
+                <td align="right">
+                    名称:</td>
+                <td>
+                    <input class="easyui-textbox" id="name"/></td>
+            </tr>
+            <tr id="row1">
+                <td id="waterPriceName1" align="right">
+                    </td>
+                <td>
+                    <input class="easyui-textbox" id="price1" /></td>
+            </tr>
+            <tr id="row2">
+                <td id="waterPriceName2" align="right">
+                    </td>
+                <td>
+                    <input class="easyui-textbox" id="price2" /></td>
+            </tr>
+            <tr id="row3" >
+                <td id="waterPriceName3" align="right">
+                    </td>
+                <td>
+                   <input class="easyui-textbox" id="price3" /></td>
+            </tr>
+            <tr id="row4" >
+                <td id="waterPriceName4" align="right">
+                    </td>
+                <td>
+                    <input class="easyui-textbox" id="price4" /></td>
+            </tr>
+        </table>
+        </fieldset>
+        </div>
+                <div id="dlg-waterButtons" style="width: 100%; text-align: center">
+                <a id="save" href="javascript:void(0)" class="easyui-linkbutton" style="width: 48px"
+                   onclick="Btn_WaterSave_Click()">确定</a> <a id="cancel" href="javascript:void(0)"
+                                                                 class="easyui-linkbutton" style="width: 48px" onclick="Btn_WaterCancel_Click()">
+                    取消
+                </a>
+            </div>
+        <div id="powerDialog" class="easyui-dialog" title="添加电价价格信息" style="width: 350px; height: 250px;"
+        data-options="resizable:true,modal:true,closed:true,buttons: '#dlg-powerButtons'">
+         <div title="电价价格信息">
+        <fieldset id="powerFieldset" >
+          <legend>电价价格信息</legend>
+        <table align="center">
+            <tr>
+                <td align="right">
+                    名称:</td>
+                <td>
+                    <input class="easyui-textbox" id="powerName"/></td>
+            </tr>
+            <tr id="powerRow1">
+                <td id="powerPriceName1" align="right">
+                    </td>
+                <td>
+                    <input class="easyui-textbox" id="powerPrice1" /></td>
+            </tr>
+            <tr id="powerRow2">
+                <td id="powerPriceName2" align="right">
+                    </td>
+                <td>
+                    <input class="easyui-textbox" id="powerPrice2" /></td>
+            </tr>
+            <tr id="powerRow3">
+                <td id="powerPriceName3" align="right">
+                    </td>
+                <td>
+                   <input class="easyui-textbox" id="powerPrice3" /></td>
+            </tr>
+            <tr id="powerRow4">
+                <td id="powerPriceName4" align="right">
+                    </td>
+                <td>
+                    <input class="easyui-textbox" id="powerPrice4" /></td>
+            </tr>
+        </table>
+        </fieldset>
+        </div>
+    <div id="dlg-powerButtons" style="width: 100%; text-align: center">
+                <a id="powerSave" href="javascript:void(0)" class="easyui-linkbutton" style="width: 48px"
+                   onclick="Btn_PowerSave_Click()">确定</a> <a id="powerCancel" href="javascript:void(0)"
+                                                                 class="easyui-linkbutton" style="width: 48px" onclick="Btn_PowerCancel_Click()">
+                    取消
+                </a>
+     </div>
+</body>
+</html>

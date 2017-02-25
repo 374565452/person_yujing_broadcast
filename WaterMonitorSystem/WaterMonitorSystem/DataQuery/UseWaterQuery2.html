@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html >
+<html>
+<head>
+    <title>设备用水查询</title>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="0" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css" />
+    <style type="text/css">
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+    </style>
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/DataQuery/UseWaterQuery2.js?3"></script>
+
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px;
+        height: 600px;">
+        <div id="divLeft" title="设备用水查询" data-options="region:'west',border:true,split:true"
+             style="width: 210px; padding: 0 0 0 0;">
+            <div id="divAreaTree" class="easyui-tree">
+            </div>
+        </div>
+        <div id="divOperateQuery" title="设备用水查询" data-options="region:'center',border:true" style="overflow-y: hidden;height:100%;">
+            <table id="tbOperateInfos" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:false,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20,onLoadSuccess:BindOnSelectPage"
+                   style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar"></table>
+            <div id="toolbar">
+                <span id="wellname" style="margin-left: 10px">设备</span>名称：
+                <input id="cbb_DevNameCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />
+                <span style="margin-left: 10px">起始时间：</span>
+                <input id="txt_StartTime" type="text" style="width: 110px" maxlength="19" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" />
+                <span style="margin-left: 10px">结束时间：</span>
+                <input id="txt_EndTime" maxlength="19" style="width: 110px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"
+                       type="text" />
+                <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                   plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                <a id="btn_Export" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel" plain="true" onclick="Btn_Excel_Click();">导出</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1324 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>百度地图</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/Map.css">
+    <style type="text/css">
+        body, html, #allmap {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+    </style>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../js/ajaxfileupload.js"></script>
+    <script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="../js/PSExtend.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ndUzBpyp7u4Dr6gBVZLhEIGs"></script>
+    <script type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+    <script type="text/javascript" src="GPSConvert.js"></script>
+    <script type="text/javascript" src="../js/Page/GlobalView/BDMap.js?1"></script>
+    <style type="text/css">
+        .anchorBL {
+            display: none;
+        }
+
+        .psbutton {
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0 0 10px #ccc;
+            width: 80px;
+            height: 30px;
+            background: #e0ecef;
+            border: 1px solid #ccc;
+            margin: 5px 5px;
+            color: #0e2d5f;
+            font-size: 13px;
+        }
+
+        .psbutton2 {
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0 0 10px #ccc;
+            width: 160px;
+            height: 30px;
+            background: #e0ecef;
+            border: 1px solid #ccc;
+            margin: 5px 5px;
+            color: #0e2d5f;
+            font-size: 13px;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            var str;
+            var date = new Date();
+            if (date.getMinutes() < 15)
+                date = date.DateAdd('h', -10);
+            else if (date.getMinutes() < 45)
+                date = date.DateAdd('h', -9);
+            else if (date.getMinutes() >= 45)
+                date = date.DateAdd('h', -9);
+
+            var str = date.Format("yyyyMMddHH4500000");
+            $("#divWXYTInfo").html("<img src=\"http://i.weather.com.cn/i/product/pic/m/sevp_nsmc_wxcl_asc_e99_achn_lno_py_" + str + ".jpg\" style=\"width:100%;\" alt=\"" + str + "\" />");
+
+            ShowAndHideInfo();
+        });
+    </script>
+</head>
+<body>
+    <div id="allmap">
+    </div>
+    <div id="divTabWeather" class="easyui-resizable" style="position: absolute; top: 50px; right: 0; width: 320px; height: 175px; overflow: hidden;">
+        <div style="width: 320px; height: 175px; overflow: hidden; float: left; background-color: white;">
+            <div style="margin-left: -180px; width: 515px; height: 175px; overflow: hidden;">
+                <iframe name="weather_inc" src="http://i.tianqi.com/index.php?c=code&id=83&py=beijing" width="515" height="178" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+            </div>
+        </div>
+    </div>
+    <div id="divWXYT" class="easyui-resizable" style="position: absolute; top: 225px; right: 0; width: 320px; height: 210px; overflow: hidden;">
+        <div id="divWXYTInfo" style="width: 320px; height: 210px; overflow: hidden; float: left;">
+        </div>
+    </div>
+    <div id="divTabContainer" class="easyui-resizable" style="position: absolute; top: 100px; left: 300px; width: 425px;">
+        <div style="float: left; width: 25px; height: 400px;">
+            <img id="imgRealTimeData" src="../Images/实时数据.png" style="position: relative; left: 1px; margin-top: 315px;" onclick="ShowAndHideInfo();" />
+        </div>
+        <div id="divTabs" class="easyui-tabs" data-options="border:true,onSelect:TabOnSelect" style="float: right; width: 400px; height: 400px;">
+        </div>
+    </div>
+
+
+    <div id="titleDiv" style="position: absolute; left: 0px; top: 0px; display: none;"></div>
+
+    <div id="dlgSendFile" class="easyui-dialog" title="文件语音" data-options="closed:true,modal:true"
+        style="width: 550px; height: 400px; padding: 5px">
+        <fieldset id="Fieldset3">
+            <legend>文件语音</legend>
+            <div>
+                <input type="radio" name="ParamWaterRadio3" id="ParamWaterRadio31" checked="checked" onclick="radioClick3(1)" /><label for="ParamWaterRadio31">文件下发</label>
+                <input type="radio" name="ParamWaterRadio3" id="ParamWaterRadio32" onclick="radioClick3(2)" /><label for="ParamWaterRadio32">语音播报</label>
+            </div>
+            <div class="ParamWaterRadio3 ParamWaterRadio31">
+                <iframe name='hidden_frame' id="hidden_frame" style='width: 150px; height: 50px; display: none;'></iframe>
+                文件类型：
+                <select name="Select18" id="Select18">
+                    <option value="0">-请选择-</option>
+                    <option value="2">音频</option>
+                    <option value="3">更新程序</option>
+                </select>
+                <br />
+                文件选择：<input id="File1" name="File1" type="file" />
+                <br />
+                <input type="button" value="发送" onclick="return sendFile();" />
+                <div id="div1"></div>
+            </div>
+            <div class="ParamWaterRadio3 ParamWaterRadio32">
+                播报次数：<input id="txtPlayCount" class="textbox" style="height: 21px; width: 40px" /> 次数限制1-255 <br />
+                播报角色：<select name="selPlayRole" id="selPlayRole">
+                    <option value="0">-请选择-</option>
+                    <option value="1">男声</option>
+                    <option value="2">女声</option>
+                </select><br />
+                播报速度：<select name="selPlaySpeed" id="selPlaySpeed">
+                    <option value="0">-请选择-</option>
+                    <option value="1">快</option>
+                    <option value="2">中</option>
+                    <option value="2">慢</option>
+                </select><br />
+                播报内容：<br /><textarea id="txtPlayContext" rows="8" cols="60" style="padding: 2px;"></textarea><br />内容最多400字<br />
+                <input type="button" value="播报" onclick="return sendPlay();" />
+            </div>
+        </fieldset>
+    </div>
+
+    <div id="dlgParamWater" class="easyui-dialog" title="水文查询" data-options="closed:true,modal:true"
+        style="width: 550px; height: 460px; padding: 5px">
+        <fieldset id="Fieldset1">
+            <legend>水文查询</legend>
+            <div>
+                <input type="radio" name="ParamWaterRadio2" id="ParamWaterRadio21" checked="checked" onclick="radioClick2(1)" /><label for="ParamWaterRadio21">查询1</label>
+                <input type="radio" name="ParamWaterRadio2" id="ParamWaterRadio22" onclick="radioClick2(2)" /><label for="ParamWaterRadio22">查询2</label>
+                <input type="radio" name="ParamWaterRadio2" id="ParamWaterRadio23" onclick="radioClick2(3)" /><label for="ParamWaterRadio23">查询3</label>
+                <input type="radio" name="ParamWaterRadio2" id="ParamWaterRadio24" onclick="radioClick2(4)" /><label for="ParamWaterRadio24">预警</label>
+                <input type="radio" name="ParamWaterRadio2" id="ParamWaterRadio25" onclick="radioClick2(5)" /><label for="ParamWaterRadio25">预警责任人</label>
+            </div>
+            <textarea id="waterInfo" rows="8" cols="60" style="padding: 2px;"></textarea>
+            <table>
+
+                <tr class="ParamWaterRadio2 ParamWaterRadio21" height="30px">
+                    <td align="right" width="100px">起始时间：</td>
+                    <td>
+                        <input id="Text1" class="textbox" style="height: 21px; width: 135px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH'})" /></td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio21" height="30px">
+                    <td align="right" width="100px">结束时间：</td>
+                    <td>
+                        <input id="Text2" class="textbox" style="height: 21px; width: 135px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH'})" /></td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio21" height="30px">
+                    <td align="right" width="100px">查询要素：</td>
+                    <td>
+                        <select id="Select1" class="easyui-combobox">
+                            <option>日埋深</option>
+                            <option>日水温</option>
+                            <option>埋深</option>
+                            <option>水温</option>
+                            <option>1小时时段降水量</option>
+                            <option>日降水量</option>
+                            <option>当前降水量</option>
+                            <option>降水量累计值</option>
+                            <option>瞬时水位</option>
+                            <option>1小时内每5分钟时段雨量</option>
+                            <option>1小时内5分钟间隔相对水位1</option>
+                        </select></td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio21" height="30px">
+                    <td align="right" width="100px">查询步长：</td>
+                    <td>
+                        <input id="Text3" class="textbox" style="height: 21px; width: 40px" />天，
+                        <input id="Text4" class="textbox" style="height: 21px; width: 40px" />小时，
+                        <input id="Text5" class="textbox" style="height: 21px; width: 40px" />分钟
+                        <br />
+                        天取值范围0-30，小时范围0-23，分钟范围0-59
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio21" height="30px">
+                    <td align="right" width="100px"></td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice3('时段数据查询')">时段数据查询</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice3('实时数据查询')">实时数据查询</a>
+                    </td>
+                </tr>
+
+                <tr class="ParamWaterRadio2 ParamWaterRadio21" height="30px">
+                    <td align="right" width="100px">IC卡状态：</td>
+                    <td>
+                        <select id="Select13" class="easyui-combobox">
+                            <option value="0">关闭</option>
+                            <option value="1">IC卡有效</option>
+                        </select></td>
+                </tr>
+
+                <tr class="ParamWaterRadio2 ParamWaterRadio21" height="30px">
+                    <td align="right" width="100px">水量定值：</td>
+                    <td>
+                        <select id="Select14" class="easyui-combobox">
+                            <option value="FF">控制已投入</option>
+                            <option value="00">控制已退出</option>
+                        </select></td>
+                </tr>
+
+                <tr class="ParamWaterRadio2 ParamWaterRadio21" height="30px">
+                    <td align="right" width="100px"></td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('设置IC卡状态')">设置IC卡状态</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('水量定值控制')">水量定值控制</a>
+                    </td>
+                </tr>
+
+                <tr class="ParamWaterRadio2 ParamWaterRadio22" height="30px">
+                    <td align="right" width="100px">查询要素：</td>
+                    <td>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_FF0E" value="FF0E" /><label for="ckbIden_FF0E">日埋深</label>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_FF03" value="FF03" /><label for="ckbIden_FF03">日水温</label>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_0E" value="0E" /><label for="ckbIden_0E">埋深</label>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_03" value="03" /><label for="ckbIden_03">水温</label>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_1A" value="1A" /><label for="ckbIden_1A">1小时时段降水量</label><br />
+                        <input type="checkbox" name="ckbIden" id="ckbIden_1F" value="1F" /><label for="ckbIden_1F">日降水量</label>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_20" value="20" /><label for="ckbIden_20">当前降水量</label>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_26" value="26" /><label for="ckbIden_26">降水量累计值</label>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_39" value="39" /><label for="ckbIden_39">瞬时水位</label><br />
+                        <input type="checkbox" name="ckbIden" id="ckbIden_F4" value="F4" /><label for="ckbIden_F4">1小时内每5分钟时段雨量</label>
+                        <input type="checkbox" name="ckbIden" id="ckbIden_F5" value="F5" /><label for="ckbIden_F5">1小时内5分钟间隔相对水位1</label>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio22" height="30px">
+                    <td align="right" width="100px">密码：</td>
+                    <td>旧：<input id="Text31" class="textbox" style="height: 21px; width: 135px" />，
+                        新：<input id="Text29" class="textbox" style="height: 21px; width: 135px" /></td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio22" height="30px">
+                    <td align="right" width="100px">时钟：</td>
+                    <td>
+                        <input id="Text30" class="textbox" style="height: 21px; width: 150px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" /></td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio22" height="30px">
+                    <td align="right" width="100px"></td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('查询指定要素')">查询指定要素</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('修改密码')">修改密码</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('设置时钟')">设置时钟</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('查询时钟')">查询时钟</a>
+                        <br />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('查询人工置数')">查询人工置数</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('查询电机实时')">查询电机实时</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('查询软件版本')">查询软件版本</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('查询状态报警')">查询状态报警</a>
+                        <br />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('初始化数据')">初始化数据</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('恢复出厂设置')">恢复出厂设置</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('查询事件记录')">查询事件记录</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('拍照')">拍照</a>
+                    </td>
+                </tr>
+
+                <tr class="ParamWaterRadio2 ParamWaterRadio23" height="30px">
+                    <td align="right" width="100px">水泵开关：</td>
+                    <td>水泵1：<select id="Select2">
+                        <option value="0">关</option>
+                        <option value="1">开</option>
+                    </select>
+                        水泵2：<select id="Select3">
+                            <option value="0">关</option>
+                            <option value="1">开</option>
+                        </select>
+                        水泵3：<select id="Select4">
+                            <option value="0">关</option>
+                            <option value="1">开</option>
+                        </select>
+                        水泵4：<select id="Select5">
+                            <option value="0">关</option>
+                            <option value="1">开</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio23" height="30px">
+                    <td align="right" width="100px">阀门开关：</td>
+                    <td>阀门1：<select id="Select6">
+                        <option value="0">关</option>
+                        <option value="1">开</option>
+                    </select>
+                        阀门2：<select id="Select7">
+                            <option value="0">关</option>
+                            <option value="1">开</option>
+                        </select>
+                        阀门3：<select id="Select8">
+                            <option value="0">关</option>
+                            <option value="1">开</option>
+                        </select>
+                        阀门4：<select id="Select9">
+                            <option value="0">关</option>
+                            <option value="1">开</option>
+                        </select></td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio23" height="30px">
+                    <td align="right" width="100px">闸门开关：</td>
+                    <td>闸门1：<select id="Select10">
+                        <option value="0">关</option>
+                        <option value="1">开</option>
+                    </select>
+                        开度：<input id="Text6" class="textbox" style="height: 21px; width: 60px" />
+                        闸门2：<select id="Select11">
+                            <option value="0">关</option>
+                            <option value="1">开</option>
+                        </select>
+                        开度：<input id="Text7" class="textbox" style="height: 21px; width: 60px" />
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio23" height="30px">
+                    <td align="right" width="100px"></td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('控制水泵开关')">控制水泵开关</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('控制阀门开关')">控制阀门开关</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('控制闸门开关')">控制闸门开关</a>
+                    </td>
+                </tr>
+
+                <tr class="ParamWaterRadio2 ParamWaterRadio24" height="30px">
+                    <td align="right" width="100px">预警阀值：</td>
+                    <td>1小时阀值：黄色值：<input id="Text8" class="textbox" style="height: 21px; width: 50px" />
+                        橙色值：<input id="Text9" class="textbox" style="height: 21px; width: 50px" />
+                        红色值：<input id="Text10" class="textbox" style="height: 21px; width: 50px" /><br />
+                        3小时阀值：黄色值：<input id="Text11" class="textbox" style="height: 21px; width: 50px" />
+                        橙色值：<input id="Text12" class="textbox" style="height: 21px; width: 50px" />
+                        红色值：<input id="Text13" class="textbox" style="height: 21px; width: 50px" /><br />
+                        6小时阀值：黄色值：<input id="Text14" class="textbox" style="height: 21px; width: 50px" />
+                        橙色值：<input id="Text15" class="textbox" style="height: 21px; width: 50px" />
+                        红色值：<input id="Text16" class="textbox" style="height: 21px; width: 50px" /><br />
+                        12小时阀值：黄色值：<input id="Text17" class="textbox" style="height: 21px; width: 50px" />
+                        橙色值：<input id="Text18" class="textbox" style="height: 21px; width: 50px" />
+                        红色值：<input id="Text19" class="textbox" style="height: 21px; width: 50px" />
+                        <br />
+                        预警阀值取值范围0-255    
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio24" height="30px">
+                    <td align="right" width="100px">预警发布：</td>
+                    <td>预警类型：<select id="Select12">
+                        <option value="1">水位</option>
+                        <option value="2">雨量</option>
+                    </select>
+                        &nbsp;
+                        预警级别：<select id="Select15">
+                            <option value="1">黄色预警</option>
+                            <option value="2">橙色预警</option>
+                            <option value="3">红色预警</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio24" height="30px">
+                    <td align="right" width="100px"></td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('预警阈值设置')">预警阈值设置</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('预警阈值读取')">预警阈值读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('预警发布')">预警发布</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio24" height="30px">
+                    <td align="right" width="100px">扩展参数：</td>
+                    <td>遥测站类型：
+                        <select id="Select16">
+                            <option value="1">雨量站</option>
+                            <option value="2">水位站</option>
+                            <option value="3">雨量水位站</option>
+                        </select>
+                        是否发送短信：
+                        <select id="Select17">
+                            <option value="0">不发</option>
+                            <option value="1">发送</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio24" height="30px">
+                    <td align="right" width="100px"></td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('扩展参数读取')">扩展参数读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice5('扩展参数设置')">扩展参数设置</a>
+                    </td>
+                </tr>
+
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码01：</td>
+                    <td>
+                        <input id="txtPhone_01" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','01')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','01')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码02：</td>
+                    <td>
+                        <input id="txtPhone_02" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','02')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','02')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码03：</td>
+                    <td>
+                        <input id="txtPhone_03" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','03')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','03')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码04：</td>
+                    <td>
+                        <input id="txtPhone_04" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','04')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','04')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码05：</td>
+                    <td>
+                        <input id="txtPhone_05" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','05')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','05')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码06：</td>
+                    <td>
+                        <input id="txtPhone_06" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','06')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','06')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码07：</td>
+                    <td>
+                        <input id="txtPhone_07" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','07')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','07')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码08：</td>
+                    <td>
+                        <input id="txtPhone_08" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','08')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','08')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码09：</td>
+                    <td>
+                        <input id="txtPhone_09" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','09')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','09')">设置</a>
+                    </td>
+                </tr>
+                <tr class="ParamWaterRadio2 ParamWaterRadio25" height="30px">
+                    <td align="right" width="100px">责任人号码10：</td>
+                    <td>
+                        <input id="txtPhone_10" class="textbox" style="height: 21px; width: 120px" />
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('读取','10')">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice6('设置','10')">设置</a>
+                    </td>
+                </tr>
+
+            </table>
+        </fieldset>
+    </div>
+
+    <div id="dlgParamWater2" class="easyui-dialog" title="水文参数" data-options="closed:true,modal:true"
+        style="width: 600px; height: 600px; padding: 5px">
+        <fieldset id="Fieldset2">
+            <legend>水文参数</legend>
+            <div>
+                <input type="radio" name="ParamWaterRadio" id="ParamWaterRadio1" checked="checked" onclick="radioClick(1)" /><label for="ParamWaterRadio1">运行参数</label>
+                <input type="radio" name="ParamWaterRadio" id="ParamWaterRadio2" onclick="radioClick(2)" /><label for="ParamWaterRadio2">配置参数</label>
+            </div>
+            <table id="tableParamWater1">
+                <tr height="30px">
+                    <td align="right" width="150px">定时报时间间隔：</td>
+                    <td>
+                        <input id="txtwp_yx_20" class="textbox" style="height: 21px; width: 135px" />
+                        1,2,3,4,6,8,12,24(按照发送段次确定)</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">加报时间间隔：</td>
+                    <td>
+                        <input id="txtwp_yx_21" class="textbox" style="height: 21px; width: 135px" />
+                        0 表示关闭时间触发加报,1～59 分钟</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">降水量日起始时间：</td>
+                    <td>
+                        <input id="txtwp_yx_22" class="textbox" style="height: 21px; width: 135px" />
+                        0 ～23 小时</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">采样间隔：</td>
+                    <td>
+                        <input id="txtwp_yx_23" class="textbox" style="height: 21px; width: 135px" />
+                        0 ～9999 秒</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">水位数据存储间隔：</td>
+                    <td>
+                        <input id="txtwp_yx_24" class="textbox" style="height: 21px; width: 135px" />
+                        1 ～59 分钟</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">雨量计分辨力：</td>
+                    <td>
+                        <input id="txtwp_yx_25" class="textbox" style="height: 21px; width: 135px" />
+                        1 毫米,0.5 毫米,0.2 毫米,0.1 毫米</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">水位计分辨力：</td>
+                    <td>
+                        <input id="txtwp_yx_26" class="textbox" style="height: 21px; width: 135px" />
+                        1 厘米,0.5 厘米,0.1 厘米</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">雨量加报阈值：</td>
+                    <td>
+                        <input id="txtwp_yx_27" class="textbox" style="height: 21px; width: 135px" />
+                        1 ～99 毫米</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">水位基值1：</td>
+                    <td>
+                        <input id="txtwp_yx_28" class="textbox" style="height: 21px; width: 135px" />
+                        数据单位：米</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">水位修正基值1：</td>
+                    <td>
+                        <input id="txtwp_yx_30" class="textbox" style="height: 21px; width: 135px" />
+                        数据单位：米</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">加报水位1：</td>
+                    <td>
+                        <input id="txtwp_yx_38" class="textbox" style="height: 21px; width: 135px" />
+                        数据单位：米</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">加报水位以上加报阈值：</td>
+                    <td>
+                        <input id="txtwp_yx_40" class="textbox" style="height: 21px; width: 135px" />
+                        数据单位：米</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">加报水位以下加报阈值：</td>
+                    <td>
+                        <input id="txtwp_yx_41" class="textbox" style="height: 21px; width: 135px" />
+                        数据单位：米</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px"></td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice4('读取运行参数')">读取运行参数</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice4('设置运行参数')">设置运行参数</a>
+                    </td>
+                </tr>
+            </table>
+            <table id="tableParamWater2">
+                <tr height="30px">
+                    <td align="right" width="150px">遥测站地址：</td>
+                    <td>
+                        <input id="txtwp_pz_02" class="textbox" style="height: 21px; width: 135px" maxlength="10" />10位，前两位00，后八位数字</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">密码：</td>
+                    <td>
+                        <input id="txtwp_pz_03" class="textbox" style="height: 21px; width: 135px" maxlength="10" />4位十六进制字符</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站：</td>
+                    <td>地址1：<input id="txtwp_pz_01_1" class="textbox" style="height: 21px; width: 30px" />，地址2：<input id="txtwp_pz_01_2" class="textbox" style="height: 21px; width: 30px" />，
+                        地址3：<input id="txtwp_pz_01_3" class="textbox" style="height: 21px; width: 30px" />，地址4：<input id="txtwp_pz_01_4" class="textbox" style="height: 21px; width: 30px" />
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站1主信道：</td>
+                    <td>信道类型：<select id="txtwp_pz_04_1"><option value="1">短信</option>
+                        <option value="2">IPV4</option>
+                        <option value="3">北斗</option>
+                        <option value="4">海事卫星</option>
+                        <option value="5">PSTN</option>
+                        <option value="6">超短波</option>
+                    </select><br />
+                        地址：<input id="txtwp_pz_04_2" class="textbox" style="height: 21px; width: 120px" />，
+                        端口：<input id="txtwp_pz_04_3" class="textbox" style="height: 21px; width: 45px" />
+                        IP包含端口</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站1备用信道：</td>
+                    <td>信道类型：<select id="txtwp_pz_05_1"><option value="1">短信</option>
+                        <option value="2">IPV4</option>
+                        <option value="3">北斗</option>
+                        <option value="4">海事卫星</option>
+                        <option value="5">PSTN</option>
+                        <option value="6">超短波</option>
+                    </select><br />
+                        地址：<input id="txtwp_pz_05_2" class="textbox" style="height: 21px; width: 120px" />，
+                        端口：<input id="txtwp_pz_05_3" class="textbox" style="height: 21px; width: 45px" />
+                        IP包含端口</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站2主信道：</td>
+                    <td>信道类型：<select id="txtwp_pz_06_1"><option value="1">短信</option>
+                        <option value="2">IPV4</option>
+                        <option value="3">北斗</option>
+                        <option value="4">海事卫星</option>
+                        <option value="5">PSTN</option>
+                        <option value="6">超短波</option>
+                    </select><br />
+                        地址：<input id="txtwp_pz_06_2" class="textbox" style="height: 21px; width: 120px" />，
+                        端口：<input id="txtwp_pz_06_3" class="textbox" style="height: 21px; width: 45px" />
+                        IP包含端口</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站2备用信道：</td>
+                    <td>信道类型：<select id="txtwp_pz_07_1"><option value="1">短信</option>
+                        <option value="2">IPV4</option>
+                        <option value="3">北斗</option>
+                        <option value="4">海事卫星</option>
+                        <option value="5">PSTN</option>
+                        <option value="6">超短波</option>
+                    </select><br />
+                        地址：<input id="txtwp_pz_07_2" class="textbox" style="height: 21px; width: 120px" />，
+                        端口：<input id="txtwp_pz_07_3" class="textbox" style="height: 21px; width: 45px" />
+                        IP包含端口</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站3主信道：</td>
+                    <td>信道类型：<select id="txtwp_pz_08_1"><option value="1">短信</option>
+                        <option value="2">IPV4</option>
+                        <option value="3">北斗</option>
+                        <option value="4">海事卫星</option>
+                        <option value="5">PSTN</option>
+                        <option value="6">超短波</option>
+                    </select><br />
+                        地址：<input id="txtwp_pz_08_2" class="textbox" style="height: 21px; width: 120px" />，
+                        端口：<input id="txtwp_pz_08_3" class="textbox" style="height: 21px; width: 45px" />
+                        IP包含端口</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站3备用信道：</td>
+                    <td>信道类型：<select id="txtwp_pz_09_1"><option value="1">短信</option>
+                        <option value="2">IPV4</option>
+                        <option value="3">北斗</option>
+                        <option value="4">海事卫星</option>
+                        <option value="5">PSTN</option>
+                        <option value="6">超短波</option>
+                    </select><br />
+                        地址：<input id="txtwp_pz_09_2" class="textbox" style="height: 21px; width: 120px" />，
+                        端口：<input id="txtwp_pz_09_3" class="textbox" style="height: 21px; width: 45px" />
+                        IP包含端口</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站4主信道：</td>
+                    <td>信道类型：<select id="txtwp_pz_0A_1"><option value="1">短信</option>
+                        <option value="2">IPV4</option>
+                        <option value="3">北斗</option>
+                        <option value="4">海事卫星</option>
+                        <option value="5">PSTN</option>
+                        <option value="6">超短波</option>
+                    </select><br />
+                        地址：<input id="txtwp_pz_0A_2" class="textbox" style="height: 21px; width: 120px" />，
+                        端口：<input id="txtwp_pz_0A_3" class="textbox" style="height: 21px; width: 45px" />
+                        IP包含端口</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">中心站4备用信道：</td>
+                    <td>信道类型：<select id="txtwp_pz_0B_1"><option value="1">短信</option>
+                        <option value="2">IPV4</option>
+                        <option value="3">北斗</option>
+                        <option value="4">海事卫星</option>
+                        <option value="5">PSTN</option>
+                        <option value="6">超短波</option>
+                    </select><br />
+                        地址：<input id="txtwp_pz_0B_2" class="textbox" style="height: 21px; width: 120px" />，
+                        端口：<input id="txtwp_pz_0B_3" class="textbox" style="height: 21px; width: 45px" />
+                        IP包含端口</td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">工作方式：</td>
+                    <td>
+                        <select id="txtwp_pz_0C">
+                            <option value="1">自报工作状态</option>
+                            <option value="2">自报确认工作状态</option>
+                            <option value="3">查询/应答工作状态</option>
+                            <option value="4">调试或维修状态</option>
+                        </select></td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">遥测站采集要素设置：</td>
+                    <td>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_01" value="01" /><label for="txtwp_pz_0D_01">降水量</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_02" value="02" /><label for="txtwp_pz_0D_02">蒸发量</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_03" value="03" /><label for="txtwp_pz_0D_03">风向</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_04" value="04" /><label for="txtwp_pz_0D_04">风速</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_05" value="05" /><label for="txtwp_pz_0D_05">气温</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_06" value="06" /><label for="txtwp_pz_0D_06">湿度</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_07" value="07" /><label for="txtwp_pz_0D_07">地温</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_08" value="08" /><label for="txtwp_pz_0D_08">气压</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_09" value="09" /><label for="txtwp_pz_0D_09">水位8</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_10" value="10" /><label for="txtwp_pz_0D_10">水位7</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_11" value="11" /><label for="txtwp_pz_0D_11">水位6</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_12" value="12" /><label for="txtwp_pz_0D_12">水位5</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_13" value="13" /><label for="txtwp_pz_0D_13">水位4</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_14" value="14" /><label for="txtwp_pz_0D_14">水位3</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_15" value="15" /><label for="txtwp_pz_0D_15">水位2</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_16" value="16" /><label for="txtwp_pz_0D_16">水位1</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_17" value="17" /><label for="txtwp_pz_0D_17">地下水埋深</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_18" value="18" /><label for="txtwp_pz_0D_18">图片</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_19" value="19" /><label for="txtwp_pz_0D_19">波浪</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_20" value="20" /><label for="txtwp_pz_0D_20">闸门开度</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_21" value="21" /><label for="txtwp_pz_0D_21">水量</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_22" value="22" /><label for="txtwp_pz_0D_22">流速</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_23" value="23" /><label for="txtwp_pz_0D_23">流量</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_24" value="24" /><label for="txtwp_pz_0D_24">水压</label>
+                        <!--
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_25" value="25" /><label for="txtwp_pz_0D_25">水表8</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_26" value="26" /><label for="txtwp_pz_0D_26">水表7</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_27" value="27" /><label for="txtwp_pz_0D_27">水表6</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_28" value="28" /><label for="txtwp_pz_0D_28">水表5</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_29" value="29" /><label for="txtwp_pz_0D_29">水表4</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_30" value="30" /><label for="txtwp_pz_0D_30">水表3</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_31" value="31" /><label for="txtwp_pz_0D_31">水表2</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_32" value="32" /><label for="txtwp_pz_0D_32">水表1</label>
+
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_33" value="33" /><label for="txtwp_pz_0D_33">100CM墒情</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_34" value="34" /><label for="txtwp_pz_0D_34">80CM墒情</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_35" value="35" /><label for="txtwp_pz_0D_35">60CM墒情</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_36" value="36" /><label for="txtwp_pz_0D_36">50CM墒情</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_37" value="37" /><label for="txtwp_pz_0D_37">40CM墒情</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_38" value="38" /><label for="txtwp_pz_0D_38">30CM墒情</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_39" value="39" /><label for="txtwp_pz_0D_39">20CM墒情</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_40" value="40" /><label for="txtwp_pz_0D_40">10CM墒情</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_41" value="41" /><label for="txtwp_pz_0D_41">pH值</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_42" value="42" /><label for="txtwp_pz_0D_42">溶解氧</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_43" value="43" /><label for="txtwp_pz_0D_43">电导率</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_44" value="44" /><label for="txtwp_pz_0D_44">浊度</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_45" value="45" /><label for="txtwp_pz_0D_45">氧化还原电位</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_46" value="46" /><label for="txtwp_pz_0D_46">高锰酸盐指数</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_47" value="47" /><label for="txtwp_pz_0D_47">氨氮</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_48" value="48" /><label for="txtwp_pz_0D_48">水温</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_49" value="49" /><label for="txtwp_pz_0D_49">总有机碳</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_50" value="50" /><label for="txtwp_pz_0D_50">总氮</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_51" value="51" /><label for="txtwp_pz_0D_51">总磷</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_52" value="52" /><label for="txtwp_pz_0D_52">锌</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_53" value="53" /><label for="txtwp_pz_0D_53">硒</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_54" value="54" /><label for="txtwp_pz_0D_54">砷</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_55" value="55" /><label for="txtwp_pz_0D_55">总汞</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_56" value="56" /><label for="txtwp_pz_0D_56">镉</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_57" value="57" /><label for="txtwp_pz_0D_57"></label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_58" value="58" /><label for="txtwp_pz_0D_58"></label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_59" value="59" /><label for="txtwp_pz_0D_59"></label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_60" value="60" /><label for="txtwp_pz_0D_60"></label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_61" value="61" /><label for="txtwp_pz_0D_61"></label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_62" value="62" /><label for="txtwp_pz_0D_62">叶绿素a</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_63" value="63" /><label for="txtwp_pz_0D_63">铜</label>
+                        <input type="checkbox" name="txtwp_pz_0D" id="txtwp_pz_0D_64" value="64" /><label for="txtwp_pz_0D_64">铅</label>
+                        -->
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px">遥测站通信设备识别号：</td>
+                    <td>卡类型<select id="txtwp_pz_0F_1"><option value="1">移动通信卡</option>
+                        <option value="2">北斗卫星通信卡</option>
+                    </select>
+                        <br />
+                        识别号：<input id="txtwp_pz_0F_2" class="textbox" style="height: 21px; width: 135px" /></td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="150px"></td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice4('读取配置参数')">读取配置参数</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice4('设置配置参数')">设置配置参数</a>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+
+    <div id="dlgParam" class="easyui-dialog" title="参数设置" data-options="closed:true,modal:true"
+        style="width: 500px; height: auto; padding: 5px">
+        <fieldset id="paramFieldset">
+            <legend>参数信息</legend>
+            <table id="tbUser">
+                <tr height="30px">
+                    <td align="right" width="100px">
+                        <span>遥测终端时钟：</span>
+                    </td>
+                    <td>
+                        <input id="txt_Time" class="textbox" style="height: 21px; width: 135px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+                    </td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ReadParam('遥测终端时钟','txt_Time')" style="margin-left: 3px">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="SetParam('遥测终端时钟','txt_Time')">设置</a>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="100px">
+                        <span>年可开采量：</span>
+                    </td>
+                    <td>
+                        <input id="txt_Exploit" class="textbox" style="height: 21px; width: 135px" onkeypress="javascript:return OnlyNumDot();" />
+                    </td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ReadParam('年可开采量','txt_Exploit')" style="margin-left: 3px">读取</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="SetParam('年可开采量','txt_Exploit')">设置</a>
+                    </td>
+                </tr>
+                <tr height="25px">
+                    <td align="right" width="100px"></td>
+                    <td colspan="2">
+                        <span>单位：吨，范围：1～9999999.9</span>
+                    </td>
+                </tr>
+                <tr height="25px">
+                    <td align="right" width="100px">卡序列号：
+                    </td>
+                    <td>
+                        <input id="txt_SerialNumber" class="textbox" style="height: 21px; width: 135px" />
+                    </td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="SetParam('屏蔽','txt_SerialNumber')">屏蔽</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="SetParam('解除屏蔽','txt_SerialNumber')">解除屏蔽</a>
+                    </td>
+                </tr>
+                <tr height="25px">
+                    <td align="right" width="100px">量程：
+                    </td>
+                    <td>
+                        <input id="txt_Range" class="textbox" style="height: 21px; width: 135px" />
+                    </td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice2('参数设置')">参数设置</a>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice2('参数查询')">参数查询</a>
+                    </td>
+                </tr>
+                <tr height="25px">
+                    <td align="right" width="100px">投入线长：
+                    </td>
+                    <td>
+                        <input id="txt_LineLength" class="textbox" style="height: 21px; width: 135px" />
+                    </td>
+                    <td></td>
+                </tr>
+                <tr height="25px">
+                    <td align="right" width="100px">水位计数据：
+                    </td>
+                    <td>
+                        <input id="txt_GroundWaterLevel" class="textbox" style="height: 21px; width: 135px" />
+                    </td>
+                    <td></td>
+                </tr>
+                <tr height="25px">
+                    <td align="right" width="100px">观测时间：
+                    </td>
+                    <td>
+                        <input id="txt_Acq_Time" class="textbox" style="height: 21px; width: 135px" />
+                    </td>
+                    <td>
+                        <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ControlDevice2('水位查询')">水位查询</a>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+
+    <script type="text/javascript">
+        function radioClick(k) {
+            $("#tableParamWater1").hide();
+            $("#tableParamWater2").hide();
+            if (k == 1) {
+                $("#tableParamWater1").show();
+            } else if (k == 2) {
+                $("#tableParamWater2").show();
+            }
+        }
+
+        radioClick(1);
+
+        function radioClick2(k) {
+            $(".ParamWaterRadio2").hide();
+            $(".ParamWaterRadio2" + k).show();
+        }
+
+        radioClick2(1);
+
+        function radioClick3(k) {
+            $(".ParamWaterRadio3").hide();
+            $(".ParamWaterRadio3" + k).show();
+        }
+
+        radioClick3(1);
+
+        function ControlDevice4(ctrlName) {
+            if (ctrlName != "读取运行参数" && ctrlName != "设置运行参数" && ctrlName != "读取配置参数" && ctrlName != "设置配置参数") {
+                $.messager.alert("提示信息", "非法操作！" + ctrlName);
+                return;
+            }
+
+            var params = "";
+
+            if (ctrlName == "读取运行参数" || ctrlName == "设置运行参数") {
+                var objs = $("input[id^='txtwp_yx_']");
+                //alert(ctrlName + "，参数数量：" + objs.length);
+                for (var i = 0; i < objs.length; i++) {
+                    //alert(objs.eq(i).parent().parent().children().eq(0).text() + objs.eq(i).val());
+                    params += objs.eq(i).attr("id").split('_')[2] + ":" + objs.eq(i).val() + ",";
+                }
+            }
+
+            if (ctrlName == "读取配置参数" || ctrlName == "设置配置参数") {
+                //alert(ctrlName + "，参数数量：" + objs.length);
+                params += "01" + ":" + $("#txtwp_pz_01_1").val() + "|" + $("#txtwp_pz_01_2").val() + "|" + $("#txtwp_pz_01_3").val() + "|" + $("#txtwp_pz_01_4").val() + ",";
+                params += "02" + ":" + $("#txtwp_pz_02").val() + ",";
+                params += "03" + ":" + $("#txtwp_pz_03").val() + ",";
+                params += "04" + ":" + $("#txtwp_pz_04_1").val() + "|" + $("#txtwp_pz_04_2").val() + "|" + $("#txtwp_pz_04_3").val() + ",";
+                params += "05" + ":" + $("#txtwp_pz_05_1").val() + "|" + $("#txtwp_pz_05_2").val() + "|" + $("#txtwp_pz_05_3").val() + ",";
+                params += "06" + ":" + $("#txtwp_pz_06_1").val() + "|" + $("#txtwp_pz_06_2").val() + "|" + $("#txtwp_pz_06_3").val() + ",";
+                params += "07" + ":" + $("#txtwp_pz_07_1").val() + "|" + $("#txtwp_pz_07_2").val() + "|" + $("#txtwp_pz_07_3").val() + ",";
+                params += "08" + ":" + $("#txtwp_pz_08_1").val() + "|" + $("#txtwp_pz_08_2").val() + "|" + $("#txtwp_pz_08_3").val() + ",";
+                params += "09" + ":" + $("#txtwp_pz_09_1").val() + "|" + $("#txtwp_pz_09_2").val() + "|" + $("#txtwp_pz_09_3").val() + ",";
+                params += "0A" + ":" + $("#txtwp_pz_0A_1").val() + "|" + $("#txtwp_pz_0A_2").val() + "|" + $("#txtwp_pz_0A_3").val() + ",";
+                params += "0B" + ":" + $("#txtwp_pz_0B_1").val() + "|" + $("#txtwp_pz_0B_2").val() + "|" + $("#txtwp_pz_0B_3").val() + ",";
+                params += "0C" + ":" + $("#txtwp_pz_0C").val() + ",";
+                params += "0D" + ":";
+                var objs = $("input[name='txtwp_pz_0D']");
+                for (var i = 0; i < objs.length; i++) {
+                    if (objs.eq(i).is(':checked')) {
+                        params += objs.eq(i).val() + "|";
+                    }
+                }
+                params += ",";
+                params += "0F" + ":" + $("#txtwp_pz_0F_1").val() + "|" + $("#txtwp_pz_0F_2").val() + ",";
+            }
+
+            $.ShowMask("正在" + ctrlName + "，请稍等……");
+            $.ajax({
+                type: "GET",
+                url: "../WebServices/DeviceMonitorService.asmx/ControlDevice4",
+                data: { 'loginIdentifer': window.parent.guid, 'ctrlName': ctrlName, 'devID': realDevId, 'Params': params },
+                contentType: "content",
+                dataType: "text",
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    $.HideMask();
+                    if (data.Result) {
+                        $.messager.alert("提示信息", ctrlName + "成功！");
+                        if (ctrlName == "读取运行参数") {
+                            //alert(data.Info);
+                            var kvs = data.Info.split(',');
+                            for (var i = 0; i < kvs.length; i++) {
+                                var kv = kvs[i].split(':');
+                                $("#txtwp_yx_" + kv[0]).val(kv[1]);
+                            }
+                        } else if (ctrlName == "读取配置参数") {
+                            //alert(data.Info);
+                            var kvs = data.Info.split(',');
+                            for (var i = 0; i < kvs.length; i++) {
+                                var kv = kvs[i].split(':');
+                                if (kv[0] == "0F") {
+                                    $("#txtwp_pz_0F_1").val(kv[1].split(';')[0]);
+                                    $("#txtwp_pz_0F_2").val(kv[1].split(';')[1]);
+                                }
+                            } for (var i = 0; i < kvs.length; i++) {
+                                var kv = kvs[i].split(':');
+                                if (kv[0] == "01") {
+                                    $("#txtwp_pz_01_1").val(kv[1].split(';')[0]);
+                                    $("#txtwp_pz_01_2").val(kv[1].split(';')[1]);
+                                    $("#txtwp_pz_01_3").val(kv[1].split(';')[2]);
+                                    $("#txtwp_pz_01_4").val(kv[1].split(';')[3]);
+                                } else if (kv[0] == "02") {
+                                    $("#txtwp_pz_02").val(kv[1]);
+                                } else if (kv[0] == "03") {
+                                    $("#txtwp_pz_03").val(kv[1]);
+                                } else if (kv[0] == "04") {
+                                    $("#txtwp_pz_04_1").val(kv[1].split(';')[0]);
+                                    if (kv[1].split(';')[0] == "2") {
+                                        $("#txtwp_pz_04_2").val(kv[1].split(';')[1]);
+                                        $("#txtwp_pz_04_3").val(kv[1].split(';')[2]);
+                                    } else {
+                                        $("#txtwp_pz_04_2").val(kv[1].split(';')[3]);
+                                        $("#txtwp_pz_04_3").val('');
+                                    }
+                                } else if (kv[0] == "05") {
+                                    $("#txtwp_pz_05_1").val(kv[1].split(';')[0]);
+                                    if (kv[1].split(';')[0] == "2") {
+                                        $("#txtwp_pz_05_2").val(kv[1].split(';')[1]);
+                                        $("#txtwp_pz_05_3").val(kv[1].split(';')[2]);
+                                    } else {
+                                        $("#txtwp_pz_05_2").val(kv[1].split(';')[3]);
+                                        $("#txtwp_pz_05_3").val('');
+                                    }
+                                } else if (kv[0] == "06") {
+                                    $("#txtwp_pz_06_1").val(kv[1].split(';')[0]);
+                                    if (kv[1].split(';')[0] == "2") {
+                                        $("#txtwp_pz_06_2").val(kv[1].split(';')[1]);
+                                        $("#txtwp_pz_06_3").val(kv[1].split(';')[2]);
+                                    } else {
+                                        $("#txtwp_pz_06_2").val(kv[1].split(';')[3]);
+                                        $("#txtwp_pz_06_3").val('');
+                                    }
+                                } else if (kv[0] == "07") {
+                                    $("#txtwp_pz_07_1").val(kv[1].split(';')[0]);
+                                    if (kv[1].split(';')[0] == "2") {
+                                        $("#txtwp_pz_07_2").val(kv[1].split(';')[1]);
+                                        $("#txtwp_pz_07_3").val(kv[1].split(';')[2]);
+                                    } else {
+                                        $("#txtwp_pz_07_2").val(kv[1].split(';')[3]);
+                                        $("#txtwp_pz_07_3").val('');
+                                    }
+                                } else if (kv[0] == "08") {
+                                    $("#txtwp_pz_08_1").val(kv[1].split(';')[0]);
+                                    if (kv[1].split(';')[0] == "2") {
+                                        $("#txtwp_pz_08_2").val(kv[1].split(';')[1]);
+                                        $("#txtwp_pz_08_3").val(kv[1].split(';')[2]);
+                                    } else {
+                                        $("#txtwp_pz_08_2").val(kv[1].split(';')[3]);
+                                        $("#txtwp_pz_08_3").val('');
+                                    }
+                                } else if (kv[0] == "09") {
+                                    $("#txtwp_pz_09_1").val(kv[1].split(';')[0]);
+                                    if (kv[1].split(';')[0] == "2") {
+                                        $("#txtwp_pz_09_2").val(kv[1].split(';')[1]);
+                                        $("#txtwp_pz_09_3").val(kv[1].split(';')[2]);
+                                    } else {
+                                        $("#txtwp_pz_09_2").val(kv[1].split(';')[3]);
+                                        $("#txtwp_pz_09_3").val('');
+                                    }
+                                } else if (kv[0] == "0A") {
+                                    $("#txtwp_pz_0A_1").val(kv[1].split(';')[0]);
+                                    if (kv[1].split(';')[0] == "2") {
+                                        $("#txtwp_pz_0A_2").val(kv[1].split(';')[1]);
+                                        $("#txtwp_pz_0A_3").val(kv[1].split(';')[2]);
+                                    } else {
+                                        $("#txtwp_pz_0A_2").val(kv[1].split(';')[3]);
+                                        $("#txtwp_pz_0A_3").val('');
+                                    }
+                                } else if (kv[0] == "0B") {
+                                    $("#txtwp_pz_0B_1").val(kv[1].split(';')[0]);
+                                    if (kv[1].split(';')[0] == "2") {
+                                        $("#txtwp_pz_0B_2").val(kv[1].split(';')[1]);
+                                        $("#txtwp_pz_0B_3").val(kv[1].split(';')[2]);
+                                    } else {
+                                        $("#txtwp_pz_0B_2").val(kv[1].split(';')[3]);
+                                        $("#txtwp_pz_0B_3").val('');
+                                    }
+                                } else if (kv[0] == "0C") {
+                                    $("#txtwp_pz_0C").val(kv[1]);
+                                } else if (kv[0] == "0D") {
+                                    var objs = $("input[name='txtwp_pz_0D']");
+                                    for (var i = 0; i < objs.length; i++) {
+                                        objs.eq(i).attr("checked", kv[1][i] == '1');
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        var result = data.Message;
+                        $.messager.alert("提示信息", result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.HideMask();
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.reponseText);
+                }
+            });
+        }
+
+        function ControlDevice5(ctrlName) {
+            if (ctrlName != "设置IC卡状态" && ctrlName != "水量定值控制" && ctrlName != "查询指定要素" && ctrlName != "修改密码"
+                && ctrlName != "设置时钟" && ctrlName != "查询时钟" && ctrlName != "查询人工置数" && ctrlName != "查询电机实时"
+                && ctrlName != "查询软件版本" && ctrlName != "查询状态报警" && ctrlName != "初始化数据" && ctrlName != "恢复出厂设置"
+                && ctrlName != "查询事件记录" && ctrlName != "控制水泵开关" && ctrlName != "控制阀门开关" && ctrlName != "控制闸门开关"
+                && ctrlName != "预警阈值设置" && ctrlName != "预警阈值读取" && ctrlName != "预警发布"
+                && ctrlName != "扩展参数读取" && ctrlName != "扩展参数设置" && ctrlName != "拍照") {
+                $.messager.alert("提示信息", "非法操作！" + ctrlName);
+                return;
+            }
+
+            var params = "";
+            if (ctrlName == "设置IC卡状态") {
+                params = $("#Select13").combobox("getValue");
+            } else if (ctrlName == "水量定值控制") {
+                params = $("#Select14").combobox("getValue");
+            } else if (ctrlName == "查询指定要素") {
+                var objs = $("input[name='ckbIden']");
+                for (var i = 0; i < objs.length; i++) {
+                    if (objs.eq(i).is(':checked')) {
+                        params += objs.eq(i).val() + "|";
+                    }
+                }
+            } else if (ctrlName == "修改密码") {
+                params = $("#Text31").val() + "," + $("#Text29").val();
+            } else if (ctrlName == "设置时钟") {
+                params = $("#Text30").val();
+            } else if (ctrlName == "控制水泵开关") {
+                params += $("#Select2").val() + "|" + $("#Select3").val() + "|" + $("#Select4").val() + "|" + $("#Select5").val();
+            } else if (ctrlName == "控制阀门开关") {
+                params += $("#Select6").val() + "|" + $("#Select7").val() + "|" + $("#Select8").val() + "|" + $("#Select9").val();
+            } else if (ctrlName == "控制闸门开关") {
+                params += $("#Select10").val() + "|" + $("#Select11").val();
+                params += "#";
+                if ($.trim($("#Text6").val()) == "") $("#Text6").val("0");
+                if ($.trim($("#Text7").val()) == "") $("#Text7").val("0");
+                params += $("#Text6").val() + "|" + $("#Text7").val();
+            } else if (ctrlName == "预警阈值设置") {
+                for (var i = 8; i < 20; i++) {
+                    var obj = $("#Text" + i);
+                    var val = obj.val();
+                    if ($.trim(val) == "") {
+                        val = "0";
+                    } else if (parseInt(val) != val || parseInt(val) < 0 || parseInt(val) > 255) {
+                        alert("预警阈值取值0-255");
+                        obj.focus();
+                        return;
+                    }
+                    params += val + "|";
+                }
+            } else if (ctrlName == "预警发布") {
+                params += $("#Select12").val() + "|" + $("#Select15").val();
+            } else if (ctrlName == "扩展参数设置") {
+                params += $("#Select16").val() + "|" + $("#Select17").val();
+            }
+
+            //alert(ctrlName + "  ||  " + params);
+
+            $.ShowMask("正在" + ctrlName + "，请稍等……");
+            $.ajax({
+                type: "GET",
+                url: "../WebServices/DeviceMonitorService.asmx/ControlDevice5",
+                data: { 'loginIdentifer': window.parent.guid, 'ctrlName': ctrlName, 'devID': realDevId, 'Params': params },
+                contentType: "content",
+                dataType: "text",
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    $.HideMask();
+                    if (data.Result) {
+                        $.messager.alert("提示信息", ctrlName + "成功！");
+                        $("#waterInfo").val(data.Info);
+                        if (ctrlName == "预警阈值读取") {
+                            var vals = data.Vals.split(',');
+                            if (vals.length == 12) {
+                                $("#Text8").val(vals[0]);
+                                $("#Text9").val(vals[1]);
+                                $("#Text10").val(vals[2]);
+                                $("#Text11").val(vals[3]);
+                                $("#Text12").val(vals[4]);
+                                $("#Text13").val(vals[5]);
+                                $("#Text14").val(vals[6]);
+                                $("#Text15").val(vals[7]);
+                                $("#Text16").val(vals[8]);
+                                $("#Text17").val(vals[9]);
+                                $("#Text18").val(vals[10]);
+                                $("#Text19").val(vals[11]);
+                            }
+                        } else if (ctrlName == "扩展参数读取") {
+                            var vals = data.Vals.split(',');
+                            if (vals.length == 2) {
+                                $("#Select16").val(vals[0]);
+                                $("#Select17").val(vals[1]);
+                            }
+                        }
+                    } else {
+                        var result = data.Message;
+                        $.messager.alert("提示信息", result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.HideMask();
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.reponseText);
+                }
+            });
+
+        }
+
+        function ControlDevice6(ctrlName, order) {
+            if (ctrlName != "设置" && ctrlName != "读取") {
+                $.messager.alert("提示信息", "非法操作！" + ctrlName);
+                return;
+            }
+
+            $.ShowMask("正在" + ctrlName + "预警责任人" + order + "号码，请稍等……");
+            $.ajax({
+                type: "GET",
+                url: "../WebServices/DeviceMonitorService.asmx/ControlDevice6",
+                data: { 'loginIdentifer': window.parent.guid, 'ctrlName': ctrlName, 'devID': realDevId, 'OrderNum': order, 'Phone': $("#txtPhone_" + order).val() },
+                contentType: "content",
+                dataType: "text",
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    $.HideMask();
+                    if (data.Result) {
+                        $.messager.alert("提示信息", ctrlName + "成功！");
+                        $("#waterInfo").val(data.Info);
+                        if (ctrlName == "读取") {
+                            $("#txtPhone_" + data.OrderNum).val(data.Phone);
+                        }
+                    } else {
+                        var result = data.Message;
+                        $.messager.alert("提示信息", result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.HideMask();
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.reponseText);
+                }
+            });
+        }
+
+        function sendFile() {
+            var a = $.trim($("#Select18").val());
+            if (a != 2 && a != 3) {
+                alert("请选择一个类型！")
+                return false;
+            }
+
+            $("#div1").html("<font color='blue'>正在发送....</font>");
+            $.ajaxFileUpload({
+                url: "../accept.aspx?loginIdentifer=" + window.parent.guid + "&realDevId=" + realDevId + "&a=" + a, //用于文件上传的服务器端请求地址
+                secureuri: false, //是否需要安全协议，一般设置为false
+                fileElementId: 'File1', //文件上传域的ID
+                dataType: 'HTML', //返回值类型 一般设置为json
+                success: function (data, status)  //服务器成功响应处理函数
+                {
+                    //alert(data);
+                    var s = data.split('|');
+                    if (s[0] == "yes") {
+                        $("#div1").html("<font color='blue'>发送成功！" + s[1] + "</font>");
+                    } else {
+                        $("#div1").html("<font color='red'>发送失败！" + s[1] + "</font>");
+                    }
+                },
+                error: function (data, status, e)//服务器响应失败处理函数
+                {
+                    alert(e);
+                    $("#div1").html("<font color='red'>发送失败！</font>");
+                }
+            });
+            return false;
+        }
+
+        function sendPlay() {
+            var PlayCount = $.trim($("#txtPlayCount").val());
+            if (isNaN(PlayCount)) {
+                $.messager.alert("提示信息", "播报次数必须为数字！");
+                //alert("播报次数必须为数字！")
+                return false;
+            }
+            if (parseInt(PlayCount) < 1 || parseInt(PlayCount) > 255) {
+                $.messager.alert("提示信息", "播报次数范围1-255！");
+                //alert("播报次数范围1-255！")
+                return false;
+            }
+            var PlayRole = $.trim($("#selPlayRole").val());
+            if (PlayRole != 1 && PlayRole != 2) {
+                $.messager.alert("提示信息", "请选择一个播报角色！");
+                //alert("请选择一个播报角色！")
+                return false;
+            }
+            var PlaySpeed = $.trim($("#selPlaySpeed").val());
+            if (PlaySpeed != 1 && PlaySpeed != 2 && PlaySpeed != 3) {
+                $.messager.alert("提示信息", "请选择一个播报速度！");
+                //alert("请选择一个播报速度！")
+                return false;
+            }
+            var PlayContext = $.trim($("#txtPlayContext").val());
+            if (PlayContext.length < 1 || PlayContext.length > 400) {
+                $.messager.alert("提示信息", "播报内容字数范围1-400！");
+                //alert("播报内容字数范围1-400！")
+                return false;
+            }
+
+            $.ShowMask("正在下发播报内容，请稍等……");
+            $.ajax({
+                type: "POST",
+                url: "../WebServices/DeviceMonitorService.asmx/ControlDevice7",
+                data: { 'loginIdentifer': window.parent.guid, 'devID': realDevId, 'PlayCount': PlayCount, 'PlayRole': PlayRole, 'PlaySpeed': PlaySpeed, 'PlayContext': PlayContext },
+                contentType: "application/x-www-form-urlencoded",
+                dataType: "text",
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    $.HideMask();
+                    if (data.Result) {
+                        $.messager.alert("提示信息", "播报内容下发成功！");
+                    } else {
+                        var result = data.Message;
+                        $.messager.alert("提示信息", result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.HideMask();
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.reponseText);
+                }
+            });
+
+            return false;
+        }
+    </script>
+
+</body>
+</html>

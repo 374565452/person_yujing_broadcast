@@ -1,0 +1,234 @@
+﻿using Common;
+using DTU.GateWay.Protocol.WaterMessageClass;
+using System;
+using System.Globalization;
+using System.Text;
+
+namespace DTU.GateWay.Protocol
+{
+    public class WaterCmd_4E_2 : WaterBaseMessage
+    {
+        public WaterCmd_4E_2()
+        {
+            AFN = (byte)WaterBaseProtocol.AFN._4E;
+            UpOrDown = (int)WaterBaseProtocol.UpOrDown.Up;
+            SerialNumber = 0;
+        }
+
+        /// <summary>
+        /// 流水号
+        /// </summary>
+        public short SerialNumber
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// 发报时间
+        /// </summary>
+        public DateTime SendTime
+        {
+            get;
+            set;
+        }
+
+        public Identifier_F1 Iden_F1
+        {
+            get;
+            set;
+        }
+
+        public bool[] Ps
+        {
+            get;
+            set;
+        }
+
+        public short[] PsOpen
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// 报文正文
+        /// </summary>
+        public string UserDataAll
+        {
+            set;
+            get;
+        }
+
+        /// <summary>
+        /// 报文正文
+        /// </summary>
+        public byte[] UserDataBytesAll
+        {
+            set;
+            get;
+        }
+
+        public WaterBaseMessage[] MsgList
+        {
+            get;
+            set;
+        }
+
+        public string WriteMsg()
+        {
+            UserDataAll += SerialNumber.ToString("X").PadLeft(4, '0');
+            UserDataAll += SendTime.ToString("yyMMddHHmmss").PadLeft(12, '0');
+            UserDataAll += Iden_F1.GetHexStr();
+
+            int count = Ps.Length < PsOpen.Length ? Ps.Length : PsOpen.Length;
+            UserData += count.ToString("X").PadLeft(2, '0');
+            string s = "";
+            for (int i = 0; i < count; i++)
+            {
+                if (Ps[i])
+                {
+                    s = "1" + s;
+                }
+                else
+                {
+                    s = "0" + s;
+                }
+            }
+            s = s.PadLeft(8 * ((count - 1) / 8 + 1), '0');
+            UserData += HexStringUtility.BinStringToHexString(s);
+
+            for (int i = 0; i < count; i++)
+            {
+                if (PsOpen[i] <= 9999)
+                {
+                    UserData += PsOpen[i].ToString().PadLeft(4, '0');
+                }
+                else if (PsOpen[i] > 9999)
+                {
+                    UserData += PsOpen[i].ToString().Substring(PsOpen[i].ToString().Length - 4);
+                }
+            }
+
+            byte[] UserDataBytesAllTmp;
+            WaterBaseMessage[] MsgListTmp;
+            string msg = WaterBaseMessageService.GetMsgList_WriteMsg(this, UserDataAll, out UserDataBytesAllTmp, out MsgListTmp);
+            if (msg == "")
+            {
+                UserDataBytesAll = UserDataBytesAllTmp;
+                MsgList = MsgListTmp;
+            }
+            else
+            {
+                if (ShowLog) logHelper.Error(msg);
+            }
+            return msg;
+        }
+
+        public string ReadMsg()
+        {
+            string UserDataAllTmp;
+            byte[] UserDataBytesAllTmp;
+            string msg = WaterBaseMessageService.ReadMsg(MsgList, out UserDataAllTmp, out UserDataBytesAllTmp);
+            if (msg == "")
+            {
+                UserDataAll = UserDataAllTmp;
+                UserDataBytesAll = UserDataBytesAllTmp;
+
+                return ReadMsg(UserDataAll);
+            }
+            else
+            {
+                if (ShowLog) logHelper.Error(msg);
+                return msg;
+            }
+        }
+
+        public string ReadMsg(string UserDataAll)
+        {
+            short SerialNumberTmp;
+            DateTime SendTimeTmp;
+            string msg = WaterBaseMessageService.GetSerialNumberAndSendTime(UserDataAll, out SerialNumberTmp, out SendTimeTmp);
+            if (msg == "")
+            {
+                SerialNumber = SerialNumberTmp;
+                SendTime = SendTimeTmp;
+            }
+            else
+            {
+                if (ShowLog) logHelper.Error(msg);
+                return msg;
+            }
+
+            try
+            {
+                Iden_F1 = new Identifier_F1();
+                Iden_F1.RemoteStation = UserDataAll.Substring(20, 10);
+            }
+            catch (Exception ex)
+            {
+                if (ShowLog) logHelper.Error(ex.Message + Environment.NewLine + "获取遥测站出错" + " " + RawDataStr);
+                return "获取遥测站出错";
+            }
+
+            try
+            {
+                string Remain = UserDataAll.Substring(30);
+                int count = Convert.ToInt32(Remain.Substring(0, 2), 16);
+                Ps = new bool[count];
+                PsOpen = new short[count];
+                string hexStr = Remain.Substring(2, ((count - 1) / 8 + 1) * 2);
+                string binStr = HexStringUtility.HexStringToBinString(hexStr);
+                for (int i = 0; i < binStr.Length; i++)
+                {
+                    if (count > binStr.Length - i - 1)
+                    {
+                        Ps[binStr.Length - i - 1] = binStr[i] == '1';
+                    }
+                }
+                for (int i = 0; i < count; i++)
+                {
+                    string s = Remain.Substring(2 + ((count - 1) / 8 + 1) * 2 + 4 * i, 4);
+                    PsOpen[i] = Convert.ToInt16(s);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ShowLog) logHelper.Error(ex.Message + Environment.NewLine + "获取闸门开关状态出错" + " " + RawDataStr);
+                return "获取闸门开关状态出错";
+            }
+
+            return "";
+        }
+
+        public string ReadMsg(byte[] bs)
+        {
+            return ReadMsg(HexStringUtility.ByteArrayToHexString(bs));
+        }
+
+        public override string ToString()
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("【" + EnumUtils.GetDescription(typeof(WaterBaseProtocol.AFN), AFN) + "】：");
+                sb.Append("【流水号】：" + SerialNumber + "，");
+                sb.Append("【发报时间】：" + SendTime.ToString("yyyy-MM-dd HH:mm:ss") + "，");
+                sb.Append("【遥测终端】：" + Iden_F1.ToString() + "，");
+                if (Ps != null && Ps.Length > 0 && PsOpen != null && PsOpen.Length > 0)
+                {
+                    int count = Ps.Length < PsOpen.Length ? Ps.Length : PsOpen.Length;
+                    for (int i = 0; i < count; i++)
+                    {
+                        sb.Append("【" + (i + 1) + "号闸门】：" + (Ps[i] ? "开" : "关") + "，【闸门开度】：" + PsOpen[i] + "厘米，");
+                    }
+                }
+                return sb.ToString().TrimEnd('，');
+            }
+            catch
+            {
+                return "【" + EnumUtils.GetDescription(typeof(WaterBaseProtocol.AFN), AFN) + "】：" + " ToString error";
+            }
+        }
+    }
+}

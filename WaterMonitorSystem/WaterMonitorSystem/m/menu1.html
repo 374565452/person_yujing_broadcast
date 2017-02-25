@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet" />
+    <title></title>
+    <script src="../js/jquery-1.11.1.min.js"></script>
+    <script src="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript">
+        function urlGo(url)
+        {
+            if (window.parent.window.urlGo)
+                window.parent.window.urlGo(url);
+        }
+    </script>
+</head>
+<body>
+    <div data-role="header" data-theme="b">
+		<h1>菜单</h1>
+	</div>
+    <div data-role="content" data-theme="c">
+        <a href="javascript:void(0);" data-role="button" data-theme="c" onclick="urlGo('WellMap.html')">设备地图</a>
+        <a href="javascript:void(0);" data-role="button" data-theme="c" onclick="urlGo('WellMonitorList.html')">设备列表</a>
+        <a href="javascript:void(0);" data-role="button" data-theme="c" onclick="urlGo('VillageWaterStatistic.html')">村用水统计</a>
+        <a href="javascript:void(0);" data-role="button" data-theme="c" onclick="urlGo('GroundWaterRecord.html')">地下水位</a>
+        <a href="javascript:void(0);" data-role="button" data-theme="c" onclick="urlGo('MeteorologicalRecord.html')">气象信息</a>
+        <a href="javascript:void(0);" data-role="button" data-theme="c" onclick="urlGo('SOILMOISTURERecord.html')">墒情信息</a>
+        <a href="javascript:void(0);" data-role="button" data-theme="c" onclick="urlGo('RainFallRecord.html')">雨量信息</a>
+    </div>
+</body>
+</html>

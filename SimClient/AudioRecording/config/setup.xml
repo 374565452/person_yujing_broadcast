@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <!--录音文件上传服务器IP地址-->
+    <add key="uploadServerIp" value="127.0.0.1"></add>
+    <!--录音文件上传服务器端口号-->
+    <add key="uploadServerPort" value="58622"></add>
+    <!--录音采样频率-->
+    <add key="sampleRate" value="44100"></add>
+    <!--录音采样位数-->
+    <add key="sampleBits" value="8"></add>
+  </appSettings>  
+</configuration>

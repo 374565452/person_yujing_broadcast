@@ -1,0 +1,626 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>水资源管理平台 设备列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link href="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet" />
+    <script src="../js/jquery-1.11.1.min.js"></script>
+
+    <script src="mobiscroll/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+	<script src="mobiscroll/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+	<link href="mobiscroll/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+	<link href="mobiscroll/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+	<script src="mobiscroll/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+	<script src="mobiscroll/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+	<script src="mobiscroll/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+	<link href="mobiscroll/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+    <script src="../js/jquery.cookie.js"></script>
+    <script src="../js/CheckBrowser.js"></script>
+    <script src="../js/PSExtend.js"></script>
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="js/base.js?4"></script>
+    <script src="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/menu.js?3"></script>
+    <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            overflow: auto;
+        }
+
+        .odd {
+            background-color: white;
+        }
+
+        .even {
+            background-color: #eeeeee;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .hide {
+            display:none;
+        }
+
+        div.item {
+            height: 20px;
+            line-height: 20px;
+            overflow: hidden;
+        }
+
+            div.item .t {
+                float: left;
+                width: 120px;
+                height: 20px;
+                overflow: hidden;
+                text-align: right;
+            }
+
+            div.item .c {
+                float: left;
+            }
+
+        div.ParamItem {
+            margin: 5px;
+        }
+    </style>
+    <script type="text/javascript">
+        var diviceID = 0;
+        var DeviceName = '';
+        var b = '';
+        var manageNodes = {};
+        function setKey(key, a, b) {
+            diviceID = key;
+            DeviceName = b;
+            DistrictName = a;
+        }
+
+        function setDist(a, b) {
+            $("#spanDistName").html(a);
+            $("#spanDistId").html(b);
+        }
+
+        var mnId = "";
+        //从服务器取得系统运行状态信息
+        function GetSystemInfo() {
+            $.ajax(
+            {
+                url: "../WebServices/SystemService.asmx/GetSystemStateInfo",
+                type: "GET",
+                data: { "loginIdentifer": $.cookie("psbsLogin") },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        mnId = data.SysStateInfo.当前登录操作员管理ID;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    ShowMsg(errorThrown + "\r\n" + XMLHttpRequest.responseText, false, true);
+                }
+            });
+        }
+
+        function GetDist() {
+            $.ajax({
+                url: "../WebServices/ManageNodeService.asmx/GetManageNodeInfos",
+                data: { "mnID": mnId, "loginIdentifer": $.cookie("psbsLogin"), "isRecursive": true, "isExport": false },
+                type: "Get",
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    try {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result) {
+                            manageNodes = {};
+                            $("#list_District").empty();
+                            var manageJson = data.ManageNodes;
+                            for (var i = 0; i < manageJson.length; i++) {
+                                manageNodes[manageJson[i].ID] = manageJson[i];
+                                if (manageJson[i].级别名称 == "村庄") {
+                                    var html = "<li>" +
+                                        "<h2>" + manageJson[i].名称 + "</h2>" +
+                                        "<p class=\"parentName\">" + manageNodes[manageNodes[manageNodes[manageNodes[manageJson[i].上级ID].上级ID].上级ID].上级ID].名称 + " - " + manageNodes[manageNodes[manageNodes[manageJson[i].上级ID].上级ID].上级ID].名称 + " - " + manageNodes[manageNodes[manageJson[i].上级ID].上级ID].名称 + " - " + manageNodes[manageJson[i].上级ID].名称 + "</p>" +
+                                        "<p class=\"ui-li-aside\">" + manageJson[i].ID + "</p>" +
+                                        "<p>" +
+                                            "<a href=\"#pageone\" data-role=\"button\" data-mini=\"true\" data-icon=\"search\" data-inline=\"true\" onclick=\"setDist('" + manageJson[i].名称 + "','" + manageJson[i].ID + "')\">选择</a>" +
+                                        "</p>" +
+                                      "</li>";
+                                    $("#list_District").append(html);
+                                }
+                            }
+                            $('#list_District a').button();
+                            $('#list_District').listview('refresh');
+
+                            $('#btn3').unbind().on('click', function () {
+                                var dname = $.trim($("#txt_District").val());
+                                for (var i = 0; i < $("#list_District li").length; i++) {
+                                    var obj = $("#list_District li").eq(i);
+                                    obj.hide()
+                                    if ($(obj).find(".parentName").html().indexOf(dname) > -1) {
+                                        obj.show();
+                                    }
+                                }
+
+                                return false;
+                            });
+                        }
+
+                        if ($("#list_District").html() == "") {
+                            ShowMsg('未查到地区信息！', false, true);
+                        } 
+                    }
+                    catch (e) {
+                        ShowMsg('查询地区信息出错！' + e, false, true);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+
+        }
+
+        var isPollingWellDatas = false;
+        function GetList() {
+            if (isPollingWellDatas) {
+                ShowMsg('正在查询数据，请等待！', false, true);
+                return;
+            }
+            isPollingWellDatas = true;
+            $.ajax({
+                url: "../WebServices/DeviceMonitorService.asmx/GetDeviceRealTimeDatasForWell",
+                data: { "loginIdentifer": $.cookie("psbsLogin"), "devIDs": "" },
+                type: "Get",
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    //var row = 0;
+                    try {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result) {
+                            $("#list").empty();
+                            var DevDatas = data.DevDatas;
+                            for (var i = 0; i < DevDatas.length; i++) {
+                                var html = "<li>" +
+                                    "<h2>" + DevDatas[i].长编号.Value + " - " + DevDatas[i].设备.Value + "</h2>" +
+                                    "<p>村庄名称：<b>" + DevDatas[i].村庄.Value + "</b>，设备类型：<b>" + DevDatas[i].设备类型.Value + "</b> <span class=\"vid hide\">" + DevDatas[i].村庄Id.Value + "</span></p>" +
+                                    "<p>年累计用电量：<b>" + DevDatas[i].年累计用电量.Value + "</b>，年累计用水量：<b>" + DevDatas[i].年累计用水量.Value +
+                                        "</b>，累计用水量：<b>" + DevDatas[i].累计用水量.Value + "</b></p>" +
+                                    "<p>终端箱门状态：<b>" + (DevDatas[i].终端箱门状态.Value == "开启" ? ("<span style='color:red;'>" + DevDatas[i].终端箱门状态.Value + "</span>") : DevDatas[i].终端箱门状态.Value) +
+                                        "</b>，水泵工作状态：<b>" + DevDatas[i].水泵工作状态.Value + "</b></p>" +
+                                    "<p>" +
+                                        "<a href=\"#pagetwo\" data-role=\"button\" data-mini=\"true\" data-icon=\"search\" data-inline=\"true\" onclick=\"setKey('" + DevDatas[i].操作.Value + "','" + DevDatas[i].村庄.Value + "','" + DevDatas[i].设备.Value + "')\">查看</a>" +
+                                        "<a href=\"#pagefour\" data-role=\"button\" data-mini=\"true\" data-icon=\"search\" data-inline=\"true\" onclick=\"setKey('" + DevDatas[i].操作.Value + "','" + DevDatas[i].村庄.Value + "','" + DevDatas[i].设备.Value + "')\">事件</a>" +
+                                    "</p>" +
+                                    "<p class=\"ui-li-aside\">" + (DevDatas[i].通讯状态.Value == "全部正常" ? "<span style='color:green;bold:weight'>在线</span>" : "<span style='color:red;bold:weight'>离线</span>") + "</p>" +
+                                  "</li>";
+                                $("#list").append(html);
+                            }
+                            $('#list a').button();
+                            $('#list').listview('refresh');
+                        }
+                        search();
+                    }
+                    catch (e) {
+                    }
+                    isPollingWellDatas = false;
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    isPollingWellDatas = false;
+                }
+            });
+        }
+
+        function search() {
+            var fname = $.trim($("#fname").val());
+            var vid = parseInt( $.trim($("#spanDistId").text()));
+            for (var i = 0; i < $("#list li").length; i++) {
+                var obj = $("#list li").eq(i);
+                obj.hide()
+                if ($(obj).find("h2").html().indexOf(fname) > -1) {
+                    if (vid == 0 || vid == parseInt($(obj).find(".vid").html())) {
+                        obj.show();
+                    }
+                }
+            }
+        }
+
+        function HexStr(v) {
+            var s = "";
+            for (var i = 0; i < v.length; i++) {
+                var c = v.charAt(i)
+                s += c;
+                if (i % 2 == 1)
+                    s += " ";
+            }
+            return s;
+        }
+
+        $(document).on("pagebeforeshow", "#pageone", function () { // 当进入页面一时
+            //alert("页面一即将显示");
+            var t = getUrlParam('t');
+            if (t != null && t != "") {
+                $("#pageoneHeader").height(0);
+                $("#pageoneHeader").hide();
+            }
+
+            GetSystemInfo();
+            GetList();
+
+            $('#btn1').unbind().on('click', function () {
+                search()
+                return false;
+            });
+        });
+
+        $(document).on("pagebeforeshow", "#pagetwo", function () { // 当进入页面二时
+            //alert("页面二即将显示");
+            $("#village").html(DistrictName);
+            $("#irrigationWell").html(DeviceName);
+
+            var DeviceInfo = [];
+            $.ajax({
+                url: "../WebServices/DeviceMonitorService.asmx/GetDeviceInfoForWell",
+                data: { "loginIdentifer": $.cookie("psbsLogin"), "devID": diviceID },
+                type: "Get",
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    DeviceInfo = data.DeviceInfo;
+                    var resultJSON = DeviceInfo.RealDatas;
+                    for (var i = 0; i < resultJSON.length; i++) {
+                        if (resultJSON[i].Name == "长编号") {
+                            $("#irrigationWellNo").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "设备类型") {
+                            $("#deviceType").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "通讯状态") {
+                            $("#communication").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "更新时间") {
+                            $("#updateTime").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "年累计用电量") {
+                            $("#yearElectric").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "年累计用水量") {
+                            $("#yearWater").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "年剩余可开采量") {
+                            $("#yearAmount").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "用水户") {
+                            $("#waterUser").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "灌溉时长") {
+                            $("#irrigationTime").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "本次用水量") {
+                            $("#waterNum").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "本次用电量") {
+                            $("#electricNum").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "流量仪表状态") {
+                            $("#pumpStatus6").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "终端箱门状态") {
+                            $("#pumpStatus8").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "水泵工作状态") {
+                            $("#pumpStatus").html(resultJSON[i].Value);
+                        }
+                        else if (resultJSON[i].Name == "累计用水量") {
+                            $("#Water").html(resultJSON[i].Value);
+                        }
+                    }
+
+                    $("#SupportControl").hide();
+                    if (DeviceInfo.SupportControl) {
+                        $("#SupportControl").show();
+                    }
+
+                    $("#SupportParam").hide();
+                    if (DeviceInfo.SupportParam) {
+                        $("#SupportParam").show();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    ShowMsg(errorThrown + "<br>" + XMLHttpRequest.responseText, false, true);
+                }
+            });
+        });
+        $(document).on("pagebeforehide", "#pagetwo", function () { // 当离开页面二时
+            //alert("页面二即将隐藏");
+            diviceID = '';
+            search();
+        });
+       
+        $(document).on("pagebeforeshow", "#pagefour", function () { // 当进入页面四时
+            //alert("页面四即将显示");
+            //$("#txt_DeviceTime").val(new Date().Format("yyyy-MM-dd"));
+            var opt = {
+                preset: 'date', //日期
+                theme: 'jqm', //皮肤样式
+                display: 'modal', //显示方式 
+                mode: 'clickpick', //日期选择模式
+                dateFormat: 'yy-mm-dd', // 日期格式
+                setText: '确定', //确认按钮名称
+                cancelText: '取消',//取消按钮名籍我
+                dateOrder: 'yymmdd', //面板中日期排列格式
+                dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+                startYear: 2000, //开始年份
+                endYear: (new Date()).getFullYear() + 10 //结束年份
+            };
+
+            $("#txt_DeviceTime").val(new Date().Format("yyyy-MM-dd")).mobiscroll(opt);
+
+            $("#Span3").html(DeviceName);
+
+            $('#btn2').unbind().on('click', function () {
+                var startTime = new Date(Date.parse(($("#txt_DeviceTime").val() + " 0:0:0").replace(/-/g, "/")));
+                var endTime = startTime.DateAdd("d", 1);
+
+                $.ajax({
+                    url: "../WebServices/DataQueryService.asmx/GetEventRecordsCount",
+                    data: { "loginIdentifer": $.cookie("psbsLogin"), "deviceIDs": diviceID, "startTime": startTime.Format("yyyy-MM-dd"), "endTime": endTime.Format("yyyy-MM-dd"), "eventType": "" },
+                    type: "Get",
+                    dataType: "text",
+                    cache: false,
+                    success: function (responseText) {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result) {
+                            if (data.Count == 0) {
+                                ShowMsg("查询结果为空", false, true);
+                            }
+                            else {
+                                $.ajax({
+                                    url: "../WebServices/DataQueryService.asmx/GetEventRecords",
+                                    data: { "loginIdentifer": $.cookie("psbsLogin"), "operateIdentifer": data.Guid, "startIndex": 1, "count": data.Count },
+                                    type: "GET",
+                                    dataType: "text",
+                                    cache: false,
+                                    success: function (responseText) {
+                                        var dataL = eval("(" + $.xml2json(responseText) + ")");
+                                        if (dataL.Result) {
+                                            var DevDatas = dataL.Records;
+                                            //ShowMsg("列表数量：" + DevDatas.length, false, true);
+                                            $("#list_event").empty();
+                                            for (var i = 0; i < DevDatas.length; i++) {
+                                                var itemStr = "<p><b>" + (i + 1) + "</b></p>";
+                                                for (var item in DevDatas[i]) {
+                                                    if (item == "事件类型" || item == "事件时间" || item == "事件描述")
+                                                        itemStr += "<p>" + item + "：<b>" + DevDatas[i][item].Value + "</b></p>";
+                                                    else if(item =="事件数据")
+                                                        itemStr += "<p>" + item + "：<b>" + HexStr(DevDatas[i][item].Value.toUpperCase()) + "</b></p>";
+                                                }
+                                                var html = "<li>" +
+                                                    itemStr +
+                                                  "</li>";
+                                                $("#list_event").append(html);
+                                            }
+                                            $('#list_event').listview('refresh');
+                                        }
+                                        else {
+                                            ShowMsg("列表查询出错！" + dataL.Message, false, true);
+                                        }
+                                    },
+                                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                        ShowMsg("列表查询出错！<br>" + errorThrown + "<br>" + XMLHttpRequest.responseText, false, true);
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            ShowMsg("数量查询出错！" + data.Message, false, true);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        ShowMsg("数量查询出错！<br>" + errorThrown + "<br>" + XMLHttpRequest.responseText, false, true);
+                    }
+                });
+
+                return false;
+            });
+        });
+        $(document).on("pagebeforehide", "#pagefour", function () { // 当离开页面四时
+            //alert("页面四即将隐藏");
+            diviceID = '';
+            search();
+        });
+
+        $(document).on("pagebeforeshow", "#pageDistrict", function () { // 当进入页面五时
+            //alert("页面五即将显示");
+            $("#spanDistNameSel").html($("#spanDistName").text());
+            $("#spanDistIdSel").html($("#spanDistId").text());
+
+            GetDist();
+        });
+        $(document).on("pagebeforehide", "#pageDistrict", function () { // 当离开页面五时
+            //alert("页面五即将隐藏");
+            search();
+        });
+    </script>
+</head>
+<body>
+    <div data-role="page" id="pageone">
+        <div id="pageoneHeader" data-role="header" data-position="fixed" data-tap-toggle="false">
+            <a href="#" data-role="button" class="ui-btn-left showMenu" data-icon="grid">菜单</a>
+            <h1>设备管理</h1>
+            <!--<a href="menu.html?2" data-role="button" class="ui-btn-right" data-icon="grid">菜单</a>-->
+        </div>
+        <div id="pageoneContent" data-role="content" style="padding:0;">
+            <div style="height: 50px; overflow: hidden;">
+                <div style="float: left; width: 200px;">
+                    <input type="text" id="fname" placeholder="设备名称或编号......" />
+                </div>
+                <div style="float: left; width: 100px; margin-left: 5px; margin-top: 3px;">
+                    <a href="javascript:void(0)" data-role="button" data-mini="true" id="btn1">查询</a>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <ul id="list" data-role="listview" data-inset="true">
+            </ul>
+        </div>
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+            <a href="#pageDistrict" data-role="button">地区选择</a> <span id="spanDistName">全部</span> <span id="spanDistId">0</span>
+        </div>
+    </div>
+
+    <div data-role="dialog" id="pagetwo">
+        <div data-role="header" data-position="fixed" data-tap-toggle="false">
+            <h1>设备信息 </h1>
+        </div>
+        <div data-role="content">
+            <div class="item">
+                <div class="t">所属村庄：</div>
+                <div class="c"><span id="village">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">设备名称：</div>
+                <div class="c"><span id="irrigationWell">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">设备编码：</div>
+                <div class="c"><span id="irrigationWellNo">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">设备类型：</div>
+                <div class="c"><span id="deviceType">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">是否在线：</div>
+                <div class="c"><span id="communication">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">更新时间：</div>
+                <div class="c"><span id="updateTime">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">年累计用水量：</div>
+                <div class="c"><span id="yearWater">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">年累计用电量：</div>
+                <div class="c"><span id="yearElectric">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">剩余可开采量：</div>
+                <div class="c"><span id="yearAmount">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">用水户：</div>
+                <div class="c"><span id="waterUser">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">灌溉时长：</div>
+                <div class="c"><span id="irrigationTime">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">本次用水量：</div>
+                <div class="c"><span id="waterNum">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">本次用电量：</div>
+                <div class="c"><span id="electricNum">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">流量仪表：</div>
+                <div class="c"><span id="pumpStatus6">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">终端箱门：</div>
+                <div class="c"><span id="pumpStatus8">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">水泵状态：</div>
+                <div class="c"><span id="pumpStatus">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <div class="item">
+                <div class="t">累计用水量：</div>
+                <div class="c"><span id="Water">-</span></div>
+                <div class="clear"></div>
+            </div>
+            <a href="#pageone" data-role="button" data-mini="true">关闭</a>
+        </div>
+    </div>
+
+    <div data-role="page" id="pagefour">
+        <div data-role="header" data-position="fixed" data-tap-toggle="false">
+            <h1>事件列表 </h1>
+        </div>
+        <div data-role="content" style="padding:0;">
+            当前选择：<span id="Span3"></span> <span id="Span4"></span>
+            <div style="height: 50px; overflow: hidden;">
+                <div style="float: left; width: 200px;">
+                    <input type="text" id="txt_DeviceTime" />
+                </div>
+                <div style="float: left; width: 100px; margin-left: 5px; margin-top: 3px;">
+                    <a href="javascript:void(0)" data-role="button" data-mini="true" id="btn2">查询</a>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <ul id="list_event" data-role="listview" data-inset="true">
+            </ul>
+        </div>
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+            <a href="#pageone" data-role="button" data-mini="true">关闭</a>
+        </div>
+    </div>
+
+    <div data-role="page" id="pageDistrict">
+        <div data-role="header" data-position="fixed" data-tap-toggle="false">
+            <h1>区域选择 </h1>
+        </div>
+        <div data-role="content" style="padding:0;">
+            当前选择：<span id="spanDistNameSel"></span> <span id="spanDistIdSel" style="display:none"></span>
+            <div style="height: 50px; overflow: hidden;">
+                <div style="float: left; width: 200px;">
+                    <input type="text" id="txt_District" />
+                </div>
+                <div style="float: left; width: 100px; margin-left: 5px; margin-top: 3px;">
+                    <a href="javascript:void(0)" data-role="button" data-mini="true" id="btn3">查询</a>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <ul id="list_District" data-role="listview" data-inset="true">
+            </ul>
+        </div>
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+            <a href="#pageone" data-role="button" data-mini="true">关闭</a>
+            <a href="#pageone" data-role="button" data-mini="true" onclick="setDist('全部','0')">选择全部</a>
+        </div>
+    </div>
+
+    <div id="menu" style="position:absolute; background-color:white; overflow: hidden;">
+        <iframe src="menu1.html" style="width:196px; height:98%; border:2px solid #999999; overflow:auto;" ></iframe>
+    </div>
+</body>
+</html>

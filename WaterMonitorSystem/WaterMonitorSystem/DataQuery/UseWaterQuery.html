@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>用水记录</title>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="0" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css" />
+    <style type="text/css">
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+    </style>
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/DataQuery/UseWaterQuery.js?1"></script>
+
+</head>
+<body>
+    <style>
+        #divWaterQuery .datagrid-btable tr {
+            height: 40px;
+        }
+    </style>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px;
+        height: 600px;">
+        <div id="divLeft" title="用水记录查询" data-options="region:'west',border:true,split:true"
+             style="width: 210px; padding: 0 0 0 0;">
+
+            <div id="divAreaTree" class="easyui-tree">
+            </div>
+        </div>
+        <div id="divWaterQuery" title="用水记录列表" data-options="region:'center',border:true" style="overflow-y: hidden;height:100%;">
+            <table id="tbWaterInfos" class="easyui-datagrid" data-options="nowrap: false,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20,onLoadSuccess:BindOnSelectPage"
+                   style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                <thead>
+                    <tr style="height: 24px">
+                        <th data-options="field:'userName',width:40,align:'center'">
+                            用水户
+                        </th>
+                        <th data-options="field:'userNo',width:40,align:'center'">
+                            用户卡号
+                        </th>
+                        <th data-options="field:'deviceName',width:40,align:'center'">
+                            设备名称
+                        </th>
+                        <th data-options="field:'irrigationTime',width:100,align:'center'">
+                            灌溉时长<br />
+                            (开泵时间/关泵时间)
+                        </th>
+                        <th data-options="field:'waterNum',width:100,align:'center'">
+                            本次用水量(m³)<br />
+                            (开泵时剩余/关泵时剩余)
+                        </th>
+                        <th data-options="field:'electricNum',width:100,align:'center'">
+                            本次用电量(kw·h)<br />
+                            (开泵时剩余/关泵时剩余)
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div id="toolbar">
+                <span style="margin-left: 10px">用水户：</span>
+                <input id="cbb_DevCombobox" style="width:150px" />
+                <input type="checkbox" onclick="checkit(this.checked)" /><span style="margin-left: 5px">显示已注销</span>
+                <span style="margin-left: 10px">起始时间：</span>
+                <input id="txt_StartTime" type="text" style="width: 110px" maxlength="19" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" />
+                <span style="margin-left: 10px">结束时间：</span>
+                <input id="txt_EndTime" maxlength="19" style="width: 110px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"
+                       type="text" />
+                <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                   plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                <a id="btn_Export" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel" plain="true" onclick="Btn_Excel_Click();">导出</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

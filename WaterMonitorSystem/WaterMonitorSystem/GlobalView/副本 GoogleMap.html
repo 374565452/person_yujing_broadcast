@@ -1,0 +1,586 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>谷歌地图</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/Map.css">
+    <style type="text/css">
+        body, html, #allmap {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+    </style>
+    <style type="text/css">
+        .psbutton {
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0 0 10px #ccc;
+            width: 80px;
+            height: 30px;
+            background: #e0ecef;
+            border: 1px solid #ccc;
+            margin: 5px 5px;
+            color: #0e2d5f;
+            font-size: 13px;
+        }
+
+        .psbutton2 {          
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0 0 10px #ccc;
+            width: 160px;
+            height: 30px;
+            background: #e0ecef;
+            border: 1px solid #ccc;
+            margin: 5px 5px;
+            color: #0e2d5f;
+            font-size: 13px;
+        }
+    </style>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../js/PSExtend.js"></script>
+    <script type="text/javascript" src="http://maps.google.cn/maps/api/js?sensor=false"></script> 
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ndUzBpyp7u4Dr6gBVZLhEIGs"></script>
+    <script src="GPSConvert.js"></script>
+    <script src="map_B2G_G2B_4.js"></script>
+
+    <script type="text/javascript">
+        var map;
+
+        var dicDeviceAppGroups = {};
+        var mnId = "";
+        var monitorInfoShow = true;
+        var deviceInfoLoaded = false;
+        var iframeLoaded = false;
+        //地图xml数据
+        var mapDataInfo;
+        //用于存储实时数据
+        var deviceData = [];
+        //带有经纬度的设备信息
+        var deviceInfo;
+        var deviceInfos = [];
+        //用于存储选中的设备ID
+        var allDevIds = "";
+        //是否画图
+        var deviceInfoLoaded = false;
+
+        $(document).ready(function () {
+            resizeDivTabs();
+            GetSystemInfo();
+            
+            var str;
+            var date = new Date();
+            if (date.getMinutes() < 15)
+                date = date.DateAdd('h', -10);
+            else if (date.getMinutes() < 45)
+                date = date.DateAdd('h', -9);
+            else if (date.getMinutes() >= 45)
+                date = date.DateAdd('h', -9);
+
+            var str = date.Format("yyyyMMddHH4500000");
+            $("#divWXYTInfo").html("<img src=\"http://i.weather.com.cn/i/product/pic/m/sevp_nsmc_wxcl_asc_e99_achn_lno_py_" + str + ".jpg\" style=\"width:100%;\" alt=\"" + str + "\" />");
+
+            ShowAndHideInfo();
+        });
+
+        $(window).resize(function () {
+            resizeDivTabs();
+        });
+
+        function resizeDivTabs() {
+            if (monitorInfoShow) {
+                $("#divTabContainer").css("left", ($(window).width() - $("#divTabContainer").width()) + "px");
+            }
+            else {
+                $("#divTabContainer").css("left", ($(window).width() - 20) + "px");
+            }
+            $("#divTabContainer").css("top", ($(window).height() - $("#divTabContainer").height()) / 2 + "px");
+        }
+
+        function ShowAndHideInfo() {
+            if (monitorInfoShow) {
+                $("#divTabContainer").animate({ left: ($(window).width() - 25) }, 'slow');
+                $("#imgRealTimeData").attr("src", "../Images/实时数据-1.png");
+            }
+            else {
+                $("#divTabContainer").animate({ left: ($(window).width() - 405) }, 'slow');
+                $("#imgRealTimeData").attr("src", "../Images/实时数据.png");
+            }
+            monitorInfoShow = !monitorInfoShow
+        }
+
+        //从服务器取得系统运行状态信息
+        function GetSystemInfo() {
+            $.ajax(
+            {
+                url: "../WebServices/SystemService.asmx/GetSystemStateInfo",
+                type: "GET",
+                data: { "loginIdentifer": window.parent.guid },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        mnId = data.SysStateInfo.当前登录操作员管理ID;
+
+                        InitMap();
+
+                        ShowPageInTab("设备监控", true);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+        function InitMap() {
+            $.ajax(
+            {
+                url: "../WebServices/GlobalViewService.asmx/GetMapConfig",
+                type: "GET",
+                data: {},
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result) {
+                        mapDataInfo = data.MapConfig;
+                        var mapBaseConfig = data.MapConfig.基本设置;
+                        var centerPoint = mapBaseConfig.中心坐标.split("|");
+                        var initZoom = mapBaseConfig.初始缩放级别;
+                        var minZoom = mapBaseConfig.最小缩放级别;
+                        var maxZoom = mapBaseConfig.最大缩放级别;
+
+                        var centerpointGGStr = GPS.gcj_encrypt(parseFloat(centerPoint[1]), parseFloat(centerPoint[0]));
+
+                        var centerPointGGLat = centerpointGGStr.lat; //中心纬度Google
+                        var centerPointGGLng = centerpointGGStr.lon; //中心经度
+
+                        var centerPointGG = new google.maps.LatLng(centerPointGGLat, centerPointGGLng);
+
+                        // 创建Map实例
+                        var myOptions = {
+                            zoom: parseInt(initZoom) - 1,
+                            center: centerPointGG,
+                            disableDefaultUI: false,
+                            panControl: true,
+                            zoomControl: true,
+                            zoomControlOptions: { style: google.maps.ZoomControlStyle.LARGE, position: google.maps.ControlPosition.LEFT_TOP },                            streetViewControlOptions: { position: google.maps.ControlPosition.LEFT_TOP },                            scaleControl: true,
+                            mapTypeControl: true,
+                            mapTypeControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP },
+                            mapTypeId: google.maps.MapTypeId.HYBRID
+                        };
+                        map = new google.maps.Map(document.getElementById("allmap"), myOptions);
+
+                        var bdary = new BMap.Boundary();
+                        bdary.get("乌拉特前旗", function (rs) {       //获取行政区域
+                            var count = rs.boundaries.length; //行政区域的覆盖物有多少个
+                            for (var i = 0; i < count; i++) {
+                                var ps = rs.boundaries[i].split(";");
+                                var point_bdary = [];
+                                for (var j = 0; j < ps.length; j++) {
+                                    point_bdary.push(ps[j]);
+                                }
+                                var g4_bdary = new GABT4(point_bdary);
+                                g4_bdary.b2g(function (arr) {
+                                    if (arr.length > 0) {
+                                        var flightPlanCoordinates = [];
+                                        for (var k = 0; k < arr.length; k++) {
+                                            var point_Polyline = new google.maps.LatLng(arr[k].split(",")[1], arr[k].split(",")[0]);
+                                            flightPlanCoordinates.push(point_Polyline);
+                                        }
+
+                                        var flightPath = new google.maps.Polyline({
+                                            path: flightPlanCoordinates,
+                                            strokeColor: "#FF0000",
+                                            strokeOpacity: 1.0,
+                                            strokeWeight: 5
+                                        });
+
+                                        flightPath.setMap(map);
+                                    }
+                                });
+                            }
+                        });
+                            
+                        InitDeviceInfo();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+        //获取此登录用户所能看到的设备信息
+        function InitDeviceInfo() {
+            $.ajax({
+                url: "../WebServices/DeviceNodeService.asmx/GetDeviceNodeInfosByLoginUser",
+                type: "GET",
+                data: { "loginIdentifer": window.parent.guid },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        deviceInfo = data.DeviceNodes;
+                        deviceInfos = [];
+                        allDevIds = "";
+                        for (var i = 0; i < deviceInfo.length; i++) {
+                            deviceInfos.push(deviceInfo[i]);
+                            if (i > 0) {
+                                allDevIds += ",";
+                            }
+                            allDevIds += deviceInfo[i].ID;
+                        }
+
+                        deviceInfoLoaded = false;
+                        DrawPoint();
+                        setInterval(DrawPoint, 60000);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.messager.alert("提示信息", errorThrown + "<br/>" + XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+        var marker_devices = [];
+        function DrawPoint() {
+            if (!deviceInfoLoaded) {
+                deviceInfoLoaded = true;
+                $("#divInfoInfo").html("可以重新画！" + "数量：" + deviceInfos.length + " " + marker_devices.length + "。<br>" + new Date().Format("yyyy-MM-dd HH:mm:ss"));
+
+                for (var i = 0; i < marker_devices.length; i++)
+                {
+                    marker_devices[i].setMap(null);
+                }
+                marker_devices.length = 0;
+
+                var infoWindow = new google.maps.InfoWindow();
+                for (var i = 0; i < deviceInfos.length; i++)
+                {
+                    //名称,LON,LAT,Online,OnlineTime,TerminalState,DeviceType,Crop,Area,TerminalState,DeviceNo
+                    var centerpointGGStr_device = GPS.gcj_encrypt(deviceInfos[i].LAT, deviceInfos[i].LON);
+
+                    var centerPointGGLat_device = centerpointGGStr_device.lat; //设备纬度Google
+                    var centerPointGGLng_device = centerpointGGStr_device.lon; //设备经度
+
+                    var marker_device = new google.maps.Marker({
+                        position: new google.maps.LatLng(centerPointGGLat_device, centerPointGGLng_device),
+                        title: deviceInfos[i].名称 + " " + deviceInfos[i].DeviceNo,
+                        map: map,
+                        draggable: false
+                    });
+
+                    
+                    (function (marker, data_device) {
+                        var iwTitle = data_device.管理名称 + "(" + data_device.名称 + ")"
+                        
+
+                        google.maps.event.addListener(marker, "click", function (e) {
+                            var trbtn = "";
+
+                            $.ajax({
+                                url: "../WebServices/DeviceMonitorService.asmx/GetDeviceRealTimeDatas",
+                                type: "GET",
+                                data: { "loginIdentifer": window.parent.guid, "devIDs": data_device.ID },
+                                dataType: "text",
+                                async: false,
+                                cache: false,
+                                success: function (responseText) {
+                                    var data = eval("(" + $.xml2json(responseText) + ")");
+                                    if (data.Result)//登录成功
+                                    {
+                                        deviceData = data.DevDatas;
+                                        Columns = data.Columns;
+                                        if (deviceData.length > 0) {
+                                            var i = 0;
+                                            //用于存储弹出窗的html脚本;
+                                            var htmlStr = "<table class='pstbl' cellpadding='0' cellspacing='0' style='font-size:10pt;width:500px'>";
+                                            var _devId = deviceData[i].操作.Value;
+                                            //var templateId = deviceInfos[_devId].用户站参数;
+                                            var templateId = 1;
+                                            //通讯状态默认值
+                                            var commState = "未知";
+                                            //设备状态默认值
+                                            var devState = "未知";
+                                            //用于存储地图上点的状态图片
+                                            var devImg = "大圈灰.gif";
+                                            for (var j = 0; j < mapDataInfo.用户模板.length; j++) {
+                                                if (mapDataInfo.用户模板[j].ID == templateId) {
+                                                    var xmlStateValue = mapDataInfo.用户模板[j].状态量;
+                                                    var valueName = mapDataInfo.用户模板[j].采集量.split(',');
+                                                    var rowIndex = 2;
+                                                    var tdIndex = 0;
+                                                    var htmlNew = "";
+                                                    for (var k = 0; k < valueName.length; k++) {
+                                                        var currentValName = valueName[k];
+                                                        if (deviceData[i][currentValName] != null) {
+                                                            var currentValVal = deviceData[i][currentValName].Value;
+                                                            if (k == 0) {
+                                                                var commStateImg = "中断.png";
+                                                                var devStateImg = "中断.png";
+                                                                commState = deviceData[i].通讯状态.Value;
+                                                                devState = deviceData[i].运行状态.Value;
+                                                                if (commState == "全部正常") {
+                                                                    commStateImg = "正常.png";
+                                                                }
+        
+                                                                htmlStr += "<tr><td class='alt' style='width:120px;text-align:left;'>通讯状态</td><td style='width:130px'><Img style='height:20px;widht:20px;' src='../images/" + commStateImg +
+                                                                         "'/></td><td class='alt' style='width:120px;text-align:left;'>运行状态</td><td style='width:130px'>" + devState + "</tr>";
+                                                            }
+                                                            
+                                                            htmlNew += "<td class='alt' style='width:120px;text-align:left;'>" + currentValName + "</td><td style='width:130px'>" + currentValVal + "</td>";
+                                                            tdIndex++;
+                                                            if (tdIndex % 2 == 0) {
+                                                                rowIndex++;
+                                                                if (rowIndex % 2 == 1) {
+                                                                    htmlStr = htmlStr + "<tr>" + htmlNew + "</tr>";
+                                                                }
+                                                                else {
+                                                                    htmlStr = htmlStr + "<tr>" + htmlNew + "</tr>";
+                                                                }
+                                                                htmlNew = "";
+                                                            }
+                                                            if (k == valueName.length - 1) {
+                                                                if (tdIndex % 2 != 0) {
+                                                                    htmlNew += "<td style='width:120px'>&nbsp;</td><td style='width:130px'>&nbsp;</td>";
+                                                                    tdIndex++;
+                                                                }
+                                                                rowIndex++;
+                                                                if (rowIndex % 2 == 1) {
+                                                                    htmlStr = htmlStr + "<tr>" + htmlNew + "</tr>";
+                                                                }
+                                                                else {
+                                                                    htmlStr = htmlStr + "<tr>" + htmlNew + "</tr>";
+                                                                }
+                                                            }
+
+                                                        }//循环valueName结束
+        
+                                                        if (deviceData[i].运行状态.Value == "水泵工作") {
+                                                            devImg = "大圈绿.gif";
+                                                        } else if (deviceData[i].运行状态.Value == "水泵停机") {
+                                                            devImg = "大圈红.gif";
+                                                        } else {
+                                                            devImg = "大圈灰.gif";
+                                                        }
+                                                    }
+                                                    //如果最后一个量名在取得的实时数据不存在，
+                                                    if (tdIndex % 2 != 0) {
+                                                        htmlNew += "<td>&nbsp;</td><td>&nbsp;</td>";
+                                                        rowIndex++;
+                                                        if (rowIndex % 2 == 1) {
+                                                            htmlStr = htmlStr + "<tr class='alt'>" + htmlNew + "</tr>";
+                                                        }
+                                                        else {
+                                                            htmlStr = htmlStr + "<tr>" + htmlNew + "</tr>";
+                                                        }
+                                                    }
+                                                    break;
+                                                }
+                                            }//循环mapDataInfo结束
+                                            htmlStr += "</table>";
+                                            trbtn += htmlStr;
+                                        }
+                                    }
+                                    else {
+                                        trbtn += "<div style = 'width:200px;min-height:40px'>" + data_device.名称 + " " + data_device.DeviceType + "<br>实时信息获取失败！</div>";
+                                    }
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    trbtn += "<div style = 'width:200px;min-height:40px'>" + data_device.名称 + " " + data_device.DeviceType + "<br>实时信息获取失败！</div>";
+                                }
+                            });
+
+                            $.ajax({
+                                url: "../WebServices/DeviceMonitorService.asmx/GetDeviceInfoForWell",
+                                data: { "loginIdentifer": window.parent.guid, "devID": data_device.ID },
+                                type: "Get",
+                                dataType: "text",
+                                async: false,
+                                cache: false,
+                                success: function (responseText) {
+                                    var data = eval("(" + $.xml2json(responseText) + ")");
+                                    if (data.Result) {
+                                        var DeviceInfo = data.DeviceInfo;
+
+                                        var count = 0;
+                                        var iskb = 0;
+                                        var isgb = 0;
+                                        if (DeviceInfo.SupportControl) {
+                                            for (var i = 0; i < DeviceInfo.ControlNames.length; i++) {
+                                                if (DeviceInfo.ControlNames[i] == "开泵") {
+                                                    iskb = 1;
+                                                    continue;
+                                                }
+                                                if (DeviceInfo.ControlNames[i] == "关泵") {
+                                                    isgb = 1;
+                                                    continue;
+                                                }
+                                                count++;
+                                                if (count % 5 == 1)
+                                                { trbtn += "<div style=\"text-align:center;\">"; }
+                                                trbtn += "<button onclick='ControlDevice(\"" + DeviceInfo.ControlNames[i] + "\"," + data_device.ID + ")' class='psbutton'>" + DeviceInfo.ControlNames[i] + "</button>";
+                                                if (count % 5 == 0)
+                                                { trbtn += "</div>"; }
+                                            }
+                                        }
+                                        if (DeviceInfo.SupportParam) {
+                                            count++;
+                                            if (count % 5 == 1)
+                                            { trbtn += "<div style=\"text-align:center;\">"; }
+                                            trbtn += "<button onclick='OpenSetParam(" + data_device.ID + ",\"" + iwTitle + "\")' class='psbutton'>参数设置</button>";
+                                            if (count % 5 == 0)
+                                            { trbtn += "</div>"; }
+                                        }
+                                        
+                                        if (DeviceInfo.SupportWaterView) {
+                                            count++;
+                                            if (count % 5 == 1)
+                                            { trbtn += "<div style=\"text-align:center;\">"; }
+                                            trbtn += "<button onclick='OpenSetWater(" + data_device.ID + ",\"" + iwTitle + "\")' class='psbutton'>水文查询</button>";
+                                            if (count % 5 == 0)
+                                            { trbtn += "</div>"; }
+                                        }
+                                        count++;
+                                        if (count % 5 == 1)
+                                        { trbtn += "<div style=\"text-align:center;\">"; }
+                                        trbtn += "<button onclick=\"LinkAlarmData(" + data_device.ID + ")\" class='psbutton' />报警数据</button>";
+                                        if (count % 5 == 0)
+                                        { trbtn += "</div>"; }
+                                        count++;
+                                        if (count % 5 == 1)
+                                        { trbtn += "<div style=\"text-align:center;\">"; }
+                                        trbtn += "<button onclick=\"LinkEventData(" + data_device.ID + ")\" class='psbutton' />事件数据</button>";
+                                        if (count % 5 == 0)
+                                        { trbtn += "</div>"; }
+
+                                        if (count % 5 != 0)
+                                        { trbtn += "</div>"; }
+                                        count = 0;
+                                        if (iskb == 1) {
+                                            count++;
+                                            if (count % 5 == 1)
+                                            { trbtn += "<div style=\"text-align:center;\">"; }
+                                            trbtn += "<button onclick='ControlDevice(\"" + "开泵" + "\"," + data_device.ID + ")' class='psbutton2'>" + "紧急开泵" + "</button>";
+                                            if (count % 5 == 0)
+                                            { trbtn += "</div>"; }
+
+                                        }
+                                        if (isgb == 1) {
+                                            count++;
+                                            if (count % 5 == 1)
+                                            { trbtn += "<div style=\"text-align:center;\">"; }
+                                            trbtn += "<button onclick='ControlDevice(\"" + "关泵" + "\"," + data_device.ID + ")' class='psbutton2'>" + "紧急关泵" + "</button>";
+                                            if (count % 5 == 0)
+                                            { trbtn += "</div>"; }
+                                        }
+                                        if (count % 5 != 0)
+                                        { trbtn += "</div>"; }
+
+                                        if (count % 5 != 0)
+                                        { trbtn += "</div>"; }
+
+                                    }
+                                    else {
+                                        trbtn += "<div style = 'width:200px;min-height:40px'>" + data_device.名称 + " " + data_device.DeviceType + "<br>操作功能获取失败！</div>";
+                                    }
+                                    
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    trbtn += "<div style = 'width:200px;min-height:40px'>" + data_device.名称 + " " + data_device.DeviceType + "<br>操作功能获取失败！</div>";
+                                }
+                            });
+
+                            trbtn = "<b class='iw_poi_title' title='" + iwTitle + "详细信息'><span style='color:blue;font-size:10pt;'>" + iwTitle + "</span><span style='font-size:10pt;'>详细信息</span></b><div class='iw_poi_content' style='padding:5px;'>" + trbtn + "</div>"
+                            infoWindow.setContent(trbtn);
+                            infoWindow.open(map, marker);
+                        });
+
+                        
+                    })(marker_device, deviceInfos[i]);
+                    
+                    marker_devices.push(marker_device);
+                }
+
+                $("#divInfoInfo").html($("#divInfoInfo").html() + "<br>" + "重新画结束！" + "数量：" + deviceInfos.length + " " + marker_devices.length + "。<br>" + new Date().Format("yyyy-MM-dd HH:mm:ss"));
+
+                deviceInfoLoaded = false;
+            }
+            else {
+                $("#divInfoInfo").html("正在画图，无法重新画！" + new Date().Format("yyyy-MM-dd HH:mm:ss"));
+            }
+        }
+
+        function TabOnSelect(title, index) {
+            var tabPanel = $("#divTabs").tabs("getTab", index);
+            if (tabPanel.html() == "") {
+                var monitorUrl = "BDMap_Monitor.html";
+                var userStationParams = "1";
+                tabPanel.html("<iframe name='MonitorIFrame' style='width:100%;height:100%' frameborder='no' src='" + monitorUrl + "?usps=" + userStationParams + "' onload='MonitorIFrameLoaded();'></iframe>");
+            }
+        }
+
+        function MonitorIFrameLoaded() {
+            iframeLoaded = true;
+            window.frames["MonitorIFrame"].GetMonitorDataFromParent();
+        }
+
+        function ShowPageInTab(groupName, isSelected) {
+            //根据标题获取标签页
+            var tabPanel = $("#divTabs").tabs('getTab', groupName);
+            //判断获取的标签页是否为空，为空则新建，否则直接选中
+            if (tabPanel == null) {
+                $("#divTabs").tabs('add', {
+                    title: groupName,
+                    selected: isSelected,
+                    //标签页不允许关闭
+                    closable: false
+                });
+                $("#divTabs").tabs('getTab', groupName).css("overflow", "hidden");
+            }
+            else {
+                $("#divTabs").tabs('select', groupName);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="allmap">
+    </div>
+    <div id="divTabWeather" class="easyui-resizable" style="position: absolute; top: 50px; right: 0; width: 320px; height: 175px; overflow: hidden;">
+        <div style="width: 320px; height: 175px; overflow: hidden;">
+            <div style="margin-left: -180px; width: 515px; height: 175px; overflow: hidden;">
+                <iframe name="weather_inc" src="http://i.tianqi.com/index.php?c=code&id=83&py=wuqianqi" width="515" height="178" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+            </div>
+        </div>
+    </div>
+    <div id="divWXYT" class="easyui-resizable" style="position: absolute; top: 225px; right: 0; width: 320px; height: 210px; overflow: hidden;">
+        <div id="divWXYTInfo" style="width: 320px; height: 210px; overflow: hidden;">
+        </div>
+    </div>
+    <div id="divTabContainer" class="easyui-resizable" style="position: absolute; top: 100px; left: 300px; width: 425px;">
+        <div style="float: left; width: 25px; height: 400px;">
+            <img id="imgRealTimeData" src="../Images/实时数据.png" style="position: relative; left: 1px; margin-top:315px;" onclick="ShowAndHideInfo();" />
+        </div>
+        <div id="divTabs" class="easyui-tabs" data-options="border:true,onSelect:TabOnSelect" style="float: right; width: 400px; height: 400px; background-color:white;">
+        </div>
+    </div>
+    
+    <div id="titleDiv" style="position: absolute; left: 0px; top: 0px; display: none;"></div>
+</body>
+</html>

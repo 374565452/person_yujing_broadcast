@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>百度地图测试</title>
+    <style type="text/css">
+        body, html, #allmap {
+            width: 100%;
+            height: 90%;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        #allmap img {
+            max-width: inherit;
+        }
+    </style>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ndUzBpyp7u4Dr6gBVZLhEIGs"></script>
+    <script src="GPSConvert.js"></script>
+    <script src="map_B2G_G2B_3.js"></script>
+    
+    <script type="text/javascript">
+        var map;
+
+        $(function () {
+            var devices = [{ "lat": 40.732, "lng": 108.646, "name": "水泵1", "type": "水泵" },
+                { "lat": 40.732, "lng": 108.648, "name": "水位仪1", "type": "水位仪" },
+                { "lat": 40.734, "lng": 108.646, "name": "水泵2", "type": "水泵" },
+                { "lat": 40.734, "lng": 108.648, "name": "水位仪2", "type": "水位仪" }];
+
+            var initZoom = 11;
+            var minZoom = 5;
+            var maxZoom = 19;
+            var centerPointLat_wgs = 40.7336142765; //中心纬度GPS
+            var centerPointLng_wgs = 108.6470898483; //中心经度
+
+            var centerpointGGStr = GPS.gcj_encrypt(centerPointLat_wgs, centerPointLng_wgs);
+
+            var centerPointGGLat = centerpointGGStr.lat; //中心纬度Google
+            var centerPointGGLng = centerpointGGStr.lon; //中心经度
+
+            var centerpointBDStr = GPS.bd_encrypt(centerPointGGLat, centerPointGGLng);
+
+            var centerPointBDLat = centerpointBDStr.lat; //中心纬度baidu
+            var centerPointBDLng = centerpointBDStr.lon; //中心经度
+
+            var centerPointBD = new BMap.Point(centerPointBDLng, centerPointBDLat);
+            // 创建Map实例
+            map = new BMap.Map("allmap", { 'minZoom': minZoom, 'maxZoom': maxZoom, enableMapClick: false, mapType: BMAP_HYBRID_MAP });
+            map.centerAndZoom(centerPointBD, initZoom);
+            map.enableScrollWheelZoom();
+            map.disableDoubleClickZoom();//禁止双击缩放
+            map.addControl(new BMap.NavigationControl());
+            map.addControl(new BMap.MapTypeControl());
+
+            var marker = new BMap.Marker(centerPointBD);
+            marker.setTitle("中心");
+            map.addOverlay(marker);
+            
+            for (var i = 0; i < devices.length; i++)
+            {
+                var centerpointGGStr_device = GPS.gcj_encrypt(devices[i].lat, devices[i].lng);
+
+                var centerPointGGLat_device = centerpointGGStr_device.lat; //设备纬度Google
+                var centerPointGGLng_device = centerpointGGStr_device.lon; //设备经度
+
+                var centerpointBDStr_device = GPS.bd_encrypt(centerPointGGLat_device, centerPointGGLng_device);
+
+                var centerPointBDLat_device = centerpointBDStr_device.lat; //设备纬度baidu
+                var centerPointBDLng_device = centerpointBDStr_device.lon; //设备经度
+
+                var pt_device = new BMap.Point(centerPointBDLng_device, centerPointBDLat_device);
+                var marker_device = new BMap.Marker(pt_device);
+                marker_device.setTitle(devices[i].name + "|" + devices[i].type);
+                map.addOverlay(marker_device);
+            }
+
+            var point_g4List = [];
+            point_g4List.push("108.676319,40.72986");
+            point_g4List.push("108.681319,40.72586");
+
+            for (var i = 0; i < point_g4List.length; i++)
+            {
+                var marker_CS = new BMap.Marker(new BMap.Point(parseFloat(point_g4List[i].split(",")[0]), parseFloat(point_g4List[i].split(",")[1])));
+                marker_CS.setTitle("测试"+(i+1));
+                map.addOverlay(marker_CS);
+            }
+            
+            var bdary = new BMap.Boundary();
+            bdary.get("乌拉特前旗", function (rs) {       //获取行政区域
+                var count = rs.boundaries.length; //行政区域的点有多少个
+                for (var i = 0; i < count; i++) {
+                    var ps = rs.boundaries[i].split(";");
+                    var point_bdary = [];
+                    for (var j = 0; j < ps.length; j++) {
+                        if (j % 10 == 0) {
+                            var marker_Polyline = new BMap.Marker(new BMap.Point(parseFloat(ps[j].split(",")[0]), parseFloat(ps[j].split(",")[1])));
+                            marker_Polyline.setTitle("Polyline" + (j + 1));
+                            map.addOverlay(marker_Polyline);
+                        }
+                    }
+
+                    var ply = new BMap.Polyline(rs.boundaries[i], { strokeWeight: 4, strokeColor: "#ff0000" }); //建立多边形覆盖物
+                    map.addOverlay(ply);  //添加覆盖物
+                }
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <div id="allmap">
+    </div>
+</body>
+</html>

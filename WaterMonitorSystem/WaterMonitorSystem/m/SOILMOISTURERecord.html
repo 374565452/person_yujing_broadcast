@@ -1,0 +1,405 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>水资源管理平台 墒情信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link href="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet" />
+    <script src="../js/jquery-1.11.1.min.js"></script>
+
+    <script src="mobiscroll/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+    <script src="mobiscroll/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+    <link href="mobiscroll/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+    <link href="mobiscroll/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+    <script src="mobiscroll/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+    <script src="mobiscroll/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+    <script src="mobiscroll/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+    <link href="mobiscroll/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+    <script src="../js/jquery.cookie.js"></script>
+    <script src="../js/CheckBrowser.js"></script>
+    <script src="../js/PSExtend.js"></script>
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="js/base.js?4"></script>
+    <script src="../js/Highcharts-4.2.4/highcharts.js"></script>
+    <script src="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/menu.js?3"></script>
+    <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            overflow: auto;
+        }
+
+        .odd {
+            background-color: white;
+        }
+
+        .even {
+            background-color: #eeeeee;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript">
+        var mnId = "";
+        //用水记录数量
+        var waterRecordsCount;
+        //操作标识
+        var operateIdentifer;
+
+        //从服务器取得系统运行状态信息
+        function GetSystemInfo() {
+            $.ajax(
+            {
+                url: "../WebServices/SystemService.asmx/GetSystemStateInfo",
+                type: "GET",
+                data: { "loginIdentifer": $.cookie("psbsLogin") },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        mnId = data.SysStateInfo.当前登录操作员管理ID;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    ShowMsg(errorThrown + "\r\n" + XMLHttpRequest.responseText, false, true);
+                }
+            });
+        }
+
+        var startTime;
+        var endTime;
+        var xAxis_categories = [];
+        var series_name = [];
+        var series1 = [];
+        var series2 = [];
+        var series3 = [];
+        var tickInterval = 1;
+        var diff = 0;
+
+        function search() {
+            $.mobile.loading('show', {
+                text: '加载中...', //加载器中显示的文字  
+                textVisible: true, //是否显示文字  
+                theme: 'a',        //加载器主题样式a-e  
+                textonly: false,   //是否只显示文字  
+                html: ""           //要显示的html内容，如图片等  
+            });
+
+            $("#divChart").empty();
+            xAxis_categories = [];
+            series_name = [];
+            series1 = [];
+            series2 = [];
+            series3 = [];
+
+            if (date1 == "" || date2 == "") {
+                ShowMsg("请选择时间！", false, true);
+                return false;
+            }
+
+            startTime = new Date(Date.parse(date1.replace(/-/g, "/")));
+            endTime = new Date(Date.parse(date2.replace(/-/g, "/"))).DateAdd("d", 1);
+
+            if (startTime >= endTime) {
+                ShowMsg("开始时间不能大于结束时间！", false, true);
+                return false;
+            }
+            diff = GetDateDiff(startTime.Format("yyyy-MM-dd"), endTime.Format("yyyy-MM-dd"), 'day');
+
+            if (diff <= 2) {
+                for (var i = 0; i < diff * 6; i++) {
+                    xAxis_categories.push(startTime.DateAdd('h', 4 * i).Format("yyyy-MM-dd HH"));
+                }
+            } else {
+                for (var i = 0; i < 24; i++) {
+                    var c = startTime.DateAdd('d', Math.ceil(diff / 24) * i);
+                    if (c > endTime.DateAdd("d", -1)) { break; }
+                    xAxis_categories.push(c.Format("yyyy-MM-dd"));
+                }
+            }
+
+            tickInterval = 1;
+            if (xAxis_categories.length > 5) {
+                tickInterval = Math.ceil(xAxis_categories.length / 5);
+            }
+
+            $.ajax(
+            {
+                url: "../WebServices/DataQueryNewService.asmx/GetSOILMOISTURERecordsCount",
+                data: { "loginIdentifer": $.cookie("psbsLogin"), "stationID": "", "startTime": startTime.Format("yyyy-MM-dd"), "endTime": endTime.Format("yyyy-MM-dd") },
+                type: "GET",
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    $.mobile.loading('hide');
+                    if (data.Result) {
+                        waterRecordsCount = data.Count;
+                        operateIdentifer = data.Guid;
+                        if (waterRecordsCount == 0) {
+                            $.mobile.loading('hide');
+                            ShowMsg("查询结果为空", false, true);
+                        }
+                        else {
+                            QueryCurrentChartData(1, waterRecordsCount);
+                        }
+                    }
+                    else {
+                        ShowMsg(data.Message, false, true);
+                        if (data.Message == "未登录") {
+                            location.href = "Default.html?" + Math.random();
+                        }
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.mobile.loading('hide');
+                    ShowMsg(errorThrown + "\r\n" + XMLHttpRequest.responseText, false, true);
+                },
+                complete: function () {
+                }
+            });
+        }
+
+        function showChart() {
+            $('#divChart1').highcharts({
+                chart: { type: 'line' },
+                title: { text: '土壤土壤水分1折线图' },
+                xAxis: { categories: xAxis_categories },
+                yAxis: { title: { text: '土壤水分1（%）' }, labels: { rotation: -45, formatter: function () { return this.value } } },
+                tooltip: { enabled: false },
+                plotOptions: { series: { dataLabels: { enabled: true } } },
+                credits: { enabled: false },
+                series: series1
+            });
+
+            $('#divChart2').highcharts({
+                chart: { type: 'line' },
+                title: { text: '土壤土壤水分2折线图' },
+                xAxis: { categories: xAxis_categories },
+                yAxis: { title: { text: '土壤水分1（%）' }, labels: { rotation: -45, formatter: function () { return this.value } } },
+                tooltip: { enabled: false },
+                plotOptions: { series: { dataLabels: { enabled: true } } },
+                credits: { enabled: false },
+                series: series2
+            });
+
+            $('#divChart3').highcharts({
+                chart: { type: 'line' },
+                title: { text: '土壤土壤水分3折线图' },
+                xAxis: { categories: xAxis_categories },
+                yAxis: { title: { text: '土壤水分1（%）' }, labels: { rotation: -45, formatter: function () { return this.value } } },
+                tooltip: { enabled: false },
+                plotOptions: { series: { dataLabels: { enabled: true } } },
+                credits: { enabled: false },
+                series: series3
+            });
+        }
+
+        function QueryCurrentChartData(pageNumber, pageSize) {
+            $.mobile.loading('show', {
+                text: '正在加载数据...', //加载器中显示的文字  
+                textVisible: true, //是否显示文字  
+                theme: 'a',        //加载器主题样式a-e  
+                textonly: false,   //是否只显示文字  
+                html: ""           //要显示的html内容，如图片等  
+            });
+
+            var startIndex = (pageNumber - 1) * pageSize + 1;
+            $.ajax({
+                url: "../WebServices/DataQueryNewService.asmx/GetSOILMOISTURERecordsChart",
+                data: { "loginIdentifer": $.cookie("psbsLogin"), "operateIdentifer": operateIdentifer, "startIndex": startIndex, "count": pageSize },
+                type: "GET",
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result == true) {
+                        for (var i = 0; i < data.Records.length; i++) {
+                            if (series_name.indexOf(data.Records[i].StationID) == -1)
+                                series_name.push(data.Records[i].StationID);
+                        }
+
+                        for (var i = 0; i < series_name.length; i++) {
+                            var myMap1 = {};
+                            myMap1['name'] = series_name[i];
+                            myMap1['data'] = [];
+                            var myMap2 = {};
+                            myMap2['name'] = series_name[i];
+                            myMap2['data'] = [];
+                            var myMap3 = {};
+                            myMap3['name'] = series_name[i];
+                            myMap3['data'] = [];
+
+                            var flag = false;
+
+                            for (var j = 0; j < xAxis_categories.length; j++) {
+                                var t1;
+                                var t2;
+                                var tmp1 = 0;
+                                var tmp2 = 0;
+                                var tmp3 = 0;
+                                var count = 0;
+                                if (diff <= 2) {
+                                    t1 = new Date(Date.parse((xAxis_categories[j] + ":00:00").replace(/-/g, "/")));
+                                    if (j != xAxis_categories.length - 1) {
+                                        t2 = new Date(Date.parse((xAxis_categories[j + 1] + ":00:00").replace(/-/g, "/")));
+                                    }
+                                } else {
+                                    t1 = new Date(Date.parse((xAxis_categories[j] + " 00:00:00").replace(/-/g, "/")));
+                                    if (j != xAxis_categories.length - 1) {
+                                        t2 = new Date(Date.parse((xAxis_categories[j + 1] + " 00:00:00").replace(/-/g, "/")));
+                                    }
+                                }
+
+                                for (var k = 0; k < data.Records.length; k++) {
+                                    if (data.Records[k].StationID == series_name[i]) {
+                                        var Acq_Time = new Date(Date.parse((data.Records[k].AcqTime + ":00:00").replace(/-/g, "/")));
+                                        if (Acq_Time >= t1 && Acq_Time < t2 || j == xAxis_categories.length - 1 && Acq_Time >= t1) {
+                                            tmp1 += parseFloat(data.Records[k].SoilMoisture1);
+                                            tmp2 += parseFloat(data.Records[k].SoilMoisture2);
+                                            tmp3 += parseFloat(data.Records[k].SoilMoisture3);
+                                            count++;
+                                        }
+                                    }
+                                }
+
+                                if (count > 0) {
+                                    myMap1['data'].push(parseFloat((tmp1 / count).toFixed(2)));
+                                    myMap2['data'].push(parseFloat((tmp2 / count).toFixed(2)));
+                                    myMap3['data'].push(parseFloat((tmp3 / count).toFixed(2)));
+                                } else {
+                                    myMap1['data'].push(null);
+                                    myMap2['data'].push(null);
+                                    myMap3['data'].push(null);
+                                }
+                            }
+
+                            series1.push(myMap1);
+                            series2.push(myMap2);
+                            series3.push(myMap3);
+                        }
+
+                        $.mobile.loading('hide');
+                        setTimeout(showChart, 500);
+                    }
+                    else {
+                        $.mobile.loading('hide');
+                        ShowMsg(data.Message, false, true);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.mobile.loading('hide');
+                    ShowMsg(errorThrown + "\r\n" + XMLHttpRequest.responseText, false, true);
+                }
+            });
+        }
+
+        var date1 = new Date().Format("yyyy-MM-01");
+        var date2 = new Date().Format("yyyy-MM-dd");
+        var k = false
+        $(document).on("pagecreate", function (event) {
+            //alert("触发 pagecreate 事件！");
+            if (!k) {
+                Highcharts.setOptions({
+                    global: {
+                        useUTC: false
+                    }
+                });
+
+                var opt = {
+                    preset: 'date', //日期
+                    theme: 'jqm', //皮肤样式
+                    display: 'modal', //显示方式 
+                    mode: 'clickpick', //日期选择模式
+                    dateFormat: 'yy-mm-dd', // 日期格式
+                    setText: '确定', //确认按钮名称
+                    cancelText: '取消',//取消按钮名籍我
+                    dateOrder: 'yymmdd', //面板中日期排列格式
+                    dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+                    startYear: 2000, //开始年份
+                    endYear: (new Date()).getFullYear() + 10 //结束年份
+                };
+
+                $("#txt_DeviceTime1").val(date1).mobiscroll(opt);
+                $("#txt_DeviceTime2").val(date2).mobiscroll(opt);
+
+                GetSystemInfo();
+                search();
+
+                k = true;
+            }
+        });
+
+        $(document).on("pagebeforeshow", "#pageone", function () {
+            var t = getUrlParam('t');
+            if (t != null && t != "") {
+                $("#pageoneHeader").height(0);
+                $("#pageoneHeader").hide();
+            }
+
+            GetSystemInfo();
+
+            try {
+                $('#divChart1').highcharts().reflow();
+                $('#divChart2').highcharts().reflow();
+                $('#divChart3').highcharts().reflow();
+            } catch (e) {
+            }
+
+            $('#btn2').unbind().on('click', function () {
+                date1 = $("#txt_DeviceTime1").val();
+                date2 = $("#txt_DeviceTime2").val();
+                search();
+                return false;
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <div data-role="page" id="pageone">
+        <div id="pageoneHeader" data-role="header" data-position="fixed" data-tap-toggle="false">
+            <a href="#" data-role="button" class="ui-btn-left showMenu" data-icon="grid">菜单</a>
+            <h1>墒情信息</h1>
+            <!--<a href="menu.html?2" data-role="button" class="ui-btn-right" data-icon="grid">菜单</a>-->
+        </div>
+        <div id="pageoneContent" data-role="content" style="padding:0;">
+            <div style="height: 50px; overflow: hidden;">
+                <div style="float: left; width: 110px; margin-left:10px;">
+                    <input type="text" id="txt_DeviceTime1" />
+                </div>
+                <div style="float: left; width: 110px;">
+                    <input type="text" id="txt_DeviceTime2" />
+                </div>
+                <div style="float: left; width: 90px; margin-left: 5px; margin-top: 3px;">
+                    <a href="javascript:void(0)" data-role="button" data-mini="true" id="btn2">查询</a>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div id="divChart1" style=" width:100%;">
+            </div>
+            <div id="divChart2" style=" width:100%;">
+            </div>
+            <div id="divChart3" style=" width:100%;">
+            </div>
+        </div>
+    </div>
+
+    <div id="menu" style="position:absolute; background-color:white; overflow: hidden;">
+        <iframe src="menu1.html" style="width:196px; height:98%; border:2px solid #999999; overflow:auto;" ></iframe>
+    </div>
+</body>
+</html>

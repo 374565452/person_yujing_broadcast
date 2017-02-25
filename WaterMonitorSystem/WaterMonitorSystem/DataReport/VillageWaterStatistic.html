@@ -1,0 +1,208 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>村用水统计</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+    <style type="text/css">
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+    </style>
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/json2.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/datagrid-detailview.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/datagrid-bufferview.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/DataReport/villageWaterStatistic.js?3"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/DataReport/VillageWaterYearStatistic.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/DataReport/VillageWaterMonthStatistic.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/DataReport/VillageWaterDayStatistic.js"></script>
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px;
+        height: 600px;">
+        <div id="divLeft" title="乡镇列表" data-options="region:'west',border:true,split:true"
+             style="width: 210px; padding: 0 0 0 0;">
+
+            <div id="divAreaTree" class="easyui-tree">
+            </div>
+        </div>
+        <div id="divRechargeQuery" title="" data-options="region:'center',border:false" style="overflow-y: hidden;height:100%;">
+            <div class="easyui-tabs" id="villageStatisticTabs" fit="true">
+                <div title="按时段统计">
+                    <table id="tbRechargeInfos" class="easyui-datagrid" data-options="nowrap: false,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20,showFooter: true"
+                           style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                        <thead>
+                            <tr style="height: 24px">
+                                <th data-options="field:'villageID',width:40,hidden:true">
+                                    村庄
+                                </th>
+                                <th data-options="field:'villageName',width:40">
+                                    村庄
+                                </th>
+                                <th data-options="field:'waterTime',width:40">
+                                    用水时间
+                                </th>
+                                <th data-options="field:'waterNum',width:40">
+                                    用水量
+                                </th>
+                                <th data-options="field:'electricNum',width:40">
+                                    用电量
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="toolbar">
+                        <span id="villagename" style="margin-left: 10px">村庄</span>名称：
+                        <input id="cbb_DevCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />
+                        <span style="margin-left: 10px">起始时间：</span>
+                        <input id="txt_StartTime" type="text" style="width: 110px" maxlength="19" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" />
+                        <span style="margin-left: 10px">结束时间：</span>
+                        <input id="txt_EndTime" maxlength="19" style="width: 110px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"
+                               type="text" />
+                        <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                           plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                        <a id="btn_Export" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel" plain="true" onclick="Btn_Excel_Click();">导出</a>
+                    </div>
+                </div>
+
+                <div title="按年统计">
+                    <table id="yearStatistic" class="easyui-datagrid" data-options="nowrap: false,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,showFooter: true"
+                           style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#yeartoolbar">
+                        <thead>
+                            <tr style="height: 24px">
+                                <th data-options="field:'villageID',width:40,hidden:true">
+                                    村庄ID
+                                </th>
+                                <th data-options="field:'startTime',width:40,hidden:true">
+                                    起始时间
+                                </th>
+                                <th data-options="field:'month',width:40">
+                                    月份
+                                </th>
+                                <th data-options="field:'waterTime',width:40">
+                                    用水时间
+                                </th>
+                                <th data-options="field:'waterNum',width:40">
+                                    用水量
+                                </th>
+                                <th data-options="field:'electricNum',width:40">
+                                    用电量
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="yeartoolbar">
+                        <span id="yvillagename" style="margin-left: 10px">村庄</span>名称：
+                        <input id="cbb_YearDevCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />
+                        <span style="margin-left: 10px">年份：</span>
+                        <input id="txt_YearTime" type="text" style="width: 50px" maxlength="19" onfocus="WdatePicker({dateFmt:'yyyy'})" />
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                           plain="true" onclick="Btn_YearQuery_Click();">查询</a>&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel" plain="true" onclick="Btn_YearExcel_Click();">导出</a>
+                    </div>
+                </div>
+
+                <div title="按月统计">
+                    <table id="monthStatistic" class="easyui-datagrid" data-options="nowrap: false,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,showFooter: true"
+                           style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#monthtoolbar">
+                        <thead>
+                            <tr style="height: 24px">
+                                <th data-options="field:'villageID',width:40,hidden:true">
+                                    村庄ID
+                                </th>
+                                <th data-options="field:'startTime',width:40,hidden:true">
+                                    起始时间
+                                </th>
+                                <th data-options="field:'date',width:40">
+                                    日期
+                                </th>
+                                <th data-options="field:'waterTime',width:40">
+                                    用水时间
+                                </th>
+                                <th data-options="field:'waterNum',width:40">
+                                    用水量
+                                </th>
+                                <th data-options="field:'electricNum',width:40">
+                                    用电量
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="monthtoolbar">
+                        <span id="mvillagename" style="margin-left: 10px">村庄</span>名称：
+                        <input id="cbb_MonthDevCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />
+                        <span style="margin-left: 10px">月份：</span>
+                        <input id="txt_MonthTime" type="text" style="width: 60px" maxlength="19" onfocus="WdatePicker({dateFmt:'yyyy-MM'})" />
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                           plain="true" onclick="Btn_MonthQuery_Click();">查询</a>&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel" plain="true" onclick="Btn_MonthExcel_Click();">导出</a>
+                    </div>
+                </div>
+
+                <div title="按日统计">
+                    <table id="dayStatistic" class="easyui-datagrid" data-options="nowrap: false,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,showFooter: true"
+                           style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#daytoolbar">
+                        <thead>
+                            <tr style="height: 24px">
+                                <th data-options="field:'villageID',width:40,hidden:true">
+                                    村庄ID
+                                </th>
+                                <th data-options="field:'startTime',width:40,hidden:true">
+                                    起始时间
+                                </th>
+                                <th data-options="field:'hour',width:40">
+                                    小时
+                                </th>
+                                <th data-options="field:'waterTime',width:40">
+                                    用水时间
+                                </th>
+                                <th data-options="field:'waterNum',width:40">
+                                    用水量
+                                </th>
+                                <th data-options="field:'electricNum',width:40">
+                                    用电量
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="daytoolbar">
+                        <span id="dvillagename" style="margin-left: 10px">村庄</span>名称
+                        <input id="cbb_DayDevCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />
+                        <span style="margin-left: 10px">日期：</span>
+                        <input id="txt_DayTime" type="text" style="width: 80px" maxlength="19" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                           plain="true" onclick="Btn_DayQuery_Click();">查询</a>&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel" plain="true" onclick="Btn_DayExcel_Click();">导出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+﻿table, caption, tbody, tfoot, thead, tr, th, td 
+{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+table 
+{
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/* Table style  
+----------------------------------------------------------*/
+.pstbl
+{
+	/*width: 100%;*/
+}
+.pstbl tbody
+{
+	/*width: 100%;*/
+}
+
+.pstbl tr td,
+.pstbl tr th
+{
+	border: solid 1px #888;
+	margin: 0;
+	padding:0 0 0 0;
+	vertical-align:middle;
+}
+
+.pstbl tr td
+{
+	text-align: center;
+	background-color: #fff;
+	color: #444;
+	vertical-align:middle;
+}
+
+.pstbl tbody tr.alt td
+{
+	background-color: #e4ecf7;
+}
+
+.pstbl tbody tr td.alt
+{
+	background-color: #A3C2EA;
+}
+
+.pstbl tr.hover td,
+.pstbl tbody tr.alt.hover td
+{
+	background-color: #bcd4ec;
+	color: #000;
+}
+.tdXuHao
+{
+	background-color:#A3C2EA;
+}

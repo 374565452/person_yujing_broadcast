@@ -1,0 +1,371 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>水资源管理平台 村用水统计</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link href="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet" />
+    <script src="../js/jquery-1.11.1.min.js"></script>
+    
+    <script src="mobiscroll/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+	<script src="mobiscroll/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+	<link href="mobiscroll/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+	<link href="mobiscroll/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+	<script src="mobiscroll/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+	<script src="mobiscroll/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+	<script src="mobiscroll/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+	<link href="mobiscroll/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+    <script src="../js/jquery.cookie.js"></script>
+    <script src="../js/CheckBrowser.js"></script>
+    <script src="../js/PSExtend.js"></script>
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="js/base.js?4"></script>
+    <script src="../js/Highcharts-4.2.4/highcharts.js"></script>
+    <script src="js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/menu.js?3"></script>
+    <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            overflow: auto;
+        }
+
+        .odd {
+            background-color: white;
+        }
+
+        .even {
+            background-color: #eeeeee;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .hide {
+            display:none;
+        }
+    </style>
+    <script type="text/javascript">
+        function setDist(a, b) {
+            $("#spanDistName").html(a);
+            $("#spanDistId").html(b);
+        }
+
+        var mnId = "";
+        //从服务器取得系统运行状态信息
+        function GetSystemInfo() {
+            $.ajax(
+            {
+                url: "../WebServices/SystemService.asmx/GetSystemStateInfo",
+                type: "GET",
+                data: { "loginIdentifer": $.cookie("psbsLogin") },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    if (data.Result)//登录成功
+                    {
+                        mnId = data.SysStateInfo.当前登录操作员管理ID;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    ShowMsg(errorThrown + "\r\n" + XMLHttpRequest.responseText, false, true);
+                }
+            });
+        }
+
+        function GetDist() {
+            $.ajax({
+                url: "../WebServices/ManageNodeService.asmx/GetManageNodeInfos",
+                data: { "mnID": mnId, "loginIdentifer": $.cookie("psbsLogin"), "isRecursive": true, "isExport": false },
+                type: "Get",
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    try {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result) {
+                            manageNodes = {};
+                            $("#list_District").empty();
+                            var manageJson = data.ManageNodes;
+                            for (var i = 0; i < manageJson.length; i++) {
+                                manageNodes[manageJson[i].ID] = manageJson[i];
+                                if (manageJson[i].级别名称 == "村庄") {
+                                    var html = "<li>" +
+                                        "<h2>" + manageJson[i].名称 + "</h2>" +
+                                        "<p class=\"parentName\">" + manageNodes[manageNodes[manageNodes[manageNodes[manageJson[i].上级ID].上级ID].上级ID].上级ID].名称 + " - " + manageNodes[manageNodes[manageNodes[manageJson[i].上级ID].上级ID].上级ID].名称 + " - " + manageNodes[manageNodes[manageJson[i].上级ID].上级ID].名称 + " - " + manageNodes[manageJson[i].上级ID].名称 + "</p>" +
+                                        "<p class=\"ui-li-aside\" style=\"display:none;\">" + manageJson[i].ID + "</p>" +
+                                        "<p>" +
+                                            "<a href=\"#pageone\" data-role=\"button\" data-mini=\"true\" data-icon=\"search\" data-inline=\"true\" onclick=\"setDist('" + manageJson[i].名称 + "','" + manageJson[i].ID + "')\">选择</a>" +
+                                        "</p>" +
+                                      "</li>";
+                                    $("#list_District").append(html);
+                                }
+                            }
+                            $('#list_District a').button();
+                            $('#list_District').listview('refresh');
+
+                            $('#btn3').unbind().on('click', function () {
+                                var dname = $.trim($("#txt_District").val());
+                                for (var i = 0; i < $("#list_District li").length; i++) {
+                                    var obj = $("#list_District li").eq(i);
+                                    obj.hide()
+                                    if ($(obj).find(".parentName").html().indexOf(dname) > -1) {
+                                        obj.show();
+                                    }
+                                }
+
+                                return false;
+                            });
+                        }
+
+                        if ($("#list_District").html() == "") {
+                            ShowMsg('未查到地区信息！', false, true);
+                        }
+                    }
+                    catch (e) {
+                        ShowMsg('查询地区信息出错！' + e, false, true);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+
+        }
+
+        function search() {
+            $("#spanDistName").css("color", "black");
+            if ($.trim($("#spanDistId").text()) == "0") {
+                $("#spanDistName").css("color", "red");
+                $("#spanDistName").html("请选择一个村庄");
+                return false;
+            }
+
+            if (date == "") {
+                ShowMsg("请选择时间！" + dataL.Message, false, true);
+                return false;
+            }
+
+            var startTime = new Date(Date.parse((date + "-1 0:0:0").replace(/-/g, "/")));
+            var endTime = startTime.DateAdd("m", 1);
+
+            $.mobile.loading('show', {
+                text: '正在加载数据...', //加载器中显示的文字  
+                textVisible: true, //是否显示文字  
+                theme: 'a',        //加载器主题样式a-e  
+                textonly: false,   //是否只显示文字  
+                html: ""           //要显示的html内容，如图片等  
+            });
+
+            $.ajax(
+            {
+                url: "../WebServices/DataReportService.asmx/GetDeviceDataByVillage",
+                type: "GET",
+                data: { 'loginIdentifer': $.cookie("psbsLogin"), 'villageID': $("#spanDistId").text(), 'startTime': startTime.Format("yyyy-MM-dd"), 'endTime': endTime.Format("yyyy-MM-dd") },
+                dataType: "text",
+                cache: false,
+                success: function (responseText) {
+                    var data = eval("(" + $.xml2json(responseText) + ")");
+                    $.mobile.loading('hide');
+                    if (data.Result) {
+                        var dataWater = data.村用水;
+                        if (dataWater.length == 0)
+                        {
+                            ShowMsg("查询完成！查询结果为空", false, true);
+                            return;
+                        }
+
+                        var xAxis_categories = [];
+                        var series_data = [];
+                        var max = 0;
+                        for (var i = 0; i < dataWater.length; i++) {
+                            xAxis_categories.push(dataWater[i].DeviceName);
+                            series_data.push(parseFloat(dataWater[i].YearWaterUsed));
+                            if (parseFloat(dataWater[i].YearWaterUsed) > max) max = parseFloat(dataWater[i].YearWaterUsed);
+                        }
+                        
+                        var tickInterval = Math.ceil(max / 100) * 10;
+                        max = tickInterval * 11;
+                        if (max < 10) { max = 10; tickInterval = 5;}
+
+                        $('#divChart').highcharts({
+                            chart: {
+                                type: 'bar'
+                            },
+                            title: {
+                                text: $("#spanDistName").text() + " " + date + " 用水统计"
+                            },
+                            xAxis: {
+                                categories: xAxis_categories,
+                                title: {
+                                    text: null
+                                },
+                                labels: {
+                                    rotation: -45,//倾斜度
+                                }
+                            },
+                            yAxis: {
+                                tickInterval: tickInterval,  //自定义刻度  
+                                min: 0,
+                                max: max,
+                                title: {
+                                    text: '用水量 (吨)',
+                                    align: 'high'
+                                },
+                                labels: {
+                                    overflow: 'justify'
+                                }
+                            },
+                            tooltip: {
+                                enabled: false
+                            },
+                            plotOptions: {
+                                bar: {
+                                    dataLabels: {
+                                        enabled: true
+                                    }
+                                },
+                                series: {
+                                    showInLegend: false
+                                }
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            series: [{
+                                name: date,
+                                data: series_data
+                            }]
+                        });
+                    }
+                    else {
+                        ShowMsg("列表查询出错！" + dataL.Message, false, true);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.mobile.loading('hide');
+                    ShowMsg("查询用水量出错！<br>" + errorThrown + "<br>" + XMLHttpRequest.responseText, false, true);
+                }
+            });
+        }
+
+        var date = new Date().Format("yyyy-MM");
+        $(document).on("pagecreate", function (event) {
+            //alert("触发 pagecreate 事件！");
+            var opt = {
+                preset: 'date', //日期
+                theme: 'jqm', //皮肤样式
+                display: 'modal', //显示方式 
+                mode: 'clickpick', //日期选择模式
+                dateFormat: 'yy-mm', // 日期格式
+                setText: '确定', //确认按钮名称
+                cancelText: '取消',//取消按钮名籍我
+                dateOrder: 'yymm', //面板中日期排列格式
+                dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+                startYear: 2000, //开始年份
+                endYear: (new Date()).getFullYear() + 10 //结束年份
+            };
+
+            $("#txt_DeviceTime").val(date).mobiscroll(opt);
+        });
+
+        $(document).on("pagebeforeshow", "#pageone", function () {
+            var t = getUrlParam('t');
+            if (t != null && t != "") {
+                $("#pageoneHeader").height(0);
+                $("#pageoneHeader").hide();
+            }
+
+            GetSystemInfo();
+            $("#divChart").empty();
+
+            if ($.trim($("#spanDistId").text()) == "0") {
+                $("#aSelDistrict").click();
+            } else {
+                $('#btn2').unbind().on('click', function () {
+                    date = $("#txt_DeviceTime").val();
+                    search();
+                    return false;
+                });
+
+                setTimeout(function () { $('#btn2').click(); }, 500);
+            }
+        });
+
+        $(document).on("pagebeforeshow", "#pageDistrict", function () {
+            $("#spanDistNameSel").html($("#spanDistName").text());
+            $("#spanDistIdSel").html($("#spanDistId").text());
+            
+            setTimeout(GetDist, 500);
+        });
+
+        $(document).on("pagebeforehide", "#pageDistrict", function () {
+            $("#spanDistName").css("color", "black");
+            if ($.trim($("#spanDistId").text()) == "0") {
+                $("#spanDistName").css("color", "red");
+                $("#spanDistName").html("请选择一个村庄");
+            } else {
+                $("#spanDistName").css("color", "blue");
+            }
+        });
+    </script>
+</head>
+<body>
+    <div data-role="page" id="pageone">
+        <div id="pageoneHeader" data-role="header" data-position="fixed" data-tap-toggle="false">
+            <a href="#" data-role="button" class="ui-btn-left showMenu" data-icon="grid">菜单</a>
+            <h1>村用水统计</h1>
+            <!--<a href="menu.html?2" data-role="button" class="ui-btn-right" data-icon="grid">菜单</a>-->
+        </div>
+        <div id="pageoneContent" data-role="content" style="padding:0;">
+            <div style="height: 50px; overflow: hidden;">
+                <div style="float: left; width: 120px;">
+                    <input type="text" id="txt_DeviceTime" />
+                </div>
+                <div style="float: left; width: 100px; margin-left: 5px; margin-top: 3px;">
+                    <a href="javascript:void(0)" data-role="button" data-mini="true" id="btn2">查询</a>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div id="divChart" style=" width:100%;">
+            </div>
+        </div>
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+            <a href="#pageDistrict" data-role="button" id="aSelDistrict">地区选择</a> <span id="spanDistName">请选择一个村庄</span> <span id="spanDistId" style="display:none;">0</span>
+        </div>
+    </div>
+
+    <div data-role="page" id="pageDistrict">
+        <div data-role="header" data-position="fixed" data-tap-toggle="false">
+            <h1>区域选择 </h1>
+        </div>
+        <div data-role="content" style="padding:0;">
+            当前选择：<span id="spanDistNameSel"></span> <span id="spanDistIdSel" style="display:none"></span>
+            <div style="height: 50px; overflow: hidden;">
+                <div style="float: left; width: 200px;">
+                    <input type="text" id="txt_District" />
+                </div>
+                <div style="float: left; width: 100px; margin-left: 5px; margin-top: 3px;">
+                    <a href="javascript:void(0)" data-role="button" data-mini="true" id="btn3">查询</a>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <ul id="list_District" data-role="listview" data-inset="true">
+            </ul>
+        </div>
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+            <a href="#pageone" data-role="button" data-mini="true">关闭</a>
+            <span style="color:red;">必须选择一个村庄才可以查询</span>
+        </div>
+    </div>
+
+    <div id="menu" style="position:absolute; background-color:white; overflow: hidden;">
+        <iframe src="menu1.html" style="width:196px; height:98%; border:2px solid #999999; overflow:auto;" ></iframe>
+    </div>
+</body>
+</html>

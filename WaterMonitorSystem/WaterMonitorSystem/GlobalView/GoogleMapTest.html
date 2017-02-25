@@ -1,0 +1,164 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>谷歌地图测试</title>
+    <style type="text/css">
+        body, html, #allmap {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        #allmap {
+            width: 100%;
+            height: 90%;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        #divC {
+            width: 100%;
+            height: 10%;
+            margin: 0;
+            background-color:yellow; overflow:auto;
+        }
+    </style>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="http://maps.google.cn/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ndUzBpyp7u4Dr6gBVZLhEIGs"></script>
+    <script src="GPSConvert.js"></script>
+    <script src="map_B2G_G2B_3.js?17"></script>
+    <script src="map_B2G_G2B_4.js?8"></script>
+    <script type="text/javascript">
+        var map;
+        
+
+        function init() {
+            var devices = [{ "lat": 40.732, "lng": 108.646, "name": "水泵1", "type": "水泵", "id": 1 },
+                { "lat": 40.732, "lng": 108.648, "name": "水位仪1", "type": "水位仪", "id": 2 },
+                { "lat": 40.734, "lng": 108.646, "name": "水泵2", "type": "水泵", "id": 3 },
+                { "lat": 40.734, "lng": 108.648, "name": "水位仪2", "type": "水位仪", "id": 4 }];
+
+            var initZoom = 11;
+            var minZoom = 5;
+            var maxZoom = 19;
+            var centerPointLat_wgs = 40.7336142765; //中心纬度GPS
+            var centerPointLng_wgs = 108.6470898483; //中心经度
+
+            var centerpointGGStr = GPS.gcj_encrypt(centerPointLat_wgs, centerPointLng_wgs);
+
+            var centerPointGGLat = centerpointGGStr.lat; //中心纬度Google
+            var centerPointGGLng = centerpointGGStr.lon; //中心经度
+
+            var centerPointGG = new google.maps.LatLng(centerPointGGLat, centerPointGGLng);
+            // 创建Map实例
+            var myOptions = {
+                zoom: parseInt(initZoom),
+                center: centerPointGG,
+                disableDefaultUI: false,
+                panControl: true,
+                zoomControl: true,
+                zoomControlOptions: { style: google.maps.ZoomControlStyle.LARGE, position: google.maps.ControlPosition.LEFT_TOP },                streetViewControlOptions: { position: google.maps.ControlPosition.LEFT_TOP },                scaleControl: true,
+                mapTypeControl: true,
+                mapTypeControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP },
+                mapTypeId: google.maps.MapTypeId.HYBRID
+            };
+            map = new google.maps.Map(document.getElementById("allmap"), myOptions);
+
+            google.maps.event.addListener(map, "click", function (e) {
+                alert(e.latLng.lng() + "," + e.latLng.lat());
+                var point_WGS = GPS.gcj_decrypt(e.latLng.lat(), e.latLng.lng());
+                alert(point_WGS.lon.toFixed(6) + "," + point_WGS.lat.toFixed(6));
+            });
+            
+            var marker = new google.maps.Marker({
+                position: centerPointGG,
+                title: "中心",
+                map: map,
+                draggable: false
+            });
+
+            for (var i = 0; i < devices.length; i++)
+            {
+                var centerpointGGStr_device = GPS.gcj_encrypt(devices[i].lat, devices[i].lng);
+
+                var centerPointGGLat_device = centerpointGGStr_device.lat; //设备纬度Google
+                var centerPointGGLng_device = centerpointGGStr_device.lon; //设备经度
+
+                var marker_device = new google.maps.Marker({
+                    position: new google.maps.LatLng(centerPointGGLat_device, centerPointGGLng_device),
+                    title: devices[i].name + "|" + devices[i].type,
+                    map: map,
+                    draggable: false
+                });
+            }
+
+            var point_g4List = [];
+            point_g4List.push("108.676319,40.72986");
+            point_g4List.push("108.681319,40.72586");
+            var g4 = new GABT4(point_g4List);
+            g4.b2g(function (arr) {
+                //alert(arr.length);
+                for (var i = 0; i < arr.length; i++)
+                {
+                    //alert((i + 1) + "：" + arr[i]);
+                    var marker_CS = new google.maps.Marker({
+                        position: new google.maps.LatLng(arr[i].split(",")[1], arr[i].split(",")[0]),
+                        title: "测试" + (i + 1),
+                        map: map,
+                        draggable: false
+                    });
+                }
+            });
+
+            var bdary = new BMap.Boundary();
+            bdary.get("乌拉特前旗", function (rs) {       //获取行政区域
+                var count = rs.boundaries.length; //行政区域的覆盖物有多少个
+                for (var i = 0; i < count; i++) {
+                    var ps = rs.boundaries[i].split(";");
+                    var point_bdary = [];
+                    for (var j = 0; j < ps.length; j++)
+                    {
+                        point_bdary.push(ps[j]);
+                    }
+                    var g4_bdary = new GABT4(point_bdary);
+                    g4_bdary.b2g(function (arr) {
+                        if (arr.length > 0)
+                        {
+                            var flightPlanCoordinates = [];
+                            for (var k = 0; k < arr.length; k++) {
+                                var point_Polyline = new google.maps.LatLng(arr[k].split(",")[1], arr[k].split(",")[0]);
+                                if (k % 10 == 0)
+                                {
+                                    var marker_Polyline = new google.maps.Marker({
+                                        position: point_Polyline,
+                                        title: "Polyline" + (k + 1),
+                                        map: map,
+                                        draggable: false
+                                    });
+                                }
+                                flightPlanCoordinates.push(point_Polyline)
+                            }
+
+                            var flightPath = new google.maps.Polyline({
+                                path: flightPlanCoordinates,
+                                strokeColor: "#FF0000",
+                                strokeOpacity: 1.0,
+                                strokeWeight: 2
+                            });
+
+                            flightPath.setMap(map);
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+</head>
+<body onload="init()">
+    <div id="allmap">
+    </div>
+    <div id="divC"></div>
+</body>
+</html>

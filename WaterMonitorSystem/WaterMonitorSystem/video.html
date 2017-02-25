@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <style>
+        body, html {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            resizeContainer();
+            $("#iframe").bind("load", iframeload);
+            $("#iframe").bind("readystatechange", iframeload);
+            $("#iframe").attr("src", "http://3cef8c61ed9d.dahuaddns.com:8081/");
+        });
+
+        $(window).resize(function () {
+            resizeContainer();
+        });
+
+        function resizeContainer() {
+            $("#iframe").height($(window).height() - 4);
+        }
+
+        function iframeload() {
+            $("#divInfo").hide();
+            $("#iframe").show();
+        }
+    </script>
+</head>
+<body>
+    <iframe id="iframe" style="background-color: #eeeeee; display: none;" width="100%" height="600" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="yes"></iframe>
+    <div id="divInfo" style="height: 50px; line-height: 50px; font-size: 16px; margin: 20px; color: blue;">正在加载页面，请等待。。。。。。</div>
+</body>
+</html>

@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>操作记录</title>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="0" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css" />
+    <style type="text/css">
+       body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+        table, caption, tbody, tfoot, thead, tr, th, td 
+        {
+	        margin: 0;
+	        padding: 0;
+	        border: 0;
+	        outline: 0;
+	        font-size: 100%;
+	        vertical-align: baseline;
+	        background: transparent;
+        }
+        table 
+        {
+	        border-collapse: collapse;
+	        border-spacing: 0;
+        }
+                .pstbl
+        {
+	        /*width: 100%;*/
+        }
+        .pstbl tbody
+        {
+	        /*width: 100%;*/
+        }
+
+        .pstbl tr td,
+        .pstbl tr th
+        {
+	        border: solid 1px #888;
+	        margin: 0;
+	        padding:0 0 0 0;
+	        vertical-align:middle;
+        }
+
+        .pstbl tr td
+        {
+	        text-align: center;
+	        background-color: #fff;
+	        color: #444;
+	        vertical-align:middle;
+        }
+
+        .pstbl tbody tr.alt td
+        {
+	        background-color: #e4ecf7;
+        }
+
+        .pstbl tbody tr td.alt
+        {
+
+            width:60px;
+	        background-color: #A3C2EA;
+            text-align:left;
+        }
+
+        .pstbl tr.hover td,
+        .pstbl tbody tr.alt.hover td
+        {
+	        background-color: #bcd4ec;
+	        color: #000;
+        }
+
+        .psbutton {
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0 0 10px #ccc;
+            width: 80px;
+            height: 30px;
+            background: #e0ecef;
+            border: 1px solid #ccc;
+            margin: 5px 5px;
+            color: #0e2d5f;
+            font-size: 13px;
+        }
+
+            .psbutton:hover {
+                background: #1abc9c;
+            }
+
+            .psbutton:active {
+                background: #27ae60;
+            }
+    </style>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/DataMonitor/MonitorList.js"></script>
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px;
+        height: 600px;">
+        <div id="divLeft" title="设备列表" data-options="region:'west',border:true,split:true"
+             style="width: 210px; padding: 0 0 0 0;">
+            <div id="divAreaTree" class="easyui-tree">
+            </div>
+        </div>
+        <div id="divOperateQuery" title="实时数据列表" data-options="region:'center',border:true" style="overflow: hidden;height:100%;">
+            <table id="tbOperateInfos" class="easyui-datagrid" data-options="nowrap: false, autoRowHeight: false, fitColumns: true, border: false, rownumbers: true, singleSelect: true, pagination: true,pageList:[20,50,100,150,200],pageSize:20"
+                   style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar"></table>
+            <div id="toolbar">
+                <span id="wellname" style="margin-left:10px">测点</span>名称：<input id="cbb_DevCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />&nbsp;
+                <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                   plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                <!--<a id="btn_Export" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel" plain="true" onclick="Btn_Excel_Click();">导出</a>-->
+            </div>
+        </div>
+    </div>
+
+    <!-- 设备详细信息-->
+    <div id="divDetailData" class="easyui-dialog" title="详细数据" data-options="closed:true,modal:true" style="width:570px;">
+        <div id="divDataList" style="overflow-y:auto;">
+        </div>
+    </div>
+
+    <div id="dlgParam" class="easyui-dialog" title="参数设置" data-options="closed:true,modal:true"
+         style="width: 350px; height: 300px; padding: 5px">
+        <table id="tbUser">
+            <tr height="30px">
+                <td align="right" width="75px">
+                    <span>设备名称：</span>
+                </td>
+                <td>
+                    <input id="ccb_DeviceName" class="easyui-combobox" data-options="valueField: 'id',textField: 'text',panelHeight:50" style="width: 171px" />
+                </td>
+                <td>
+                    <a class="easyui-linkbutton" href="javascript:void(0)" onclick="ReadParam()">读参</a>
+                </td>
+            </tr>
+            <tr height="30px">
+                <td align="right" width="75px">
+                    <span>参数名称：</span>
+                </td>
+                <td>
+                    <input id="ccb_ParamName" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width: 171px" />
+                </td>
+                <td>
+                    <a class="easyui-linkbutton" href="javascript:void(0)" onclick="SetParam()">设参</a>
+                </td>
+            </tr>
+            <tr height="30px">
+                <td align="right" width="75px">
+                    <span>参数值：</span>
+                </td>
+                <td>
+                    <input id="txt_Param" class="textbox"
+                           style="height: 21px;" />
+                </td>
+                <td>
+                    <span id="txt_unit" style="font-size:18px;color:red"></span>
+                </td>
+            </tr>
+            <tr height="auto">
+                <td colspan="3">
+                    <table id="paramgrid" class="easyui-datagrid" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,singleSelect:true">
+                        <thead>
+                            <tr style="height: 24px">
+                                <th data-options="field:'paramName',width:40">
+                                    参数名
+                                </th>
+                                <th data-options="field:'param',width:40">
+                                    参数值
+                                </th>
+                                <th data-options="field:'unit',width:40">
+                                    单位
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="divPhotoData" class="easyui-dialog" title="详细数据" data-options="closed:true,modal:true" style="width:600px;">
+        <table width="550px" height="200px" style="font-size:10pt;">
+            <tr>
+                <td style="padding-top: 0px; vertical-align: top;width:250px;" align="center">
+                    <div id="divPhotoDataList" style="overflow-y:auto; width: 245px; height:330px">
+                    </div>
+                </td>
+                <td width="320px" height="335px" style="text-align:center; vertical-align:top">
+                    <img id="imgMonitor" alt="没有报警图片" width="320px" height="264px" style="border:solid 1px #888" />
+                    <br />
+                    <br />
+                    拍照时间：<span id="photoTime"></span>&nbsp;&nbsp;
+
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="mm" class="easyui-menu" style="width:120px;">
+        <div>详细数据</div>
+        <div>历史数据</div>
+        <div>报警数据</div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
+<head>
+    <title>用水户管理</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js?3"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/SystemAdmin/WaterUserManager.js?17"></script>
+
+</head>
+<body style="margin: 0; overflow: hidden">
+    <div id="userContainer" class="easyui-layout" data-options="fit:true" style="width: 100%;
+        height: 400px;">
+        <div id="userLeft" title="用水户列表" data-options="region:'west',border:true,split:true"
+            style="width: 210px; padding: 0 0 0 0;">
+            <div id="WaterUserTree" class="easyui-tree">
+            </div>
+        </div>
+        <div id="userCenter" title="用户信息列表" data-options="region:'center',split:true,border:true">
+            <div class="easyui-layout" data-options="fit:true">
+                <div data-options="region:'center',border:false">
+                    <table id="tbWaterUserInfos" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20"
+                        style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                        <thead>
+                            <tr style="height: 24px">
+                                <th data-options="field:'userID',width:30,hidden:true">
+                                    户ID</th>
+                                <th data-options="field:'userName',width:60">
+                                    户名</th>
+                                <th data-options="field:'IdentityNumber',width:120">
+                                    身份证号</th>
+                                <th data-options="field:'Telephone',width:60">
+                                    电话</th>
+                                <th data-options="field:'Address',width:120">
+                                    住址</th>
+                                <th data-options="field:'WaterQuota',width:60">
+                                    用水定额(吨)</th>
+                                <th data-options="field:'ElectricQuota',width:60">
+                                    用电定额(度)</th>
+                                <th data-options="field:'State',width:60">
+                                    状态</th>
+                                <th data-options="field:'WaterPrice',width:60">
+                                    水价</th>
+                                <th data-options="field:'ElectricPrice',width:60">
+                                    电价</th>
+                                <!--<th data-options="field:'EditQuota',width:40">
+                                    编辑定额</th>-->
+                                <th data-options="field:'Edit',width:40">
+                                    编辑</th>
+                                <th data-options="field:'Cancel',width:40">
+                                    注销</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="toolbar">
+                        <span style="margin-left: 10px">户名：</span>
+                        <input id="cbb_UserNameCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'"
+                            style="width: 150px" />
+                        <!--<span style="margin-left: 10px">户号：</span>
+                        <input id="cbb_UserNumCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:100px" />-->
+                        <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                            plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                        <!-- <a id="btn_Export" href="javascript:void(0)"
+                                class="easyui-linkbutton" iconcls="icon-excel" plain="true" onclick="Btn_Excel_Click();">导出</a>-->
+                        <a id="btn_Add" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-add"
+                            plain="true" onclick="Btn_Add_Click();">添加</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="AddUserWaterData" class="easyui-dialog" data-options="iconCls:'icon-save',buttons: '#auwd-buttons',closed:true,modal:true"
+        style="width: 550px; height: 450px; padding: 5px">
+        <fieldset style="height: 215px">
+            <legend>用水户信息</legend>
+            <table id="tbUserWater">
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>电话：</span>
+                    </td>
+                    <td>
+                        <input id="txt_Telephone" class="easyui-textbox" style="width: 120px; height: 21px;" onkeypress="javascript:return OnlyNum();" />
+                    </td>
+                    <td>
+                        <span>*11位数字</span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>户名：</span>
+                    </td>
+                    <td>
+                        <input id="txt_userName" class="easyui-textbox" style="width: 120px; height: 21px;" />
+                    </td>
+                    <td>
+                        <span>*</span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>身份证号：</span>
+                    </td>
+                    <td colspan="5">
+                        <input id="txt_IdentityNumber" class="easyui-textbox" style="width: 200px; height: 21px;" onkeypress="javascript:return OnlyNum();" />
+                        *为18位
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>水价：</span>
+                    </td>
+                    <td>
+                        <input id="ccb_WaterPrice" class="easyui-combobox" data-options="valueField: 'id',textField: 'text',editable:false"
+                            style="width: 120px" />
+                    </td>
+                    <td>
+                        <span>*</span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>电价：</span>
+                    </td>
+                    <td>
+                        <input id="ccb_ElectricPrice" class="easyui-combobox" data-options="valueField: 'id',textField: 'text',editable:false"
+                            style="width: 120px" />
+                    </td>
+                    <td>
+                        <span>*</span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>用水定额：</span>
+                    </td>
+                    <td>
+                        <input id="txt_WaterQuota" class="easyui-textbox" style="width: 120px; height: 21px;" onkeypress="javascript:return OnlyNumDot();" />
+                    </td>
+                    <td>
+                        <span>*</span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>用电定额：</span>
+                    </td>
+                    <td>
+                        <input id="txt_ElectricQuota" class="easyui-textbox" style="width: 120px; height: 21px;" onkeypress="javascript:return OnlyNumDot();" />
+                    </td>
+                    <td>
+                        <span>*</span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>住址：</span>
+                    </td>
+                    <td colspan="5">
+                        <input id="txt_Address" class="easyui-textbox" style="width: 396px; height: 21px;" />
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+        <fieldset style="height: 230px; margin-top: 5px; display:none;">
+            <legend>用水户定额信息</legend>
+            <table id="tbWaterUserQuotaList" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:true,rownumbers:true,singleSelect:true,pagination:false,showFooter: true"
+                style="font-size: 10pt; width: 100%; height: 215px;" toolbar="#divOperate">
+                <thead>
+                    <tr style="height: 24px">
+                        <th data-options="field:'quotaID',width:30,hidden:true">
+                            用水定额ID</th>
+                        <th data-options="field:'unitQuotaName',width:80">
+                            作物</th>
+                        <th data-options="field:'unitQuota',width:40">
+                            亩均(吨)</th>
+                        <th data-options="field:'acreage',width:40">
+                            面积(亩)</th>
+                        <th data-options="field:'totalQuota',width:60">
+                            分配定额(吨)</th>
+                        <th data-options="field:'Edit',width:40">
+                            编辑</th>
+                        <th data-options="field:'Cancel',width:40">
+                            删除</th>
+                    </tr>
+                </thead>
+            </table>
+            <div id="divOperate">
+                <span style="margin-left: 10px">年份：</span>
+                <input id="ccb_Year" class="easyui-combobox" data-options="valueField: 'id',textField: 'text',onSelect:QueryQuotaByYear"
+                    style="width: 140px" />
+                <a id="A6" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-add"
+                    plain="true" onclick="Btn_AddQuota_Click();">添加</a>&nbsp;
+            </div>
+        </fieldset>
+    </div>
+    <div id="auwd-buttons" style="width: 100%; text-align: center">
+        <a id="A1" href="javascript:void(0)" class="easyui-linkbutton"style="width: 48px" onclick="Btn_OK_AddQuota_Click();">
+            确定</a>&nbsp; <a id="A3" href="javascript:void(0)" onclick="Btn_Cancel_AddUserWaterData()"
+                class="easyui-linkbutton" style="width: 48px">取消</a>
+    </div>
+    <div id="OperateWaterUserQuota" class="easyui-dialog" data-options="iconCls:'icon-save',buttons: '#owu-buttons',closed:true,modal:true"
+        style="width: 310px; height: 305px; padding: 5px;">
+        <fieldset style="height: 210px">
+            <legend>用水户定额</legend>
+            <table id="tbWaterUserQuotaDetail">
+                <tr height="30px">
+                    <td align="right" width="75px">
+                        <span>用&nbsp;&nbsp;水&nbsp;&nbsp;户：</span>
+                    </td>
+                    <td>
+                        <input id="txt_WaterUser" class="easyui-textbox" disabled="disabled" style="height: 21px;" />
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="75px">
+                        <span>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份：</span>
+                    </td>
+                    <td>
+                        <input id="ccb_YearQuota" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'"
+                            style="width: 154px" />
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="75px">
+                        <span>单位定额：</span>
+                    </td>
+                    <td>
+                        <input id="ccb_UnitQuotaName" class="easyui-combobox" data-options="valueField: 'id',textField: 'text',onSelect:UnitQuotaTypeChange"
+                            style="width: 154px" />
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="75px">
+                        <span>亩&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;均：</span>
+                    </td>
+                    <td>
+                        <input id="txt_UnitQuota" class="easyui-textbox" disabled="disabled" style="height: 21px;" />&nbsp;吨/亩
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="75px">
+                        <span>面&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;积：</span>
+                    </td>
+                    <td>
+                        <input id="txt_Acreage" class="easyui-textbox" data-options="onChange:CalculateAcreage"
+                            style="height: 21px;" />&nbsp;亩*
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="75px">
+                        <span>定&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：</span>
+                    </td>
+                    <td>
+                        <input id="txt_Quota" class="easyui-textbox" style="height: 21px;" />&nbsp;吨*
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div id="owu-buttons" style="width: 100%; text-align: center">
+        <a id="A1_WaterUserQuotaDetail" href="javascript:void(0)" onclick="Btn_OK_OperateWaterUser()"
+            class="easyui-linkbutton" style="width: 48px">确定</a> <a id="A2_WaterUserQuotaDetail"
+                href="javascript:void(0)" onclick="Btn_Cancel_OperateWaterUser()" class="easyui-linkbutton"
+                style="width: 48px">取消</a>
+    </div>
+</body>
+</html>

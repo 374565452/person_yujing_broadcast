@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{680570B2-5FA7-4053-AD24-781913CC79F7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DTU.GateWay.Protocol</RootNamespace>
+    <AssemblyName>DTU.GateWay.Protocol</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common">
+      <HintPath>..\..\WaterMonitorSystem\Common\bin\Debug\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Model">
+      <HintPath>..\..\WaterMonitorSystem\Model\bin\Debug\Model.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseMessage.cs" />
+    <Compile Include="BaseProtocol.cs" />
+    <Compile Include="CmdFromDtuClosePump.cs" />
+    <Compile Include="CmdFromDtuGroundWater.cs" />
+    <Compile Include="CmdFromDtuLogin.cs" />
+    <Compile Include="CmdFromDtuMeteorological.cs" />
+    <Compile Include="CmdFromDtuOpenPump.cs" />
+    <Compile Include="CmdFromDtuSOILMOISTURE.cs" />
+    <Compile Include="CmdFromDtuStateReport.cs" />
+    <Compile Include="CmdResponseFromDtuClosePump.cs" />
+    <Compile Include="CmdResponseFromDtuGroundWater.cs" />
+    <Compile Include="CmdResponseFromDtuLogin.cs" />
+    <Compile Include="CmdResponseFromDtuMeteorological.cs" />
+    <Compile Include="CmdResponseFromDtuOpenPump.cs" />
+    <Compile Include="CmdResponseFromDtuSOILMOISTURE.cs" />
+    <Compile Include="CmdResponseFromDtuStateReport.cs" />
+    <Compile Include="CmdResponseFromDtuUploadFile.cs" />
+    <Compile Include="CmdResponseToDtuClosePump.cs" />
+    <Compile Include="CmdResponseToDtuOpenPump.cs" />
+    <Compile Include="CmdResponseToDtuQueryDateTime.cs" />
+    <Compile Include="CmdResponseToDtuQueryGroundWater.cs" />
+    <Compile Include="CmdResponseToDtuQueryGroundWaterParam.cs" />
+    <Compile Include="CmdResponseToDtuQueryMeteorological.cs" />
+    <Compile Include="CmdResponseToDtuQuerySOILMOISTURE.cs" />
+    <Compile Include="CmdResponseToDtuQueryState.cs" />
+    <Compile Include="CmdResponseToDtuQueryYearExploitation.cs" />
+    <Compile Include="CmdResponseToDtuSendFile.cs" />
+    <Compile Include="CmdResponseToDtuSetDateTime.cs" />
+    <Compile Include="CmdResponseToDtuSetGroundWaterParam.cs" />
+    <Compile Include="CmdResponseToDtuSetStationCode.cs" />
+    <Compile Include="CmdResponseToDtuSetYearExploitation.cs" />
+    <Compile Include="CmdResponseToDtuShieldSerialNumber.cs" />
+    <Compile Include="CmdResponseToDtuShieldSerialNumberCancel.cs" />
+    <Compile Include="CmdToDtuQueryGroundWaterParam.cs" />
+    <Compile Include="CmdToDtuQueryState.cs" />
+    <Compile Include="CmdToDtuSendFile.cs" />
+    <Compile Include="CmdToDtuSetGroundWaterParam.cs" />
+    <Compile Include="CmdToDtuShieldSerialNumberCancel.cs" />
+    <Compile Include="CmdToDtuClosePump.cs" />
+    <Compile Include="CmdToDtuOpenPump.cs" />
+    <Compile Include="CmdToDtuQueryDateTime.cs" />
+    <Compile Include="CmdToDtuQueryGroundWater.cs" />
+    <Compile Include="CmdToDtuQueryMeteorological.cs" />
+    <Compile Include="CmdToDtuQuerySOILMOISTURE.cs" />
+    <Compile Include="CmdToDtuQueryYearExploitation.cs" />
+    <Compile Include="CmdToDtuSetDateTime.cs" />
+    <Compile Include="CmdToDtuSetStationCode.cs" />
+    <Compile Include="CmdToDtuSetYearExploitation.cs" />
+    <Compile Include="CmdToDtuShieldSerialNumber.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="DeviceInfo.cs" />
+    <Compile Include="EnumUtils.cs" />
+    <Compile Include="CmdFromDtuUploadFile.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtocolCommand.cs" />
+    <Compile Include="ProtocolConst.cs" />
+    <Compile Include="WaterBaseMessage.cs" />
+    <Compile Include="WaterBaseMessageService.cs" />
+    <Compile Include="WaterBaseProtocol.cs" />
+    <Compile Include="WaterCmd_20_1.cs" />
+    <Compile Include="WaterCmd_20_2.cs" />
+    <Compile Include="WaterCmd_20_3.cs" />
+    <Compile Include="WaterCmd_21_1.cs" />
+    <Compile Include="WaterCmd_21_2.cs" />
+    <Compile Include="WaterCmd_21_3.cs" />
+    <Compile Include="WaterCmd_22_1.cs" />
+    <Compile Include="WaterCmd_22_2.cs" />
+    <Compile Include="WaterCmd_22_3.cs" />
+    <Compile Include="WaterCmd_23_1.cs" />
+    <Compile Include="WaterCmd_23_2.cs" />
+    <Compile Include="WaterCmd_23_3.cs" />
+    <Compile Include="WaterCmd_24_1.cs" />
+    <Compile Include="WaterCmd_24_2.cs" />
+    <Compile Include="WaterCmd_24_3.cs" />
+    <Compile Include="WaterCmd_25_1.cs" />
+    <Compile Include="WaterCmd_25_2.cs" />
+    <Compile Include="WaterCmd_25_3.cs" />
+    <Compile Include="WaterCmd_26_1.cs" />
+    <Compile Include="WaterCmd_26_2.cs" />
+    <Compile Include="WaterCmd_26_3.cs" />
+    <Compile Include="WaterCmd_27_1.cs" />
+    <Compile Include="WaterCmd_27_2.cs" />
+    <Compile Include="WaterCmd_27_3.cs" />
+    <Compile Include="WaterCmd_28_1.cs" />
+    <Compile Include="WaterCmd_28_2.cs" />
+    <Compile Include="WaterCmd_28_3.cs" />
+    <Compile Include="WaterCmd_29_1.cs" />
+    <Compile Include="WaterCmd_29_2.cs" />
+    <Compile Include="WaterCmd_29_3.cs" />
+    <Compile Include="WaterCmd_2F_1.cs" />
+    <Compile Include="WaterCmd_30_1.cs" />
+    <Compile Include="WaterCmd_30_2.cs" />
+    <Compile Include="WaterCmd_31_1.cs" />
+    <Compile Include="WaterCmd_31_2.cs" />
+    <Compile Include="WaterCmd_33_1.cs" />
+    <Compile Include="WaterCmd_33_2.cs" />
+    <Compile Include="WaterCmd_34_1.cs" />
+    <Compile Include="WaterCmd_34_2.cs" />
+    <Compile Include="WaterCmd_35_1.cs" />
+    <Compile Include="WaterCmd_35_2.cs" />
+    <Compile Include="WaterCmd_36_1.cs" />
+    <Compile Include="WaterCmd_36_2.cs" />
+    <Compile Include="WaterCmd_36_3.cs" />
+    <Compile Include="WaterCmd_37_1.cs" />
+    <Compile Include="WaterCmd_37_2.cs" />
+    <Compile Include="WaterCmd_37_3.cs" />
+    <Compile Include="WaterCmd_38_1.cs" />
+    <Compile Include="WaterCmd_38_2.cs" />
+    <Compile Include="WaterCmd_38_3.cs" />
+    <Compile Include="WaterCmd_32_1.cs" />
+    <Compile Include="WaterCmd_32_2.cs" />
+    <Compile Include="WaterCmd_39_1.cs" />
+    <Compile Include="WaterCmd_39_2.cs" />
+    <Compile Include="WaterCmd_39_3.cs" />
+    <Compile Include="WaterCmd_3A_2.cs" />
+    <Compile Include="WaterCmd_3A_1.cs" />
+    <Compile Include="WaterCmd_3A_3.cs" />
+    <Compile Include="WaterCmd_40_1.cs" />
+    <Compile Include="WaterCmd_40_2.cs" />
+    <Compile Include="WaterCmd_40_3.cs" />
+    <Compile Include="WaterCmd_41_1.cs" />
+    <Compile Include="WaterCmd_41_2.cs" />
+    <Compile Include="WaterCmd_41_3.cs" />
+    <Compile Include="WaterCmd_42_2.cs" />
+    <Compile Include="WaterCmd_42_3.cs" />
+    <Compile Include="WaterCmd_43_1.cs" />
+    <Compile Include="WaterCmd_43_3.cs" />
+    <Compile Include="WaterCmd_44_1.cs" />
+    <Compile Include="WaterCmd_44_2.cs" />
+    <Compile Include="WaterCmd_44_3.cs" />
+    <Compile Include="WaterCmd_45_1.cs" />
+    <Compile Include="WaterCmd_45_2.cs" />
+    <Compile Include="WaterCmd_45_3.cs" />
+    <Compile Include="WaterCmd_46_1.cs" />
+    <Compile Include="WaterCmd_46_2.cs" />
+    <Compile Include="WaterCmd_46_3.cs" />
+    <Compile Include="WaterCmd_47_1.cs" />
+    <Compile Include="WaterCmd_47_2.cs" />
+    <Compile Include="WaterCmd_47_3.cs" />
+    <Compile Include="WaterCmd_48_1.cs" />
+    <Compile Include="WaterCmd_48_2.cs" />
+    <Compile Include="WaterCmd_48_3.cs" />
+    <Compile Include="WaterCmd_49_1.cs" />
+    <Compile Include="WaterCmd_49_2.cs" />
+    <Compile Include="WaterCmd_49_3.cs" />
+    <Compile Include="WaterCmd_4A_1.cs" />
+    <Compile Include="WaterCmd_4A_2.cs" />
+    <Compile Include="WaterCmd_4A_3.cs" />
+    <Compile Include="WaterCmd_4B_1.cs" />
+    <Compile Include="WaterCmd_4B_2.cs" />
+    <Compile Include="WaterCmd_4B_3.cs" />
+    <Compile Include="WaterCmd_4C_1.cs" />
+    <Compile Include="WaterCmd_4C_2.cs" />
+    <Compile Include="WaterCmd_4C_3.cs" />
+    <Compile Include="WaterCmd_4D_1.cs" />
+    <Compile Include="WaterCmd_4D_2.cs" />
+    <Compile Include="WaterCmd_4D_3.cs" />
+    <Compile Include="WaterCmd_4E_1.cs" />
+    <Compile Include="WaterCmd_4E_2.cs" />
+    <Compile Include="WaterCmd_4E_3.cs" />
+    <Compile Include="WaterCmd_4F_1.cs" />
+    <Compile Include="WaterCmd_4F_2.cs" />
+    <Compile Include="WaterCmd_4F_3.cs" />
+    <Compile Include="WaterCmd_50_1.cs" />
+    <Compile Include="WaterCmd_50_2.cs" />
+    <Compile Include="WaterCmd_50_3.cs" />
+    <Compile Include="WaterCmd_51_1.cs" />
+    <Compile Include="WaterCmd_51_2.cs" />
+    <Compile Include="WaterCmd_51_3.cs" />
+    <Compile Include="WaterMessageClass\Identifier_00.cs" />
+    <Compile Include="WaterMessageClass\Identifier_03.cs" />
+    <Compile Include="WaterMessageClass\Identifier_04.cs" />
+    <Compile Include="WaterMessageClass\Identifier_0E.cs" />
+    <Compile Include="WaterMessageClass\Identifier_1A.cs" />
+    <Compile Include="WaterMessageClass\Identifier_1F.cs" />
+    <Compile Include="WaterMessageClass\Identifier_20.cs" />
+    <Compile Include="WaterMessageClass\Identifier_26.cs" />
+    <Compile Include="WaterMessageClass\Identifier_38.cs" />
+    <Compile Include="WaterMessageClass\Identifier_39.cs" />
+    <Compile Include="WaterMessageClass\Identifier.cs" />
+    <Compile Include="WaterMessageClass\Identifier_45.cs" />
+    <Compile Include="WaterMessageClass\Identifier_70.cs" />
+    <Compile Include="WaterMessageClass\Identifier_71.cs" />
+    <Compile Include="WaterMessageClass\Identifier_72.cs" />
+    <Compile Include="WaterMessageClass\Identifier_73.cs" />
+    <Compile Include="WaterMessageClass\Identifier_74.cs" />
+    <Compile Include="WaterMessageClass\Identifier_75.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F0.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F1.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F2.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F3.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F4.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F5.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F6.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F7.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F8.cs" />
+    <Compile Include="WaterMessageClass\Identifier_F9.cs" />
+    <Compile Include="WaterMessageClass\Identifier_FA.cs" />
+    <Compile Include="WaterMessageClass\Identifier_FB.cs" />
+    <Compile Include="WaterMessageClass\Identifier_FC.cs" />
+    <Compile Include="WaterMessageClass\Identifier_FD.cs" />
+    <Compile Include="WaterMessageClass\Identifier_FF.cs" />
+    <Compile Include="WaterMessageClass\Identifier_FF_03.cs" />
+    <Compile Include="WaterMessageClass\Identifier_FF_0E.cs" />
+    <Compile Include="WaterMessageClass\RTUParam.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_00.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_01.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_02.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_03.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_04.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_05.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_06.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_07.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_08.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_09.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_0A.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_0B.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_0C.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_0D.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_0E.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_0F.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_20.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_21.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_22.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_23.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_24.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_25.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_26.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_27.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_28.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_29.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_2A.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_2B.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_2C.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_2D.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_2E.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_2F.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_30.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_31.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_32.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_33.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_34.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_35.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_36.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_37.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_38.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_39.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_3A.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_3B.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_3C.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_3D.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_3E.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_3F.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_40.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_41.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_97.cs" />
+    <Compile Include="WaterMessageClass\RTUParam_98.cs" />
+    <Compile Include="WaterCmd_43_2.cs" />
+    <Compile Include="WaterCmd_42_1.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

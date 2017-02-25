@@ -1,0 +1,337 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>水资源管理平台</title>
+    <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" media="screen" />
+    <link rel="stylesheet" type="text/css" href="App_Themes/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="App_Themes/easyui/themes/icon.css" />
+
+    <link href="css/styles.css" type="text/css" media="screen" rel="stylesheet" />
+    <link href="css/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+ 
+</head>
+    <style type="text/css">
+        #divMask {
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #333333;
+            z-index: 1001;
+            -moz-opacity: 0.5;
+            opacity: .50;
+            filter: alpha(opacity=50);
+        }
+
+        #divShowMsg {
+            font-size: 15px;
+            text-align: center;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200px;
+            line-height: 30px;
+            padding: 8px;
+            border: 2px solid #E8E9F7;
+            background-color: white;
+            z-index: 1002;
+            border-radius: 15px;
+        }
+
+            #divShowMsg #divMaskOK {
+                text-align: center;
+                padding: 5px;
+            }
+
+            #divShowMsg .btnMaskOK {
+                width: 100px;
+                border: #0186d1 1px solid;
+                background: #0186d1;
+                color: #FFF;
+                cursor: pointer;
+                transition: all 0.3s linear;
+                -webkit-transition: all 0.3s linear;
+                border-radius: 5px;
+            }
+
+        #imgList {
+            height: 100%;
+            width: 100%;
+            background-color: #eeeeee;
+        }
+
+            #imgList img {
+                height: 100%;
+                width: 100%;
+                display: none;
+            }
+
+        #divCC {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: #ffffff;
+            z-index: 888;
+            left: 0;
+            top: 0;
+            filter: alpha(opacity:0);
+            opacity: 0;
+        }
+
+        #shade {
+            background-color: #000;
+            position: absolute;
+            z-index: 1002;
+            display: none;
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+            filter: alpha(opacity=60);
+            -moz-opacity: 0.6;
+            margin: 0px;
+            left: 0px;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+        }
+
+        #ZZDiv {
+            height: 250px;
+            width: 450px;
+            border: 5px solid #999;
+            margin-right: auto;
+            margin-left: auto;
+            margin-top: 200px;
+            z-index: 1003;
+            display: none;
+            position: relative;
+            background-color: #FFF;
+        }
+
+    </style>
+      <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/easyui/jquery.easyui.min.js"></script>
+    <script src="js/CheckBrowser.js"></script>
+    <script src="js/wow.min.js"></script>
+    <script type="text/javascript" src="js/PSExtend.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script type="text/javascript">
+        if (browser.mobile) {
+            location.href = 'm/';
+        }
+        /*
+        检查浏览器是否支持
+        */
+        var isIE = !!window.ActiveXObject;
+        var isIE6 = isIE && !window.XMLHttpRequest;
+        if (isIE6) {
+            window.location.href = "Error/Browser.html";
+        }
+        //回车键
+        document.onkeydown = function (e) {
+            if (!e) e = window.event; //火狐中是 window.event
+            if ((e.keyCode || e.which) == 13) {
+                var btlogin = document.getElementById("loginbtn");
+                btlogin.focus();
+                btlogin.click();
+            }
+        }
+
+        //正在登录
+        var isLogging = false;
+
+        function LoginInfo() {
+            if (isLogging) {
+                return;
+            }
+            isLogging = true;
+            var userName = $("#user_name").val();
+            var password = $("#user_password").val();
+            var vcode = "";
+            if (userName.trim() == "") {
+                //alert("请输入用户名");
+                $.messager.alert("提示信息", "请输入用户名");
+                isLogging = false;
+                $("#user_name").focus();
+                return;
+            }
+
+            //ShowMsg('<div style="background:url(Images/loading.gif) no-repeat 10px center;">正在登录请等待...</div>', true, false);
+            //$.ShowMask("<div style=\"background:url(Images/loading.gif) no-repeat 10px center;text-align:center;\">正在登录，请稍等……</div>");
+            setTimeout(function () {
+                $.ajax(
+                {
+                    url: "WebServices/UserAdminService.asmx/LoginEx",
+                    type: "POST",
+                    data: { "LoginName": userName, "LoginPwd": password, "ValidateCode": vcode },
+                    dataType: "text",
+                    cache: false,
+                    success: function (responseText) {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result)//登录成功
+                        {
+                            $.HideMask();
+                            $.cookie("psbsLogin", data.Guid, { expires: 7, path: '/' });
+                            $.cookie("uname", userName);
+                            location.href = "MainNew.html";
+                        } else {
+                            if (data.Message == "系统未注册") {
+                                $.HideMask();
+                                location.href = "SysReg.aspx";
+                            } else {
+                                //ShowMsg('登录失败<br />' + data.Message, false, true);
+                                $.HideMask();
+                                $.messager.alert("提示信息", "登录失败" + "<br/>" + data.Message);
+                            }
+                        }
+                        isLogging = false;
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //ShowMsg('登录失败<br />' + XMLHttpRequest.responseText, false, true);
+                        isLogging = false;
+                        $.HideMask();
+                        $.messager.alert("提示信息", "登录失败" + "<br/>" + XMLHttpRequest.responseText);
+                    }
+                });
+            }, 100);
+        }
+    </script>
+
+    <script type="text/javascript">
+        function ShowMsg(msg, isMask, isOk) {
+            HideMsg();
+
+            if (isMask) {
+                if (!($("#divMask").length > 0)) {
+                    $(document.body).append("<div id=\"divMask\"></div>")
+                }
+            }
+
+            if (!($("#divShowMsg").length > 0)) {
+                $(document.body).append("<div id=\"divShowMsg\"></div>")
+            }
+
+            $("#divShowMsg").css("top", ($(window).height() - $("#divShowMsg").height()) / 2 - 50);
+            $("#divShowMsg").css("left", ($(window).width() - $("#divShowMsg").width()) / 2);
+
+            $("#divShowMsg").html(msg);
+            if (isOk) {
+                $("#divShowMsg").append("<div id=\"divMaskOK\"><input type=\"button\" class=\"btnMaskOK\" value=\"确定\"></div>");
+                $(".btnMaskOK").click(function () {
+                    HideMsg();
+                });
+            }
+            $("#divMask").show();
+            $("#divShowMsg").show();
+        }
+
+        function HideMsg() {
+            $("#divMask").remove();
+            $("#divShowMsg").remove();
+        }
+
+        $(function () {
+            setTimeout(function () {
+                $.ajax(
+                {
+                    url: "WebServices/GlobalAppService.asmx/GetState",
+                    type: "POST",
+                    data: {},
+                    dataType: "text",
+                    cache: false,
+                    success: function (responseText) {
+                        var data = eval("(" + $.xml2json(responseText) + ")");
+                        if (data.Result)//登录成功
+                        {
+                        } else {
+                            if (data.Message == "系统未注册") {
+                                location.href = "SysReg.aspx";
+                            } else {
+                                //ShowMsg('' + data.Message, false, true);
+                            }
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //ShowMsg('' + XMLHttpRequest.responseText, false, true);
+                    }
+                });
+            }, 100);
+
+            if (!placeholderSupport()) {
+                $('[placeholder]').focus(function () {
+                    var input = $(this);
+                    if (input.val() == input.attr('placeholder')) {
+                        input.val('');
+                        input.removeClass('placeholder');
+                    }
+                }).blur(function () {
+                    var input = $(this);
+                    if (input.val() == '' || input.val() == input.attr('placeholder')) {
+                        input.addClass('placeholder');
+                        input.val(input.attr('placeholder'));
+                    }
+                }).blur();
+            };
+
+           //showImg(0);
+        });
+
+        function showImg(k) {
+            var imgs = $("#imgList img");
+            imgs.hide();
+            if (k >= imgs.length) k = 0;
+
+            imgs.eq(k).show();
+
+            setTimeout(function () {
+                showImg(k + 1);
+            }, 5000)
+        }
+
+        function placeholderSupport() {
+            return 'placeholder' in document.createElement('input');
+        }
+    </script>
+
+<body id="login">
+    <div id="wrappertop">
+    </div>
+    <div id="wrapper">
+        <div id="content">
+            <div id="header">
+                <h1>
+                    <a href="">
+                       <!--؅׃Logo <img src="logo.png"   height="50"  width="100"  alt="logo">--></a></h1>
+            </div>
+            <div id="darkbanner" class="banner320">
+                <h2>平台登陆</h2>
+            </div>
+            <div id="darkbannerwrap">
+            </div>
+            <form name="form1">
+            <fieldset class="form">
+                <p>
+                    <label class="loginlabel" for="user_name">
+                        账号:</label>
+                    <input class="logininput ui-keyboard-input ui-widget-content ui-corner-all" name="user_name"
+                        id="user_name" type="text" value="" />
+                </p>
+                <p>
+                    <label class="loginlabel" for="user_password">
+                        密码:</label>
+                    <span>
+                        <input class="logininput  logininput ui-keyboard-input ui-widget-content ui-corner-all"   name="user_password" id="user_password" type="password" /></span>
+                </p>
+                <p style="margin-left:100px;">
+                <button id="loginbtn" type="button" class="positive" name="Submit" onclick="LoginInfo()" >
+                    <img src="Images/key.png" alt="Announcement" />登陆</button>
+               </p>
+            </fieldset>
+        </div>
+    </div>
+   
+</body>

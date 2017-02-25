@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>用户卡管理</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css" />
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/SystemAdmin/CardUserManager.js?18"></script>
+</head>
+<body style="margin: 0; overflow: hidden">
+    <div id="userContainer" class="easyui-layout" data-options="fit:true" style="width: 100%; height: 400px;">
+        <div id="userLeft" title="用水户卡列表" data-options="region:'west',border:true,split:true"
+            style="width: 210px; padding: 0 0 0 0;">
+            <div id="WaterUserTree" class="easyui-tree">
+            </div>
+        </div>
+        <div id="userCenter" title="用水户卡信息列表" data-options="region:'center',split:true,border:true">
+            <div class="easyui-layout" data-options="fit:true">
+                <div data-options="region:'center',border:false">
+                    <table id="tbCardUserInfos" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20"
+                        style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                        <thead>
+                            <tr style="height: 24px">
+                                <th data-options="field:'Id',width:30,hidden:true">户ID</th>
+                                <th data-options="field:'SerialNumber',width:60">卡序列号</th>
+                                <th data-options="field:'UserNo',width:60">用户卡号</th>
+                                <th data-options="field:'UserName',width:60">用户名</th>
+                                <th data-options="field:'IdentityNumber',width:120">身份证号</th>
+                                <th data-options="field:'Telephone',width:60">电话</th>
+                                <th data-options="field:'ResidualWater',width:60">剩余水量</th>
+                                <th data-options="field:'ResidualElectric',width:60">剩余电量</th>
+                                <th data-options="field:'IsCountermand',width:60">是否挂失</th>
+                                <th data-options="field:'OpenTime',width:100">开卡时间</th>
+                                <th data-options="field:'LastChargeTime',width:100">充值时间</th>
+                                <!--<th data-options="field:'EditQuota',width:40">
+                                    编辑定额</th>-->
+                                <th data-options="field:'Edit',width:40">查看</th>
+                                <th data-options="field:'Cancel',width:40">注销</th>
+                                <th data-options="field:'Countermand',width:40">挂失</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="toolbar">
+                        <span style="margin-left: 10px">用户名：</span>
+                        <input id="cbb_UserNameCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'"
+                            style="width: 150px" />
+                        <!--<span style="margin-left: 10px">户号：</span>
+                        <input id="cbb_UserNumCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:100px" />-->
+                        <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                            plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                        <!-- <a id="btn_Export" href="javascript:void(0)"
+                                class="easyui-linkbutton" iconcls="icon-excel" plain="true" onclick="Btn_Excel_Click();">导出</a>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ShowCardUserData" class="easyui-dialog" data-options="iconCls:'icon-save',buttons: '#auwd-buttons',closed:true,modal:true"
+        style="width: 550px; height: 450px; padding: 5px">
+        <fieldset style="height: 215px">
+            <legend>用水户卡信息</legend>
+            <table id="tbUserWater">
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>卡序列号：</span>
+                    </td>
+                    <td>
+                        <span id="txt_SerialNumber"></span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>用户卡号：</span>
+                    </td>
+                    <td>
+                        <span id="txt_UserNo"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>用户名：</span>
+                    </td>
+                    <td>
+                        <span id="txt_UserName"></span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>身份证号：</span>
+                    </td>
+                    <td>
+                        <span id="txt_IdentityNumber"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>电话：</span>
+                    </td>
+                    <td>
+                        <span id="txt_Telephone"></span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>是否注销：</span>
+                    </td>
+                    <td>
+                        <span id="txt_IsCountermand"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>剩余水量：</span>
+                    </td>
+                    <td>
+                        <span id="txt_ResidualWater"></span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>剩余电量：</span>
+                    </td>
+                    <td>
+                        <span id="txt_ResidualElectric"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>累计水量：</span>
+                    </td>
+                    <td>
+                        <span id="txt_TotalWater"></span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>累计电量：</span>
+                    </td>
+                    <td>
+                        <span id="txt_TotalElectric"></span>
+                    </td>
+                </tr>
+                <tr height="30px">
+                    <td align="right" width="65px">
+                        <span>开卡时间：</span>
+                    </td>
+                    <td>
+                        <span id="txt_OpenTime"></span>
+                    </td>
+                    <td align="right" width="85px">
+                        <span>充值时间：</span>
+                    </td>
+                    <td>
+                        <span id="txt_LastChargeTime"></span>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div id="auwd-buttons" style="width: 100%; text-align: center">
+        <a id="A1" href="javascript:void(0)" class="easyui-linkbutton" style="width: 48px; display:none;">确定</a>&nbsp; <a id="A3" href="javascript:void(0)" onclick="Btn_Cancel_AddUserWaterData()"
+            class="easyui-linkbutton" style="width: 48px">取消</a>
+    </div>
+</body>
+</html>

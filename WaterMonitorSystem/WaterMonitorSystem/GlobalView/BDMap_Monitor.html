@@ -1,0 +1,58 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>百度地图</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+    
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/Page/GlobalView/BDMap_Monitor.js?28"></script>
+    
+</head>
+<body style="margin:0 0 0 0; overflow:hidden;">
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 100%; height:400px;">
+        <div data-options="region:'north',minHeight:'32px',maxHeight:'32px',border:false,collapsible:false" style="overflow-y: hidden">
+                <table style=" margin-left:5px; margin-top:2px;">
+                    <tr style="display:none">
+                        <td>
+                            <span style="font-size:10pt">查询方式：</span>
+                        </td>
+                        <td colspan="2">
+                            <select id="cb_QueryType" class="easyui-combobox" data-options="panelHeight:'45px',editable:false,onSelect:QueryTypeChange">
+                                <option>模糊查询</option>
+                                <!--<option>选择查询</option>-->
+                            </select>
+                            &nbsp;&nbsp;
+                            <input id="devStateNormal" type="checkbox" checked="checked" style="margin:0; vertical-align:middle" /><span style="vertical-align:middle; font-size:10pt">在线</span>
+                            <input id="devStateAlarm" type="checkbox" checked="checked" style="margin:0; vertical-align:middle" /><span style="vertical-align:middle; font-size:10pt">不在线</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span style="font-size:10pt">设备名称：</span>
+                        </td>
+                        <td style="width:150px">
+                            <span id="sDevCombobox"><input id="cb_devCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" /></span>
+                            <span id="sDevCombotree" style="position:absolute; left:79px;top:31px; visibility:hidden"><input id="cb_devCombotree" class="easyui-combotree" data-options="editable:false,checkbox:true,multiple:true,onCheck:ComboboxTreeOnCheck"  /></span>
+                        </td>
+                        <td>
+                            <a id="btnQuery" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="height:22px" href="#" onclick="BtnQueryClick();return false;">搜索</a>
+                            <a id="btnReset" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="height:22px" href="#" onclick="BtnResetClick();return false;">重置</a>
+                        </td>
+                    </tr>
+                </table>
+        </div>
+        <div title="实时数据" id="divCenter" data-options="region:'center',border:false" style="overflow:auto;">
+            <table id="tbMonitorDats" class="easyui-datagrid" data-options="nowrap: false, autoRowHeight: false, border: false, rownumbers: true, singleSelect: true,fit:true"></table>
+        </div>
+    </div>
+</body>
+</html>

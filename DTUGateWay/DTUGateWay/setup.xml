@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <!--dtu接入服务端口号-->
+    <add key="dtuServerPort" value="6001"></add>
+    <!--web接入服务端口号-->
+    <add key="webServerPort" value="9010"></add>
+    <!--Socket超时 秒-->
+    <add key="socketTimeout" value="1800"></add>
+    <!--连接数-->
+    <add key="connectedCount" value="500"></add>
+    <!--开启信息日志记录：1 开启 、0 不开启-->
+    <add key="infoLogEnable" value="1"></add>
+    <!--开启错误日志记录：1 开启 、0 不开启-->
+    <add key="errorLogEnable" value="1"></add>
+    <!--开启初始化操作，表结构，表数据，清除表数据：1 开启、0 不开启-->
+    <add key="initEnable" value="1"></add>
+    <!--作初始化操作时，用到的数据库连接字符串-->
+    <!--add key="connectedString" value="Database=dtu;Data Source=127.0.0.1;User Id=root;Password=rot"></add-->
+    <!--是否允许登陆并注册成功后，删除数据：1删除、0不删除-->
+    <add key="deleteDataEnable" value="0"></add>
+    <!--是否允许进行dtu事件的历史记录，1为开启、0为不开启-->
+    <add key="recordEventEnable" value="1"></add>
+
+    <!--市级平台地址-->
+    <add key="CityServerIp" value=""></add>
+    <!--市级平台端口-->
+    <add key="CityServerPort" value=""></add>
+    <!--图片保存根目录-->
+    <add key="imgSavePath" value="D:/软件项目/机井灌溉（测试开发）/WaterMonitorSystem/WaterMonitorSystem"></add>
+  </appSettings>  
+</configuration>

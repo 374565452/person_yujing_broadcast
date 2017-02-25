@@ -1,0 +1,122 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>区域管理</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+    
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/LoadTreeNode.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/SystemAdmin/AreaManager.js?19"></script>
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px;
+        height: 600px;">
+        <div id="divLeft" title="区域管理" data-options="region:'west',border:true,split:true"
+            style="width: 210px; padding: 0 0 0 0;">
+            <div id="divAreaTree" class="easyui-tree"></div>
+        </div>
+        <div id="divCenter" title="区域管理列表" data-options="region:'center',border:true" style="overflow-y: hidden">
+            <table id="tbManageInfos" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true,pagination:true,pageList:[20,50,100,150,200],pageSize:20"
+                style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                <thead>
+                    <tr style="height: 24px">
+                        <th data-options="field:'manageId',width:40,hidden:true">
+                            管理ID
+                        </th>
+                        <th data-options="field:'LevelName',width:40">
+                            所属级别</th>
+                        <th data-options="field:'manageName',width:40">
+                            区域名称</th>
+                        <th data-options="field:'manageCode',width:40">
+                            编码
+                        </th>
+                        <th data-options="field:'editManage',width:30,fixed:true,align:'center'">
+                            编辑</th>
+                        <th data-options="field:'removeManage',width:30,fixed:true,align:'center'">
+                            删除</th>
+                    </tr>
+                </thead>
+            </table>
+            <div id="toolbar">
+                <span style="margin-left:10px">区域名称：</span>
+                <input id="cbb_ManageCombobox" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" />&nbsp;
+                <a id="btn_Query" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="Btn_Query_Click();">查询</a>&nbsp;
+                <a id="btn_Add" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="btn_Add_Click();">添加</a>
+            </div>
+            
+            <div id="dlgManage" class="easyui-dialog" title="编辑区域信息" data-options="iconCls:'icon-save',buttons: '#dlg-buttons',closed:true,modal:true" style="width:360px;height:247px;padding:5px" >
+                <div id="divDeviceTabs" class="easyui-tabs" data-options="fit:true,border:false,showHeader:false">
+                    <div title="区域信息">
+                        <fieldset style="height:145px">
+                            <legend>区域信息</legend>
+                            <table id="tbDevice">
+                                <tr height="30px">
+                                    <td align="right" width="75px"><span>区域名称：</span></td>
+                                    <td><input id="txt_ManageName" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[1,25]'" style="height:21px"/></td>
+                                    <td><span>*</span></td>
+                                </tr>
+                                <tr height="30px">
+                                    <td align="right" width="75px"><span>所属级别：</span></td>
+                                    <td><input id="cbb_LevelManager" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" /></td>
+                                    <td><span>*</span></td>
+                                </tr>
+                                <tr height="30px">
+                                    <td align="right" width="75px"><span>上级区域：</span></td>
+                                    <td><input id="cb_manageCombotree" class="easyui-combotree" data-options="editable:false,checkbox:false,multiple:false" style="width:150px"  /></td>
+                                    <td><span>*</span></td>
+                                </tr>
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div id="dlg-buttons" style="width:100%; text-align:center">
+                <a id="btn_OK" href="javascript:void(0)" class="easyui-linkbutton" style="width:48px" onclick="javascript:btn_OK_Click()">确定</a>
+                <a id="btn_Cancel" href="javascript:void(0)" class="easyui-linkbutton" style="width:48px" onclick="javascript:$('#dlgManage').dialog('close')">取消</a>
+            </div>
+
+            <div id="dlgManage2" class="easyui-dialog" title="年可开采水量设置" data-options="iconCls:'icon-save',buttons: '#dlg-buttons2',closed:true,modal:true" style="width:360px;height:247px;padding:5px" >
+                <div id="divDeviceTabs2" class="easyui-tabs" data-options="fit:true,border:false,showHeader:false">
+                    <div title="年可开采水量信息">
+                        <fieldset style="height:145px">
+                            <legend>年可开采水量信息</legend>
+                            <table id="tbYearExploitation">
+                                <tr>
+                                    <td>2017</td>
+                                    <td>3000</td>
+                                </tr>
+                                <tr>
+                                    <td>2016</td>
+                                    <td>3500</td>
+                                </tr>
+                                <tr>
+                                    <td>2015</td>
+                                    <td>3200</td>
+                                </tr>
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div id="dlg-buttons2" style="width:100%; text-align:center">
+                <a id="btn_OK2" href="javascript:void(0)" class="easyui-linkbutton" style="width:48px" onclick="javascript:btn_OK2_Click()">确定</a>
+                <a id="btn_Cancel2" href="javascript:void(0)" class="easyui-linkbutton" style="width:48px" onclick="javascript:$('#dlgManage2').dialog('close')">取消</a>
+            </div>
+        </div>
+    </div>
+</body>   
+</html>

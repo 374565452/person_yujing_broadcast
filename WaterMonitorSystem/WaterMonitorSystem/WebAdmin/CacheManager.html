@@ -1,0 +1,52 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>缓存管理</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../App_Themes/easyui/themes/icon.css">
+
+    <script language="javascript" type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/easyui/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/PSExtend.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/jquery.cookie.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/json2.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/Page/WebAdmin/CacheManager.js?13"></script>
+
+</head>
+<body>
+    <div id="divContainer" class="easyui-layout" data-options="fit:true" style="width: 800px;
+        height: 600px;">
+        <div id="divCenter" title="缓存列表" data-options="region:'center',border:true" style="overflow-y: hidden">
+            <table id="tbUserInfos" class="easyui-datagrid" data-options="nowrap: true,autoRowHeight:false,fitColumns:true,border:false,rownumbers:true,singleSelect:true"
+                style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
+                <thead>
+                    <tr style="height: 24px">
+                        <th data-options="field:'name',width:300,fixed:true">
+                            缓存名称
+                        </th>
+                        <th data-options="field:'Info',width:300">
+                            结果
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            <div id="toolbar">
+                <a id="btn_RefreshCache" href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search"
+                   plain="true" onclick="Btn_RefreshCache_Click();">刷新</a>&nbsp;
+                <span style="margin-left: 10px">当前选择缓存名称：</span>
+                <span id="CacheName" style="color:red;display:inline-block;vertical-align:middle;"></span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
