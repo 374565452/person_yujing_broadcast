@@ -311,6 +311,7 @@ function DrawPoint(searchText) {
                     //用于存储地图上点的状态图片
                     var devImg = "大圈灰.gif";
                     for (var j = 0; j < mapDataInfo.用户模板.length; j++) {
+                       
                         if (mapDataInfo.用户模板[j].ID == templateId) {
                             var xmlStateValue = mapDataInfo.用户模板[j].状态量;
                             var valueName = mapDataInfo.用户模板[j].采集量.split(',');
@@ -377,13 +378,16 @@ function DrawPoint(searchText) {
                                     }
                                 }
                                 */
-                                if (deviceData[i].运行状态.Value == "水泵工作") {
-                                    devImg = "大圈绿.gif";
-                                } else if (deviceData[i].运行状态.Value == "水泵停机") {
-                                    devImg = "大圈红.gif";
-                                } else {
-                                    devImg = "大圈灰.gif";
-                                }
+                                devImg = deviceData[i].设备类型.Value + ".gif";
+                                //if (deviceData[i].运行状态.Value == "水泵工作") {
+                                   // devImg = deviceData[i].设备类型.Value + "_绿.gif";
+                                //}
+                                //else if (deviceData[i].运行状态.Value == "水泵停机") {
+                                   // devImg = "大圈红.gif";
+                               // }
+                                //else {
+                                 //   devImg = "大圈灰.gif";
+                               // }
                             }
                             //如果最后一个量名在取得的实时数据不存在，
                             if (tdIndex % 2 != 0) {
@@ -414,6 +418,8 @@ function DrawPoint(searchText) {
                     pointObj['isOpen'] = 0;
                     pointObj['icon'] = "../Images/" + devImg;
                     baseData.push(pointObj);
+                    //取得设备类型
+                    //alert(deviceData[i].设备类型.Value);
                 }
                 //添点
                 searchClass.setData(baseData);
@@ -463,6 +469,7 @@ window.addMarker = function (data) {
         }
     });
     */
+    var imageSize = 15;
     for (var i = 0; i < data.length; i++) {
         var json = data[i];
         var p0 = json.point.split("|")[0];
@@ -480,8 +487,8 @@ window.addMarker = function (data) {
 
         var point = PointBD;
         //        var iconImg = createIcon(json.icon);
-        var iconImg = new BMap.Icon(json.icon, new BMap.Size(15, 15));
-        iconImg.setImageSize(new BMap.Size(15, 15))
+        var iconImg = new BMap.Icon(json.icon, new BMap.Size(imageSize, imageSize));
+        iconImg.setImageSize(new BMap.Size(imageSize, imageSize))
         var marker = new BMap.Marker(point, { icon: iconImg });
         var iw = createInfoWindow(i);
         var nameLength = json.title.length;

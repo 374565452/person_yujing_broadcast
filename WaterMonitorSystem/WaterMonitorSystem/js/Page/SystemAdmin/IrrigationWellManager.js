@@ -264,6 +264,7 @@ function ClearManageDetailInfo() {
 }
 
 function LoadTableData(treeid) {
+    //alert("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     if (!deviceNodeLoaded) {
         window.setTimeout("LoadTableData(" + treeid + ")", 500);
         return;
@@ -277,6 +278,7 @@ function LoadTableData(treeid) {
     tableData = [];
     var devJson;
     for (var key in deviceNodes) {
+        //alert(key);
         devJson = deviceNodes[key].attributes["device"];
         var tableRow = {};
         editJson[devJson.ID] = devJson;
