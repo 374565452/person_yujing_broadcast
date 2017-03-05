@@ -324,6 +324,7 @@ function ShowMore(diviceID, e) {
         left: leftx,
         top: e.clientY + document.body.scrollTop + document.documentElement.scrollTop,
         onClick: function (item) {
+            //alert("aaaaaaaaaaaaaaaaaaaa------item  ",item.text);
             if (item.text == "详细数据") {
                 ShowDetailData(DeviceInfo);
             } else if (item.text == "历史数据") {

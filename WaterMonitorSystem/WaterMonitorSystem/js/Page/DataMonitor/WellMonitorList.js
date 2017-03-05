@@ -278,8 +278,11 @@ function ShowMore(diviceID, e) {
         type: "Get",
         dataType: "text",
         cache: false,
+        //add by kqz 2017-3-5 因为不设置同步的话，扫许ShowDetailData时，DeviceInfo还是为空
+        async: false,
         success: function (responseText) {
             var data = eval("(" + $.xml2json(responseText) + ")");
+            //alert("==================" + data.DeviceInfo);
             DeviceInfo = data.DeviceInfo;
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -301,6 +304,8 @@ function ShowMore(diviceID, e) {
             switch(item.text)
             {
                 case "详细数据":
+                    //alert("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                   // alert(DeviceInfo + "========aaaaaaaaaaaaaaaaaaaaaaa========");
                     ShowDetailData(DeviceInfo);
                     break;
                 case "历史数据":
@@ -357,6 +362,7 @@ function ShowDetailData(DeviceInfo) {
         timeInt = window.setInterval(function () { CreateDeviceDetailPhotoTable(DeviceInfo) }, 10000);
 
     } else {
+       
         CreateDeviceDetailDataTable(DeviceInfo);
     }
 }
@@ -374,6 +380,7 @@ function CreateDeviceDetailPhotoTable(DeviceInfo) {
             document.getElementById("btn_Photo").disabled = "disabled";
         }
     }
+  
     if (DeviceInfo != "") {
         //设备监测数据
         var resultJSON = DeviceInfo;
@@ -453,6 +460,7 @@ function CreateDeviceDetailPhotoTable(DeviceInfo) {
         if ($("#btndiv") != null) {
             $("#btndiv").remove();
         }
+        
         $(btnhtml).appendTo($("#divPhotoDataList"));
     }
 }
@@ -468,10 +476,11 @@ function CreateDeviceDetailDataTable(DeviceInfo) {
     var detailName = "基础信息";
     //var _tempId = deviceNodes[realDevId].attributes.device.用户站参数;
     var _tempId = 1;
+    //alert(DeviceInfo);
     if (DeviceInfo != null && DeviceInfo != "") {
         //设备监测数据
         var resultJSON = DeviceInfo.RealDatas;
-
+        //alert("ccccdddddddddddddccc");
         //基础信息
         var tbDeviceData = "<div class='Panel2' id='tbDeviceData' style='height: auto; font-size: 10pt; width:725px;'>";
         var field_device = "<fieldset><legend>" + "实时数据" + "</legend>";

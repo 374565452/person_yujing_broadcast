@@ -136,40 +136,25 @@ namespace WaterMonitorSystem.WebServices
             }
 
             List<string> realTimeDataColumns = new List<string>();
-            realTimeDataColumns.Add("村庄");
-            realTimeDataColumns.Add("村庄Id");
+
             realTimeDataColumns.Add("设备");
             realTimeDataColumns.Add("经纬度");
             realTimeDataColumns.Add("设备类型");
             realTimeDataColumns.Add("通讯状态");
-            realTimeDataColumns.Add("累计用水量");
-            realTimeDataColumns.Add("运行状态");
-            realTimeDataColumns.Add("更新时间");
-            realTimeDataColumns.Add("设备编号");
-            realTimeDataColumns.Add("长编号");
-            realTimeDataColumns.Add("用户卡号");
-            realTimeDataColumns.Add("卡序列号");
-            realTimeDataColumns.Add("开泵时间");
-            realTimeDataColumns.Add("开泵剩余水量");
-            realTimeDataColumns.Add("开泵剩余电量");
-            realTimeDataColumns.Add("关泵时间");
-            realTimeDataColumns.Add("关泵剩余水量");
-            realTimeDataColumns.Add("关泵剩余电量");
-            realTimeDataColumns.Add("本次用水量");
-            realTimeDataColumns.Add("本次用电量");
-            realTimeDataColumns.Add("年累计用水量");
-            realTimeDataColumns.Add("年累计用电量");
-            realTimeDataColumns.Add("年可开采量");
-            realTimeDataColumns.Add("年剩余可开采量");
-            realTimeDataColumns.Add("流量仪表状态");
-            realTimeDataColumns.Add("终端箱门状态");
-            realTimeDataColumns.Add("IC卡功能有效");
-            realTimeDataColumns.Add("水泵工作状态");
-            realTimeDataColumns.Add("井剩余水量报警");
-            realTimeDataColumns.Add("电表信号报警");
-            realTimeDataColumns.Add("用户剩余水量报警");
-            realTimeDataColumns.Add("用户剩余电量报警");
+
+   
             realTimeDataColumns.Add("操作");
+            /******start add by kqz 2017-3-5*****/
+            realTimeDataColumns.Add("当前降水量（MM)");
+            realTimeDataColumns.Add("降水量累计值（MM）");
+            realTimeDataColumns.Add("电池电压");
+            realTimeDataColumns.Add("供电类型");
+            realTimeDataColumns.Add("预警状态");
+            realTimeDataColumns.Add("最近更新时间");
+            realTimeDataColumns.Add("安装地址");
+            realTimeDataColumns.Add("瞬时河道水位");
+            realTimeDataColumns.Add("北斗状态");
+            /******end add by kqz 2017-3-5*****/
             List<string> showLevelAlias = new List<string>();
             showLevelAlias.Add("村庄");
             showLevelAlias.Add("设备");
@@ -214,7 +199,82 @@ namespace WaterMonitorSystem.WebServices
                 obj3.Add("Field", str2);
                 switch (str)
                 {
-                    case "村庄": obj3.Add("Value", district.DistrictName); break;
+                    case "设备类型": obj3.Add("Value", device.DeviceType); break;
+                    case "通讯状态": obj3.Add("Value", device.Online == 1 && SystemService.isConnect ? "全部正常" : ""); break;
+                    case "安装地址":
+                        {
+                            if (!device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", district.DistrictName);
+                            }
+                            break;
+                        }
+                    case "最近更新时间": obj3.Add("Value", device.LastUpdate.ToString("yyyy-MM-dd HH:mm:ss")); break;
+                    case "当前降水量（MM)":
+                        {
+                            if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", device.CurRainfall.ToString());
+                                //break;
+                            }
+                            break;
+                        }
+                    case "降水量累计值（MM）":
+                        {
+                            if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", device.TotalRainfall.ToString());
+                                //break;
+                            }
+                            break;
+                        }
+                    case "瞬时河道水位":
+                        {
+                            if ( device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", device.RiverLevel.ToString());
+                               // break;
+                            }
+                            break;
+                        }
+                    case "预警状态":
+                        {
+                            if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", device.YuJingState.ToString());
+                               // break;
+                            }
+                            break;
+                        }
+                    case "北斗状态":
+                        {
+                            if (device.DeviceType.Equals("动态预警主机"))
+                            {
+                                obj3.Add("Value", device.BeidouState.ToString()); //break;
+                            }
+                            break;
+                        }
+                    case "供电类型":
+                        {
+                            if (device.DeviceType.Equals("动态预警主机") || device.DeviceType.Equals("无线预警广播"))
+                            {
+                                obj3.Add("Value", device.PowerSupplyWay.ToString()); //break;
+                            }
+                            break;
+                        }
+                    case "电池电压":
+                        {
+                            if ( !device.DeviceType.Equals("户外大屏") && !device.DeviceType.Equals("入户广播专业版"))
+                            {
+                                obj3.Add("Value", device.PowerVal.ToString()); //break;
+                            }
+                            break;
+                        }
+                    case "设备": obj3.Add("Value", device.DeviceName); break;
+                    case "经纬度": obj3.Add("Value", device.LON / 1000000.0 + "|" + device.LAT / 1000000.0); break;
+                    case "操作": obj3.Add("Value", device.Id); break;
+                    /****start update by kqz 2017-3-5****/
+                    /*case "村庄": obj3.Add("Value", district.DistrictName); break;
                     case "村庄Id": obj3.Add("Value", district.Id); break;
                     case "设备": obj3.Add("Value", device.DeviceName); break;
                     case "经纬度": obj3.Add("Value", device.LON / 1000000.0 + "|" + device.LAT / 1000000.0); break;
@@ -249,8 +309,9 @@ namespace WaterMonitorSystem.WebServices
                     case "电表信号报警": obj3.Add("Value", (array[0] == null ? "-" : (array[0].DeviceState[32 - 16] == '1' ? "报警" : "正常"))); break;
                     case "流量仪表状态": obj3.Add("Value", (array[0] == null ? "-" : (array[0].DeviceState[32 - 6] == '1' ? "故障" : "正常"))); break;
                     case "终端箱门状态": obj3.Add("Value", (array[0] == null ? "-" : (array[0].DeviceState[32 - 8] == '1' ? "关闭" : "开启"))); break;
-                    case "IC卡功能有效": obj3.Add("Value", (array[0] == null ? "-" : (array[0].DeviceState[32 - 10] == '1' ? "IC卡有效" : "关闭"))); break;
-                    default: obj3.Add("Value", "未知"); break;
+                    case "IC卡功能有效": obj3.Add("Value", (array[0] == null ? "-" : (array[0].DeviceState[32 - 10] == '1' ? "IC卡有效" : "关闭"))); break;*/
+                    /****end update by kqz 2017-3-5****/
+                    //default: obj3.Add("Value", "未知"); break;
                 }
 
                 if (obj3.ContainsKey("Value"))
@@ -278,12 +339,13 @@ namespace WaterMonitorSystem.WebServices
                     return JavaScriptConvert.SerializeObject(obj2);
                 }
                 Device device = DeviceModule.GetDeviceByID(long.Parse(devID));
+
                 if (device == null)
                 {
                     obj2["Message"] = "设备不存在";
                     return JavaScriptConvert.SerializeObject(obj2);
                 }
-
+                District district = DistrictModule.ReturnDistrictInfo(device.DistrictId);
                 DeviceEvent[] array = DeviceEventModule.GetEventNewByDeviceNo(DeviceModule.GetFullDeviceNoByID(device.Id), DateTime.Now);
 
                 obj3.Add("SupportRefresh", false);
@@ -314,11 +376,96 @@ namespace WaterMonitorSystem.WebServices
                 item.Add("Name", "通讯状态");
                 item.Add("Value", device.Online == 1 && SystemService.isConnect ? "正常" : "异常");
                 array2.Add(item);
+
                 item = new JavaScriptObject();
-                item.Add("Name", "更新时间");
+                item.Add("Name", "设备编号");
+                item.Add("Value", device.DeviceNo);
+                array2.Add(item);
+
+                item = new JavaScriptObject();
+                item.Add("Name", "最近更新时间");
                 item.Add("Value", device.LastUpdate.ToString("yyyy-MM-dd HH:mm:ss"));
                 array2.Add(item);
+                 //case "经纬度": obj3.Add("Value", device.LON / 1000000.0 + "|" + device.LAT / 1000000.0); break;
                 item = new JavaScriptObject();
+                item.Add("Name","经纬度");
+                item.Add("Value", device.LON / 1000000.0 + "|" + device.LAT / 1000000.0);
+                array2.Add(item);
+                /******start update by kqz 2017-3-5***********/
+                if (!device.DeviceType.Equals("雨量水位站"))
+                {
+                    //obj3.Add("Value", district.DistrictName);
+                    item = new JavaScriptObject();
+                    item.Add("Name", "安装地址");
+                    item.Add("Value",district.DistrictName );
+                    array2.Add(item);
+                }
+                if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                {
+                    //obj3.Add("Value", device.CurRainfall.ToString());
+                    //break;
+                    item = new JavaScriptObject();
+                    item.Add("Name", "当前降水量（MM)");
+                    item.Add("Value", device.CurRainfall.ToString());
+                    array2.Add(item);
+
+                    item = new JavaScriptObject();
+                    item.Add("Name", "预警状态");
+                    item.Add("Value", device.YuJingState.ToString());
+                    array2.Add(item);
+
+                    item = new JavaScriptObject();
+                    item.Add("Name", "降水量累计值（MM）");
+                    item.Add("Value", device.TotalRainfall.ToString());
+                    array2.Add(item);
+                }
+                
+                if (device.DeviceType.Equals("雨量水位站"))
+                {
+                   // obj3.Add("Value", device.RiverLevel.ToString());
+                    // break;
+                    item = new JavaScriptObject();
+                    item.Add("Name", "瞬时河道水位");
+                    item.Add("Value", device.RiverLevel.ToString());
+                    array2.Add(item);
+                }
+
+                if (device.DeviceType.Equals("动态预警主机"))
+                {
+                    //obj3.Add("Value", device.BeidouState.ToString()); //break;
+                    item = new JavaScriptObject();
+                    item.Add("Name", "北斗状态");
+                    item.Add("Value", device.BeidouState.ToString());
+                    array2.Add(item);
+                }
+
+                if (device.DeviceType.Equals("动态预警主机") || device.DeviceType.Equals("无线预警广播"))
+                {
+                    //obj3.Add("Value", device.PowerSupplyWay.ToString()); //break;
+                    item = new JavaScriptObject();
+                    item.Add("Name", "供电类型");
+                    item.Add("Value", device.PowerSupplyWay.ToString());
+                    array2.Add(item);
+                }
+
+                if (!device.DeviceType.Equals("户外大屏") && !device.DeviceType.Equals("入户广播专业版"))
+                {
+                    //obj3.Add("Value", device.PowerVal.ToString()); //break;
+                    item = new JavaScriptObject();
+                    item.Add("Name", "电池电压");
+                    item.Add("Value", device.PowerVal.ToString());
+                    array2.Add(item);
+                }
+
+                item = new JavaScriptObject();
+                item.Add("Name", "长编号");
+                item.Add("Value", DeviceModule.GetFullDeviceNoByID(device.Id));
+                array2.Add(item);
+
+                /******end update by kqz 2017-3-5*******/
+
+
+                /*item = new JavaScriptObject();
                 item.Add("Name", "设备编号");
                 item.Add("Value", device.DeviceNo);
                 array2.Add(item);
@@ -423,7 +570,7 @@ namespace WaterMonitorSystem.WebServices
                 array2.Add(item);
                 item = new JavaScriptObject();
                 item.Add("Name", "累计用水量");
-                item.Add("Value", device.WaterUsed);
+                item.Add("Value", device.WaterUsed);*/
                 array2.Add(item);
 
                 obj2["Result"] = true;

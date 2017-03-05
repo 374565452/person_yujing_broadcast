@@ -294,8 +294,10 @@ function DrawPoint(searchText) {
             var data = eval("(" + $.xml2json(responseText) + ")");
             if (data.Result)//登录成功
             {
+                
                 //======================向地图中添点开始======================//
                 deviceData = data.DevDatas;
+                
                 Columns = data.Columns;
                 baseData = [];
                 for (var i = 0; i < deviceData.length; i++) {
@@ -318,6 +320,7 @@ function DrawPoint(searchText) {
                             var rowIndex = 2;
                             var tdIndex = 0;
                             var htmlNew = "";
+                            
                             for (var k = 0; k < valueName.length; k++) {
                                 var currentValName = valueName[k];
                                 if (deviceData[i][currentValName] != null) {
@@ -326,7 +329,7 @@ function DrawPoint(searchText) {
                                         var commStateImg = "中断.png";
                                         var devStateImg = "中断.png";
                                         commState = deviceData[i].通讯状态.Value;
-                                        devState = deviceData[i].运行状态.Value;
+                                        //devState = deviceData[i].运行状态.Value;
                                         if (commState == "全部正常") {
                                             commStateImg = "正常.png";
                                         }
@@ -336,9 +339,9 @@ function DrawPoint(searchText) {
                                         }
                                         */
                                         htmlStr += "<tr><td class='alt' style='width:120px;text-align:left;'>通讯状态</td><td style='width:130px'><Img style='height:20px;widht:20px;' src='../images/" + commStateImg +
-                                                 "'/></td><td class='alt' style='width:120px;text-align:left;'>运行状态</td><td style='width:130px'>" + devState + "</tr>";
+                                                 "'/></td></tr>";
                                     }
-                                                                        
+                                    //alert(currentValName + "-------" + currentValVal);
                                     htmlNew += "<td class='alt' style='width:120px;text-align:left;'>" + currentValName + "</td><td style='width:130px'>" + currentValVal + "</td>";
                                     tdIndex++;
                                     if (tdIndex % 2 == 0) {
@@ -409,11 +412,12 @@ function DrawPoint(searchText) {
                     pointObj['title'] = deviceInfos[_devId].名称;
                     pointObj['iwTitle'] = deviceInfos[_devId].管理名称 + "(" + deviceInfos[_devId].名称 + ")";
                     pointObj['commState'] = deviceData[i].通讯状态.Value;
-                    pointObj['devState'] = deviceData[i].运行状态.Value;
+                   // pointObj['devState'] = deviceData[i].运行状态.Value;
                     pointObj['ID'] = _devId;
                     //pointObj['TemplateID']=deviceInfos[_devId].模板信息ID;
                     pointObj['TemplateID'] = 1;
                     pointObj['content'] = htmlStr;
+                    //alert("aaaaaaaaaaaaaaa"+htmlStr);
                     pointObj['point'] = deviceInfos[_devId].LON + "|" + deviceInfos[_devId].LAT;
                     pointObj['isOpen'] = 0;
                     pointObj['icon'] = "../Images/" + devImg;

@@ -231,5 +231,36 @@ namespace Maticsoft.Model
         /// </summary>	
         [DataMember]
         public DateTime Acq_Time { get; set; }
+
+        /***********start add by kqz 2017-3-5***************/
+        /// <summary>
+        /// 当前降水量
+        /// </summary>
+        public decimal CurRainfall { get; set; }
+        /// <summary>
+        /// 降水量累计值
+        /// </summary>
+        public decimal TotalRainfall { get; set; }
+        /// <summary>
+        /// 瞬时河道水位
+        /// </summary>
+        public decimal RiverLevel { get; set; }
+        /// <summary>
+        /// 供电方式
+        /// </summary>
+        public int PowerSupplyWay { get; set; }
+        /// <summary>
+        /// 预警状态
+        /// </summary>
+        public int YuJingState { get; set; }
+        /// <summary>
+        /// 电池电压
+        /// </summary>
+        public decimal PowerVal { get; set; }
+        /// <summary>
+        /// 与北斗服务器连接状态
+        /// </summary>
+        public int BeidouState { get; set; }
+        /***********end add by kqz 2017-3-5***************/
     }
 }

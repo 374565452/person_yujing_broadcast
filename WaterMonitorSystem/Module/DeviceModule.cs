@@ -785,7 +785,7 @@ namespace Module
                                     _deviceConllection_IdFullDeviceNo[device.Id] = key;
                                 }
                             }
-                            catch { }
+                            catch(Exception e ) {  }
                         }
                     }
                 }
