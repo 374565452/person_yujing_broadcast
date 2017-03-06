@@ -33,6 +33,13 @@ namespace WaterMonitorSystem.WebServices
         private static Dictionary<string, SwitchDisplayRule> dicSwitchDisplayRule;
         private JavaScriptArray jsaGetParams = new JavaScriptArray();
 
+        public static string YULIANGZHAN = "雨量站";
+        public static string YULIANGSHUIWEIZHAN = "雨量水位站";
+        public static string HUWAIDAPING = "户外大屏";
+        public static string RUHUGUANGBOZHUANYEBAN = "入户广播专业版";
+        public static string DONGTAIYUJINGZHUJI = "动态预警主机";
+        public static string WUXIANGUANGBO = "无线预警广播";
+
         public DeviceMonitorService()
         {
             this.context.Response.Buffer = true;
@@ -203,7 +210,7 @@ namespace WaterMonitorSystem.WebServices
                     case "通讯状态": obj3.Add("Value", device.Online == 1 && SystemService.isConnect ? "全部正常" : ""); break;
                     case "安装地址":
                         {
-                            if (!device.DeviceType.Equals("雨量水位站"))
+                            if (!device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
                             {
                                 obj3.Add("Value", district.DistrictName);
                             }
@@ -212,7 +219,7 @@ namespace WaterMonitorSystem.WebServices
                     case "最近更新时间": obj3.Add("Value", device.LastUpdate.ToString("yyyy-MM-dd HH:mm:ss")); break;
                     case "当前降水量（MM)":
                         {
-                            if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            if (device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN))
                             {
                                 obj3.Add("Value", device.CurRainfall.ToString());
                                 //break;
@@ -221,7 +228,7 @@ namespace WaterMonitorSystem.WebServices
                         }
                     case "降水量累计值（MM）":
                         {
-                            if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            if (device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN))
                             {
                                 obj3.Add("Value", device.TotalRainfall.ToString());
                                 //break;
@@ -230,7 +237,7 @@ namespace WaterMonitorSystem.WebServices
                         }
                     case "瞬时河道水位":
                         {
-                            if ( device.DeviceType.Equals("雨量水位站"))
+                            if ( device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
                             {
                                 obj3.Add("Value", device.RiverLevel.ToString());
                                // break;
@@ -239,7 +246,7 @@ namespace WaterMonitorSystem.WebServices
                         }
                     case "预警状态":
                         {
-                            if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            if (device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN))
                             {
                                 obj3.Add("Value", device.YuJingState.ToString());
                                // break;
@@ -248,7 +255,7 @@ namespace WaterMonitorSystem.WebServices
                         }
                     case "北斗状态":
                         {
-                            if (device.DeviceType.Equals("动态预警主机"))
+                            if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI))
                             {
                                 obj3.Add("Value", device.BeidouState.ToString()); //break;
                             }
@@ -256,7 +263,7 @@ namespace WaterMonitorSystem.WebServices
                         }
                     case "供电类型":
                         {
-                            if (device.DeviceType.Equals("动态预警主机") || device.DeviceType.Equals("无线预警广播"))
+                            if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI) || device.DeviceType.Equals(DeviceMonitorService.WUXIANGUANGBO))
                             {
                                 obj3.Add("Value", device.PowerSupplyWay.ToString()); //break;
                             }
@@ -264,7 +271,7 @@ namespace WaterMonitorSystem.WebServices
                         }
                     case "电池电压":
                         {
-                            if ( !device.DeviceType.Equals("户外大屏") && !device.DeviceType.Equals("入户广播专业版"))
+                            if ( !device.DeviceType.Equals(DeviceMonitorService.HUWAIDAPING) && !device.DeviceType.Equals(DeviceMonitorService.RUHUGUANGBOZHUANYEBAN))
                             {
                                 obj3.Add("Value", device.PowerVal.ToString()); //break;
                             }
@@ -366,7 +373,7 @@ namespace WaterMonitorSystem.WebServices
                 /*******************update by kqz 2017-3-6 **********************/
                 //if (device.DeviceType.Contains("水位仪"))
                     //obj3.Add("SupportWaterView", device.RemoteStation.ToString().Trim().Length > 0);
-                if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                if (device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
                 {
                     obj3.Add("SupportWaterView", true);
                 }
@@ -402,7 +409,7 @@ namespace WaterMonitorSystem.WebServices
                 item.Add("Value", device.LON / 1000000.0 + "|" + device.LAT / 1000000.0);
                 array2.Add(item);
                 /******start update by kqz 2017-3-5***********/
-                if (!device.DeviceType.Equals("雨量水位站"))
+                if (!device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
                 {
                     //obj3.Add("Value", district.DistrictName);
                     item = new JavaScriptObject();
@@ -410,7 +417,7 @@ namespace WaterMonitorSystem.WebServices
                     item.Add("Value",district.DistrictName );
                     array2.Add(item);
                 }
-                if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                if (device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
                 {
                     //obj3.Add("Value", device.CurRainfall.ToString());
                     //break;
@@ -430,7 +437,7 @@ namespace WaterMonitorSystem.WebServices
                     array2.Add(item);
                 }
                 
-                if (device.DeviceType.Equals("雨量水位站"))
+                if (device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
                 {
                    // obj3.Add("Value", device.RiverLevel.ToString());
                     // break;
@@ -440,7 +447,7 @@ namespace WaterMonitorSystem.WebServices
                     array2.Add(item);
                 }
 
-                if (device.DeviceType.Equals("动态预警主机"))
+                if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI))
                 {
                     //obj3.Add("Value", device.BeidouState.ToString()); //break;
                     item = new JavaScriptObject();
@@ -449,7 +456,7 @@ namespace WaterMonitorSystem.WebServices
                     array2.Add(item);
                 }
 
-                if (device.DeviceType.Equals("动态预警主机") || device.DeviceType.Equals("无线预警广播"))
+                if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI) || device.DeviceType.Equals(DeviceMonitorService.WUXIANGUANGBO))
                 {
                     //obj3.Add("Value", device.PowerSupplyWay.ToString()); //break;
                     item = new JavaScriptObject();
@@ -458,7 +465,7 @@ namespace WaterMonitorSystem.WebServices
                     array2.Add(item);
                 }
 
-                if (!device.DeviceType.Equals("户外大屏") && !device.DeviceType.Equals("入户广播专业版"))
+                if (!device.DeviceType.Equals(DeviceMonitorService.HUWAIDAPING) && !device.DeviceType.Equals(DeviceMonitorService.RUHUGUANGBOZHUANYEBAN))
                 {
                     //obj3.Add("Value", device.PowerVal.ToString()); //break;
                     item = new JavaScriptObject();
@@ -671,6 +678,19 @@ namespace WaterMonitorSystem.WebServices
                 realTimeDataColumns.Add("用户剩余水量报警");
                 realTimeDataColumns.Add("用户剩余电量报警");
                 realTimeDataColumns.Add("操作");
+
+                /******start add by kqz 2017-3-5*****/
+                realTimeDataColumns.Add("当前降水量");
+                realTimeDataColumns.Add("降水量累计值");
+                realTimeDataColumns.Add("电池电压");
+                realTimeDataColumns.Add("供电类型");
+                realTimeDataColumns.Add("预警状态");
+                realTimeDataColumns.Add("最近更新时间");
+                realTimeDataColumns.Add("安装地址");
+                realTimeDataColumns.Add("瞬时河道水位");
+                realTimeDataColumns.Add("北斗状态");
+                /******end add by kqz 2017-3-5*****/
+
                 List<string> showLevelAlias = new List<string>();
                 showLevelAlias.Add("村庄");
                 showLevelAlias.Add("设备");
@@ -708,7 +728,7 @@ namespace WaterMonitorSystem.WebServices
             {
                 return null;
             }
-
+            /*** update by kqz 2017-3-6
             string StationType = "未知";
             if (device.StationType == 0)
             {
@@ -721,7 +741,7 @@ namespace WaterMonitorSystem.WebServices
             else if (device.StationType == 2)
             {
                 StationType = "从站";
-            }
+            }*/
             DeviceEvent[] array = DeviceEventModule.GetEventNewByDeviceNo(DeviceModule.GetFullDeviceNoByID(device.Id), DateTime.Now);
 
             District district = DistrictModule.ReturnDistrictInfo(device.DistrictId);
@@ -737,7 +757,8 @@ namespace WaterMonitorSystem.WebServices
                     case "村庄": obj3.Add("Value", district.DistrictName); break;
                     case "村庄Id": obj3.Add("Value", district.Id); break;
                     case "设备": obj3.Add("Value", device.DeviceName); break;
-                    case "设备类型": obj3.Add("Value", device.DeviceType + "(" + StationType + ")"); break;
+                    //case "设备类型": obj3.Add("Value", device.DeviceType + "(" + StationType + ")"); break;
+                    case "设备类型": obj3.Add("Value", device.DeviceType); break;
                     case "通讯状态": obj3.Add("Value", device.Online == 1 && SystemService.isConnect ? "全部正常" : ""); break;
                     case "设备状态": obj3.Add("Value", "未知"); break;
                     case "设备编号": obj3.Add("Value", device.DeviceNo); break;
@@ -746,6 +767,104 @@ namespace WaterMonitorSystem.WebServices
                     case "操作": obj3.Add("Value", device.Id); break;
 
                     case "累计用水量": obj3.Add("Value", device.WaterUsed); break;
+
+                    /**********start add by kqz 2017-3-6 19:47**************/
+                    case "当前降水量":
+                        {
+                            if (device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
+                                //if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", device.CurRainfall.ToString());
+                                //break;
+                            }
+                            else
+                            {
+                                obj3.Add("Value", "-");
+                            }
+                            break;
+                        }
+                    case "降水量累计值":
+                        {
+                            if (device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
+                            //if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", device.TotalRainfall.ToString());
+                                //break;
+                            }
+                            else
+                            {
+                                obj3.Add("Value", "-");
+                            }
+                            break;
+                        }
+                    case "瞬时河道水位":
+                        {
+                            if (device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
+                                //if (device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", device.RiverLevel.ToString());
+                                // break;
+                            }
+                            else
+                            {
+                                obj3.Add("Value", "-");
+                            }
+                            break;
+                        }
+                    case "预警状态":
+                        {
+                            if (device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
+                            //if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                            {
+                                obj3.Add("Value", device.YuJingState.ToString());
+                                // break;
+                            }
+                            else
+                            {
+                                obj3.Add("Value", "-");
+                            }
+                            break;
+                        }
+                    case "北斗状态":
+                        {
+                            if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI))
+                                //if (device.DeviceType.Equals("动态预警主机"))
+                            {
+                                obj3.Add("Value", device.BeidouState.ToString()); //break;
+                            }
+                            else
+                            {
+                                obj3.Add("Value", "-");
+                            }
+                            break;
+                        }
+                    case "供电类型":
+                        {
+                            if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI) || device.DeviceType.Equals(DeviceMonitorService.WUXIANGUANGBO))
+                                //if (device.DeviceType.Equals("动态预警主机") || device.DeviceType.Equals("无线预警广播"))
+                            {
+                                obj3.Add("Value", device.PowerSupplyWay.ToString()); //break;
+                            }
+                            else
+                            {
+                                obj3.Add("Value", "-");
+                            }
+                            break;
+                        }
+                    case "电池电压":
+                        {
+                            if (!device.DeviceType.Equals(DeviceMonitorService.HUWAIDAPING) && !device.DeviceType.Equals(DeviceMonitorService.RUHUGUANGBOZHUANYEBAN))
+                                //if (!device.DeviceType.Equals("户外大屏") && !device.DeviceType.Equals("入户广播专业版"))
+                            {
+                                obj3.Add("Value", device.PowerVal.ToString()); //break;
+                            }
+                            else
+                            {
+                                obj3.Add("Value", "-");
+                            }
+                            break;
+                        }
+                    /**********end add by kqz 2017-3-6 19:47**************/
 
                     case "年累计用电量": obj3.Add("Value", (array[1] == null ? (array[2] == null ? "-" : array[2].YearElectricUsed.ToString()) : array[1].YearElectricUsed.ToString())); break;
                     case "年累计用水量": obj3.Add("Value", (array[1] == null ? (array[2] == null ? "-" : array[2].YearWaterUsed.ToString()) : array[1].YearWaterUsed.ToString())); break;

@@ -118,17 +118,28 @@
                 style="font-size: 10pt; width: 100%; height: 100%;" toolbar="#toolbar">
                 <thead>
                     <tr>
-                        <th data-options="field:'operation',width:30" rowspan="2">操作</th>
-                        <th data-options="field:'village',width:100" rowspan="2">村庄</th>
-                        <th data-options="field:'irrigationWell',width:70" rowspan="2">设备</th>
-                        <th data-options="field:'deviceType',width:100" rowspan="2">设备类型</th>
-                        <th data-options="field:'irrigationWellNo',width:100" rowspan="2">长编号</th>
-                        <th data-options="field:'communication',width:30" rowspan="2">通讯</th>
-                        <th data-options="field:'updateTime',width:120" rowspan="2">更新时间</th>
+                        <th data-options="field:'operation',width:30" >操作</th>
+                        <th data-options="field:'village',width:100" >村庄</th>
+                        <th data-options="field:'irrigationWell',width:70">设备</th>
+                        <th data-options="field:'deviceType',width:100" >设备类型</th>
+                        <th data-options="field:'irrigationWellNo',width:100" >长编号</th>
+                        <th data-options="field:'communication',width:30" >通讯</th>
+                        <th data-options="field:'updateTime',width:120" >更新时间</th>
+                        <!--add by kqz 2017-3-6-->
+                        <th data-options="field:'curRainFall',width:120" >当前降水量（MM)</th>
+                        <th data-options="field:'totalRainFall',width:120" >降水量累计值（MM）</th>
+                        <th data-options="field:'riverLevel',width:120" >瞬时河道水位</th>
+                        <th data-options="field:'beidouState',width:120" >北斗状态</th>
+                        <th data-options="field:'powerSupplyWay',width:120" >供电类型</th>
+                        <th data-options="field:'powerVal',width:120" >电池电压</th>
+                        <!--add by kqz 2017-3-6-->
+                        <!-- update by kqz 2017-3-6 19:41
                         <th colspan="2" align="center">设备数据</th>
                         <th colspan="4" align="center">用水户数据</th>
                         <th colspan="4" align="center">设备状态</th>
+                            -->
                     </tr>
+                    <!-- update by kqz 2017-3-6 19:41
                     <tr>
                         <th data-options="field:'yearElectric',width:100,align:'center'">年累计用电量</th>
                         <th data-options="field:'yearWater',width:100,align:'center'">年累计用水量</th>
@@ -143,6 +154,7 @@
                         <th data-options="field:'pumpStatus',width:80,align:'center'">水泵状态</th>
                         <th data-options="field:'Water',width:80,align:'center'">累计用水量</th>
                     </tr>
+                        -->
                 </thead>
             </table>
             <div id="toolbar">

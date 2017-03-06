@@ -93,22 +93,39 @@ function GetSystemInfo() {
                 });
 
                 var comboBoxDeviceType = [];
-                for (var i = 0; i < 3; i++) {
+                for (var i = 0; i < 6; i++) {
                     if (i == 0) {
                         var levelObj = {};
                         levelObj["id"] = "1";
-                        levelObj["text"] = "水泵";
+                        levelObj["text"] = "雨量站";
                         comboBoxDeviceType.push(levelObj);
                     } else if (i == 1) {
                         var levelObj = {};
                         levelObj["id"] = "2";
-                        levelObj["text"] = "水位仪";
+                        levelObj["text"] = "雨量水位站";
                         comboBoxDeviceType.push(levelObj);
                     }
-                    else {
+                    else if(i==2){
                         var levelObj = {};
                         levelObj["id"] = "3";
-                        levelObj["text"] = "水泵、水位仪";
+                        levelObj["text"] = "户外大屏";
+                        comboBoxDeviceType.push(levelObj);
+                    } else if (i == 3) {
+                        var levelObj = {};
+                        levelObj["id"] = "4";
+                        levelObj["text"] = "入户广播专业版";
+                        comboBoxDeviceType.push(levelObj);
+                    }
+                    else if (i == 4) {
+                        var levelObj = {};
+                        levelObj["id"] = "5";
+                        levelObj["text"] = "动态预警主机";
+                        comboBoxDeviceType.push(levelObj);
+                    }
+                    else if (i == 5) {
+                        var levelObj = {};
+                        levelObj["id"] = "6";
+                        levelObj["text"] = "无线预警广播";
                         comboBoxDeviceType.push(levelObj);
                     }
                 }
@@ -257,7 +274,7 @@ function ClearManageDetailInfo() {
     $("#txt_StationCode").val("");
     //$("#cbb_Frequency").combobox('setValue', "00");
     $("#txt_MainDevNum").val("");
-    $("#cbb_DeviceType").combobox('setValue', "水泵");
+    $("#cbb_DeviceType").combobox('setValue', "雨量站");
     $("#txt_RemoteStation").val("");
 
     InitTimeControl();
@@ -290,21 +307,23 @@ function LoadTableData(treeid) {
         tableRow["SimNo"] = devJson.SimNo;
         tableRow["InstallTime"] = devJson.SetupDate;
         tableRow["installSite"] = devJson.SetupAddress;
-        tableRow["YearExploitation"] = devJson.YearExploitation;
-        tableRow["Crop"] = devJson.Crop;
-        tableRow["Area"] = devJson.Area;
-        tableRow["showSlave"] = "<img src='../Images/Detail.gif' onclick='javascript:ShowSlave(this)' />";
+        /**********update by kqz 2017-3-6
+        //tableRow["YearExploitation"] = devJson.YearExploitation;
+        //tableRow["Crop"] = devJson.Crop;
+        //tableRow["Area"] = devJson.Area;
+        //tableRow["showSlave"] = "<img src='../Images/Detail.gif' onclick='javascript:ShowSlave(this)' />";
+        //tableRow["StationTypeStr"] = devJson.StationTypeStr;
+        //tableRow["MainDevNum"] = devJson.MainDevNum;*/
         tableRow["editDev"] = "<img src='../Images/Detail.gif' onclick='javascript:EditMonitor(" + devJson.ID + ")' />";
         tableRow["removeDev"] = "<img src='../Images/Delete.gif' onclick='javascript:DeleteMonitor(" + devJson.ID + ")' />";
 
-        tableRow["StationTypeStr"] = devJson.StationTypeStr;
-        tableRow["MainDevNum"] = devJson.MainDevNum;
-        var SlaveList = '<table width="100%" class="gridtable"><tr><th>从站名称</th><th>从站类型</th><th>从站编号</th><th>从站地址码</th></tr>';
-        for (var j = 0; j < devJson.SlaveList.length; j++) {
-            SlaveList += '<tr><td>' + devJson.SlaveList[j].名称 + '</td><td>' + devJson.SlaveList[j].DeviceType + '</td><td>' + devJson.SlaveList[j].编号 + '</td><td>' + devJson.SlaveList[j].StationCode + '</td></tr>';
-        }
-        SlaveList += "</table>";
-        tableRow["SlaveList"] = SlaveList;
+        /**********update by kqz 2017-3-6
+        //var SlaveList = '<table width="100%" class="gridtable"><tr><th>从站名称</th><th>从站类型</th><th>从站编号</th><th>从站地址码</th></tr>';
+       // for (var j = 0; j < devJson.SlaveList.length; j++) {
+          //  SlaveList += '<tr><td>' + devJson.SlaveList[j].名称 + '</td><td>' + devJson.SlaveList[j].DeviceType + '</td><td>' + devJson.SlaveList[j].编号 + '</td><td>' + devJson.SlaveList[j].StationCode + '</td></tr>';
+       // }
+//SlaveList += "</table>";
+        //tableRow["SlaveList"] = SlaveList;*/
         tableData.push(tableRow);
     }
     $('#tbDevInfos').datagrid({ loadFilter: pagerFilter }).datagrid('loadData', tableData);
@@ -529,13 +548,16 @@ function btn_OK_Click() {
     var electrictype = $("#txt_ElectricType").val();
     var YearExploitation = $("#txt_YearExploitation").val();
     var AlertAvailableWater = $("#txt_AlertAvailableWater").val();
-    var DeviceTypeCode = $("#cbb_DeviceTypeCode").combobox('getValue');
+    //var DeviceTypeCode = $("#cbb_DeviceTypeCode").combobox('getValue');
+    var DeviceTypeCode = "";
     var MeterPulse = $("#txt_MeterPulse").val();
     var AlertWaterLevel = $("#txt_AlertWaterLevel").val();
     var AlertAvailableElectric = $("#txt_AlertAvailableElectric").val();
-    var Crop = $("#cbb_Crop").combobox('getValue');
+    //var Crop = $("#cbb_Crop").combobox('getValue');
+    var Crop = "";
     var Area = $("#txt_Area").val();
-    var StationType = $("#cbb_StationType").combobox('getValue');
+    //var StationType = $("#cbb_StationType").combobox('getValue');
+    var StationType = ""
     //var StationCode = $("#cbb_StationCode").combobox('getValue');
     var StationCode = $("#txt_StationCode").val();
     //var Frequency = $("#cbb_Frequency").combobox('getValue');
@@ -604,6 +626,8 @@ function btn_OK_Click() {
     devJsonStr += "'设备类型'" + ":'" + DeviceType + "',";
     devJsonStr += "'水位仪编码'" + ":'" + RemoteStation + "'";
     devJsonStr += "}";
+    //alert(devJsonStr);
+    //alert(installtime + "--------------------");
     $.ShowMask("请稍等……");
 
     if (operateType == "MODIFY") {

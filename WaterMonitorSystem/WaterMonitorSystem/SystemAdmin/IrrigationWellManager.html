@@ -83,16 +83,18 @@
                             设备类型</th>
                         <th data-options="field:'DeviceNo',width:60">
                             设备编码</th>
+                        <!--updte by kqz 2017-3-6
                         <th data-options="field:'StationTypeStr',width:60,hidden:true">
                             站点类型</th>
                         <th data-options="field:'MainDevNum',width:60,hidden:true">
-                            主站编码</th>
+                            主站编码</th>-->
                         <th data-options="field:'SimNo',width:60">
                             手机卡号</th>
                         <th data-options="field:'InstallTime',width:60">
                             安装时间</th>
                         <th data-options="field:'installSite',width:60">
                             安装位置</th>
+                         <!--updte by kqz 2017-3-6
                         <th data-options="field:'YearExploitation',width:60">
                             年可开采水量</th>
                         <th data-options="field:'Crop',width:60">
@@ -100,14 +102,15 @@
                         <th data-options="field:'Area',width:60">
                             地块面积</th>
                         <th data-options="field:'showSlave',width:60,fixed:true,align:'center'">
-                            从站列表</th>
+                            从站列表</th>-->
                         <th data-options="field:'editDev',width:35,fixed:true,align:'center'">
                             编辑</th>
                         <th data-options="field:'removeDev',width:35,fixed:true,align:'center'">
                             删除</th>
+                        <!--updte by kqz 2017-3-6
                         <th data-options="field:'SlaveList',width:200,hidden:true">
                             从站列表字符串
-                        </th>
+                        </th>-->
                     </tr>
                 </thead>
             </table>
@@ -169,6 +172,7 @@
                                     <td><input id="txt_InstallPosition" class="easyui-validatebox textbox" style="height:21px" /></td>
                                     <td></td>
                                 </tr>
+                                <!--update by kqz 2017-3-6
                                 <tr height="30px" style=" display:none">
                                     <td align="right" width="75px"><span>水表型号：</span></td>
                                     <td><input id="txt_MeterType" class="easyui-validatebox textbox" style="height:21px" /></td>
@@ -208,16 +212,17 @@
                                     <td align="right" width="75px"><span>水位报警值：</span></td>
                                     <td><input id="txt_AlertWaterLevel" class="easyui-validatebox textbox" style="height:21px" /></td>
                                     <td></td>
-                                </tr>
+                                </tr> -->
                                 <tr height="30px">
                                     <td align="right" width="75px"><span>地图坐标：</span></td>
                                     <td><input id="txt_DevPosition" class="easyui-validatebox textbox" data-options="required:false" style="height:21px" /></td>
                                     <td><a id="btn_Map" href="javascript:void(0)" class="easyui-linkbutton" onclick="javascript:Open();">地图</a></td>
-                                
+                                    <!--update by kqz 2017-3-6 
                                     <td align="right" width="75px"><span>作物：</span></td>
                                     <td><input id="cbb_Crop" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" /></td>
-                                    <td></td>
+                                    <td></td>-->
                                 </tr>
+                                    <!--update by kqz 2017-3-6 
                                 <tr height="30px">
                                     <td align="right" width="75px"><span>地块面积（亩）：</span></td>
                                     <td><input id="txt_Area" class="easyui-validatebox textbox" style="height:21px" /></td>
@@ -235,18 +240,19 @@
                                     <td align="right" width="75px"><span>通信频率：</span></td>
                                     <td><input id="cbb_Frequency" class="easyui-combobox" data-options="valueField: 'id',textField: 'text'" style="width:150px" /></td>
                                     <td></td>
-                                -->
+                                
                                     <td align="right" width="75px"><span>主站编码：</span></td>
                                     <td><input id="txt_MainDevNum" class="easyui-validatebox textbox" data-options="validType:'numLength[3]'" style="height:21px" /></td>
                                     <td></td>
-                                </tr>
+                                </tr>-->
                                 <tr height="30px">
                                     <td align="right" width="75px"><span>设备类型：</span></td>
                                     <td><input id="cbb_DeviceType" class="easyui-combobox" data-options="valueField: 'text',textField: 'text'" style="width:150px" /></td>
                                     <td></td>
+                                    <!-- update by kqz 2017-3-6 
                                     <td align="right" width="75px"><span>水位仪编码：</span></td>
                                     <td><input id="txt_RemoteStation" class="easyui-validatebox textbox" style="height:21px" /></td>
-                                    <td></td>
+                                    <td></td>-->
                                 </tr>
                             </table>
                         </fieldset>

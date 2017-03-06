@@ -169,8 +169,17 @@ function LoadTableData(_devIds) {
                         tableRow["communication"] = (DevDatas[i].通讯状态.Value == "全部正常") ? "<Img style='height:18px;width:18px;' src='../images/正常.png'/>" : "<Img style='height:18px;width:18px;' src='../images/中断.png'/>";
                         //row++;
                         tableRow["updateTime"] = DevDatas[i].更新时间.Value;
+                        /********start add by kqz 2017-3-6*************/
+                        tableRow["curRainFall"] = DevDatas[i].当前降水量.Value;
+                        tableRow["totalRainFall"] = DevDatas[i].降水量累计值.Value;
+                        tableRow["riverLevel"] = DevDatas[i].瞬时河道水位.Value;
+                        tableRow["beidouState"] = DevDatas[i].北斗状态.Value;
+                        tableRow["powerSupplyWay"] = DevDatas[i].供电类型.Value;
+                        tableRow["powerVal"] = DevDatas[i].电池电压.Value;
+                        /********end add by kqz 2017-3-6*************/
                         //row++;
-                        tableRow["yearElectric"] = DevDatas[i].年累计用电量.Value;
+                        /*******update by kqz 2017-3-6*******/
+                       /* tableRow["yearElectric"] = DevDatas[i].年累计用电量.Value;
                         //row++;
                         tableRow["yearWater"] = DevDatas[i].年累计用水量.Value;
                         //row++;
@@ -198,18 +207,21 @@ function LoadTableData(_devIds) {
                         
                         //tableRow["electricNum"] = "<span style='display:block;cursor:pointer;width:100%;height:100%;" + (DevDatas[i].用户剩余电量报警.Value == "报警" ? "color:red;" : "") + "' title='开泵剩余电量：" + DevDatas[i].开泵剩余电量.Value + "\r\n关泵剩余电量：" + DevDatas[i].关泵剩余电量.Value + "'>" + DevDatas[i].本次用电量.Value + "</span>";
                         tableRow["electricNum"] = "<span style='display:block;cursor:pointer;width:100%;height:100%;" + (DevDatas[i].用户剩余电量报警.Value == "报警" ? "color:red;" : "") + "'>" + electricNum + "</span>";
+                        */
+                       /*******update by kqz 2017-3-6*******/
                         //row++;
                         tableRow["operation"] = "<a href='javascript:void(0)' onclick='ShowMore(" + DevDatas[i].操作.Value + ",event)'><Img id='imgedit' style='height:18px;width:18px;' border=0 src='../images/edit.png' /></a>";
                         //row++;
-                        tableRow["pumpStatus6"] = DevDatas[i].流量仪表状态.Value == "故障" ? ("<span style='color:red;bold:weight'>" + DevDatas[i].流量仪表状态.Value + "</span>") : DevDatas[i].流量仪表状态.Value;
+                        /*******update by kqz 2017-3-6*******/
+                        /*tableRow["pumpStatus6"] = DevDatas[i].流量仪表状态.Value == "故障" ? ("<span style='color:red;bold:weight'>" + DevDatas[i].流量仪表状态.Value + "</span>") : DevDatas[i].流量仪表状态.Value;
                         tableRow["pumpStatus8"] = DevDatas[i].终端箱门状态.Value == "开启" ? ("<span style='color:red;bold:weight'>" + DevDatas[i].终端箱门状态.Value + "</span>") : DevDatas[i].终端箱门状态.Value;
                         tableRow["pumpStatus10"] = DevDatas[i].IC卡功能有效.Value == "IC卡有效" ? ("<span style='color:red;bold:weight'>" + DevDatas[i].IC卡功能有效.Value + "</span>") : DevDatas[i].IC卡功能有效.Value;
                         tableRow["pumpStatus16"] = DevDatas[i].电表信号报警.Value == "报警" ? ("<span style='color:red;bold:weight'>" + DevDatas[i].电表信号报警.Value + "</span>") : DevDatas[i].电表信号报警.Value;
                         //row++;
                         tableRow["Water"] = DevDatas[i].累计用水量.Value;
-                        /*内蒙定点数据修改*/
-                        tableRow["yearWater"] = DevDatas[i].累计用水量.Value;
-                                                
+                        
+                        tableRow["yearWater"] = DevDatas[i].累计用水量.Value;*/
+                        /*******update by kqz 2017-3-6*******/
                         tableData.push(tableRow);
                     }
                     $('#tbOperateInfos').datagrid({ loadFilter: pagerFilter }).datagrid('loadData', tableData);

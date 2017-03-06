@@ -266,7 +266,7 @@ namespace Module
             {
                 return new ResMsg(false, "传入的设备ID不存在");
             }
-
+            //device.Acq_Time = device.LastUpdate;
             StringBuilder strSql = new StringBuilder();
             strSql.Append("update Device set ");
             strSql.Append("SimNo=@SimNo,");
@@ -298,13 +298,15 @@ namespace Module
             strSql.Append("MainId=@MainId,");
             strSql.Append("DeviceType=@DeviceType,");
             strSql.Append("WaterUsed=@WaterUsed,");
-            strSql.Append("RemoteStation=@RemoteStation,");
-            strSql.Append("Rainfall=@Rainfall,");
-            strSql.Append("Rainfall_Hour=@Rainfall_Hour,");
-            strSql.Append("Rainfall_Day=@Rainfall_Day,");
-            strSql.Append("Rainfall_Total=@Rainfall_Total,");
-            strSql.Append("WaterLevel=@WaterLevel,");
-            strSql.Append("Acq_Time=@Acq_Time");
+            strSql.Append("RemoteStation=@RemoteStation");
+            /****update by kqz 2017-3-6*******/
+           // strSql.Append("Rainfall=@Rainfall,");
+            //strSql.Append("Rainfall_Hour=@Rainfall_Hour,");
+            //strSql.Append("Rainfall_Day=@Rainfall_Day,");
+            //strSql.Append("Rainfall_Total=@Rainfall_Total,");
+            //strSql.Append("WaterLevel=@WaterLevel,");
+            //strSql.Append("Acq_Time=@Acq_Time");
+            /****update by kqz 2017-3-6*******/
             strSql.Append(" where Id=@Id");
             SqlParameter[] parameters = {
 					new SqlParameter("@SimNo", SqlDbType.NVarChar,20),
@@ -337,12 +339,14 @@ namespace Module
 					new SqlParameter("@DeviceType", SqlDbType.NVarChar,50),
 					new SqlParameter("@WaterUsed", SqlDbType.Decimal,9),
 					new SqlParameter("@RemoteStation", SqlDbType.NVarChar,10),
-                    new SqlParameter("@Rainfall", SqlDbType.Decimal,9),
-                    new SqlParameter("@Rainfall_Hour", SqlDbType.Decimal,9),
-                    new SqlParameter("@Rainfall_Day", SqlDbType.Decimal,9),
-                    new SqlParameter("@Rainfall_Total", SqlDbType.Decimal,9),
-                    new SqlParameter("@WaterLevel", SqlDbType.Decimal,9),
-                    new SqlParameter("@Acq_Time", SqlDbType.DateTime),
+                    /****update by kqz 2017-3-6*******/
+                    //new SqlParameter("@Rainfall", SqlDbType.Decimal,9),
+                    //new SqlParameter("@Rainfall_Hour", SqlDbType.Decimal,9),
+                    //new SqlParameter("@Rainfall_Day", SqlDbType.Decimal,9),
+                    //new SqlParameter("@Rainfall_Total", SqlDbType.Decimal,9),
+                    //new SqlParameter("@WaterLevel", SqlDbType.Decimal,9),
+                    //new SqlParameter("@Acq_Time", SqlDbType.DateTime),
+                    /****update by kqz 2017-3-6*******/
 					new SqlParameter("@Id", SqlDbType.BigInt,8)};
             parameters[0].Value = device.SimNo;
             parameters[1].Value = device.DeviceName;
@@ -374,13 +378,15 @@ namespace Module
             parameters[27].Value = device.DeviceType;
             parameters[28].Value = device.WaterUsed;
             parameters[29].Value = device.RemoteStation;
-            parameters[30].Value = device.Rainfall;
-            parameters[31].Value = device.Rainfall_Hour;
-            parameters[32].Value = device.Rainfall_Day;
-            parameters[33].Value = device.Rainfall_Total;
-            parameters[34].Value = device.WaterLevel;
-            parameters[35].Value = device.Acq_Time;
-            parameters[36].Value = device.Id;
+            /****update by kqz 2017-3-6*******/
+            //parameters[30].Value = device.Rainfall;
+            //parameters[31].Value = device.Rainfall_Hour;
+            //parameters[32].Value = device.Rainfall_Day;
+           // parameters[33].Value = device.Rainfall_Total;
+            //parameters[34].Value = device.WaterLevel;
+            //parameters[35].Value = device.Acq_Time;
+            /****update by kqz 2017-3-6*******/
+            parameters[30].Value = device.Id;
 
             int rows = DbHelperSQL.ExecuteSql(strSql.ToString(), parameters);
             if (rows > 0)

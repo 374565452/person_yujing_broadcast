@@ -148,12 +148,14 @@ namespace WaterMonitorSystem.WebServices
             device.Remark = "";
             try
             {
-                device.CropId = long.Parse(obj3["作物"].ToString());
+                //device.CropId = long.Parse(obj3["作物"].ToString());
+                device.CropId = 0;
             }
             catch
             {
-                obj2["Message"] = "请选择作物";
-                return JavaScriptConvert.SerializeObject(obj2);
+                device.CropId = 0;
+                //obj2["Message"] = "请选择作物";
+                //return JavaScriptConvert.SerializeObject(obj2);
             }
             try
             {
@@ -173,7 +175,8 @@ namespace WaterMonitorSystem.WebServices
             }
             try
             {
-                device.StationCode = int.Parse(obj3["地址码"].ToString());
+                //device.StationCode = int.Parse(obj3["地址码"].ToString());
+                device.StationCode = 0;
             }
             catch
             {
@@ -181,8 +184,8 @@ namespace WaterMonitorSystem.WebServices
             }
             if (device.StationCode < 0 || device.StationCode > 65535)
             {
-                obj2["Message"] = "地址码必须为整数，范围0-65535";
-                return JavaScriptConvert.SerializeObject(obj2);
+                //obj2["Message"] = "地址码必须为整数，范围0-65535";
+                //return JavaScriptConvert.SerializeObject(obj2);
             }
             try
             {
@@ -224,15 +227,16 @@ namespace WaterMonitorSystem.WebServices
                 obj2["Message"] = "已存在设备编码";
                 return JavaScriptConvert.SerializeObject(obj2);
             }
-            if (device.RemoteStation != null && device.RemoteStation.Length > 0)
+            /*********update by kqz 2017-3-6***************/
+            /*if (device.RemoteStation != null && device.RemoteStation.Length > 0)
             {
                 if (DeviceModule.ExistsRemoteStation(device.RemoteStation, device.Id))
                 {
                     obj2["Message"] = "已存在水位仪编码";
                     return JavaScriptConvert.SerializeObject(obj2);
                 }
-            }
-
+            }*/
+            /*********update by kqz 2017-3-6***************/
             ResMsg msg = DeviceModule.AddDevice(device);
             if (msg.Result)
             {
@@ -422,7 +426,8 @@ namespace WaterMonitorSystem.WebServices
             //device.Remark = "";
             try
             {
-                device.CropId = long.Parse(obj3["作物"].ToString());
+                //device.CropId = long.Parse(obj3["作物"].ToString());
+                device.CropId = 0;
             }
             catch
             {
@@ -447,7 +452,8 @@ namespace WaterMonitorSystem.WebServices
             }
             try
             {
-                device.StationCode = int.Parse(obj3["地址码"].ToString());
+                //device.StationCode = int.Parse(obj3["地址码"].ToString());
+                device.StationCode = 0;
             }
             catch
             {
@@ -498,6 +504,8 @@ namespace WaterMonitorSystem.WebServices
                 obj2["Message"] = "已存在设备编码";
                 return JavaScriptConvert.SerializeObject(obj2);
             }
+            /*********update by kqz 2017-3-6***************/
+            /*
             if (device.RemoteStation != null && device.RemoteStation.Length > 0)
             {
                 if (DeviceModule.ExistsRemoteStation(device.RemoteStation, device.Id))
@@ -505,8 +513,9 @@ namespace WaterMonitorSystem.WebServices
                     obj2["Message"] = "已存在水位仪编码";
                     return JavaScriptConvert.SerializeObject(obj2);
                 }
-            }
-
+            }*/
+            /*********update by kqz 2017-3-6***************/
+            
             ResMsg msg = DeviceModule.ModifyDevice(device);
             if (msg.Result)
             {
