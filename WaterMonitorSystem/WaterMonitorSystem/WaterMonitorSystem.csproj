@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CarlosAg.ExcelXmlWriter">
-      <HintPath>..\..\..\CarlosAg.ExcelXmlWriter.dll</HintPath>
+      <HintPath>..\..\..\person_business\CarlosAg.ExcelXmlWriter.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

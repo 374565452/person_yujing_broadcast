@@ -363,9 +363,19 @@ namespace WaterMonitorSystem.WebServices
                 obj3.Add("SupportControl", list.Count > 0);
                 obj3.Add("SupportParam", device.DeviceType.Contains("水泵"));
 
-                if (device.DeviceType.Contains("水位仪"))
-                    obj3.Add("SupportWaterView", device.RemoteStation.ToString().Trim().Length > 0);
+                /*******************update by kqz 2017-3-6 **********************/
+                //if (device.DeviceType.Contains("水位仪"))
+                    //obj3.Add("SupportWaterView", device.RemoteStation.ToString().Trim().Length > 0);
+                if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
+                {
+                    obj3.Add("SupportWaterView", true);
+                }
+                else
+                {
+                    obj3.Add("SupportWaterQuery",true);
+                }
 
+                /*******************update by kqz 2017-3-6 **********************/
                 JavaScriptArray array2 = new JavaScriptArray();
                 obj3.Add("RealDatas", array2);
                 JavaScriptObject item = new JavaScriptObject();

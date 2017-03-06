@@ -521,6 +521,11 @@ function CreateDeviceDetailDataTable(DeviceInfo) {
             trbtn += "<button onclick='OpenSetWater()' class='psbutton'>水文查询</button>";
             trbtn += "<button onclick='OpenSetWaterParam()' class='psbutton'>水文参数</button>";
         }
+        //start add by kqz 2017-3-6
+        if (DeviceInfo.SupportWaterQuery) {
+            trbtn += "<button onclick='OpenSetWaterEx()' class='psbutton'>水文查询</button>";
+        }
+        //end add by kqz 2017-3-6
         trbtn += "<button onclick='OpenSendFile()' class='psbutton'>文件语音</button>";
         var btnhtml = "<div style='width:725px;height:auto;'><table><tr><td  width='725px' align='center'>" + trbtn + "</td></tr></div>";
         $("#divDataList").html(trNote_device + trNote_monitor + btnhtml);
@@ -552,6 +557,10 @@ function OpenSendFile() {
 
 function OpenSetWater() {
     $('#dlgParamWater').dialog({ closed: false, title: (deviceNodes[realDevId].attributes.device.名称 + "水文查询") });
+}
+
+function OpenSetWaterEx() {
+    $('#dlgParamWater_ext').dialog({ closed: false, title: (deviceNodes[realDevId].attributes.device.名称 + "水文查询") });
 }
 
 function OpenSetWaterParam() {

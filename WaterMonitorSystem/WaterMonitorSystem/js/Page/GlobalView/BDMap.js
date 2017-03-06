@@ -559,8 +559,8 @@ window.addMarker = function (data) {
                             if (count % 5 == 0)
                             { trbtn += "</div>"; }
                         }
-
-                        count++;
+                        /*********update by kqz 2017-3-6*******************/
+                        /*count++;
                         if (count % 5 == 1)
                         { trbtn += "<div style=\"text-align:center;\">"; }
                         trbtn += "<button onclick=\"LinkAlarmData(" + realDevId + ")\" class='psbutton' />报警数据</button>";
@@ -572,8 +572,17 @@ window.addMarker = function (data) {
                         { trbtn += "<div style=\"text-align:center;\">"; }
                         trbtn += "<button onclick=\"LinkEventData(" + realDevId + ")\" class='psbutton' />事件数据</button>";
                         if (count % 5 == 0)
-                        { trbtn += "</div>"; }
-
+                        { trbtn += "</div>"; }*/
+                        if (DeviceInfo.SupportWaterQuery) {
+                            count++;
+                            if (count % 5 == 1) {
+                                trbtn += "<div style=\"text-align:center;\">";
+                            }
+                            trbtn += "<button onclick='OpenSetWaterExt(" + realDevId + ",\"" + json.iwTitle + "\")' class='psbutton'>水文查询</button>";
+                            if (count % 5 == 0)
+                            { trbtn += "</div>"; }
+                        }
+                        /*********update by kqz 2017-3-6***********************/
                         if (DeviceInfo.SupportWaterView) {
                             count++;
                             if (count % 5 == 1)
@@ -589,10 +598,17 @@ window.addMarker = function (data) {
                             { trbtn += "</div>"; }
                         }
 
+                        count++;
+                        if (count % 5 == 1)
+                        { trbtn += "<div style=\"text-align:center;\">"; }
+                        trbtn += "<button onclick='OpenSendFile(\"" + json.iwTitle + "\")' class='psbutton'>文件语音</button>";
+                        if (count % 5 == 0)
+                        { trbtn += "</div>"; }
+
                         if (count % 5 != 0)
                         { trbtn += "</div>"; }
 
-                        count = 0;
+                        /*count = 0;
                         if (iskb == 1)
                         {
                             count++;
@@ -613,16 +629,11 @@ window.addMarker = function (data) {
                             { trbtn += "</div>"; }
                         }
 
-                        count++;
-                        if (count % 5 == 1)
-                        { trbtn += "<div style=\"text-align:center;\">"; }
-                        trbtn += "<button onclick='OpenSendFile(\"" + json.iwTitle + "\")' class='psbutton'>文件语音</button>";
-                        if (count % 5 == 0)
-                        { trbtn += "</div>"; }                        
+                                           
                         
                         if (count % 5 != 0)
                         { trbtn += "</div>"; }
-
+                        */
                         if (s.indexOf("psbutton") == -1)
                             s += trbtn;
                     },
@@ -848,6 +859,11 @@ function OpenSetParam(deviceID, diviceName) {
 function OpenSetWater(deviceID, diviceName) {
     $('#dlgParamWater').dialog({ closed: false, title: (diviceName + "水文查询") });
 }
+
+function OpenSetWaterExt(deviceID, diviceName) {
+    $('#dlgParamWater_ext').dialog({ closed: false, title: (diviceName + "水文查询") });
+}
+
 
 function OpenSetWaterParam(deviceID, diviceName) {
     $('#dlgParamWater2').dialog({ closed: false, title: (diviceName + "水文参数") });
