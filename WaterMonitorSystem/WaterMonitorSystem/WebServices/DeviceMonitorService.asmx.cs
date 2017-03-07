@@ -248,7 +248,23 @@ namespace WaterMonitorSystem.WebServices
                         {
                             if (device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN))
                             {
-                                obj3.Add("Value", device.YuJingState.ToString());
+                                string state = "正常";
+                                switch ((device.YuJingState & 0xf))
+                                {
+                                    case 1: { state += "雨量黄色预警"; break; }
+                                    case 2: { state += "雨量橙色预警"; break; }
+                                    case 3: { state += "雨量经色预警"; break; }
+                                    //case 4:{break;}
+                                }
+                                switch (((device.YuJingState >> 4) & 0xf))
+                                {
+                                    case 1: { state += "水位黄色预警"; break; }
+                                    case 2: { state += "水位经色预警"; break; }
+                                    case 3: { state += "水位雨量经色预警"; break; }
+                                    //case 4:{break;}
+                                }
+                                //item.Add("Value", state);
+                                obj3.Add("Value", state);
                                // break;
                             }
                             break;
@@ -257,7 +273,13 @@ namespace WaterMonitorSystem.WebServices
                         {
                             if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI))
                             {
-                                obj3.Add("Value", device.BeidouState.ToString()); //break;
+                                 string state = "正常";
+                                if (device.BeidouState == 1)
+                                {
+                                    state = "故障";
+                                }
+                                //item.Add("Value", state);
+                                obj3.Add("Value", state); //break;
                             }
                             break;
                         }
@@ -265,7 +287,14 @@ namespace WaterMonitorSystem.WebServices
                         {
                             if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI) || device.DeviceType.Equals(DeviceMonitorService.WUXIANGUANGBO))
                             {
-                                obj3.Add("Value", device.PowerSupplyWay.ToString()); //break;
+                                
+                                string state = "交流";
+                                if (device.PowerSupplyWay == 0)
+                                {
+                                    state = "直流";
+                                }
+                    //item.Add("Value", state);
+                                obj3.Add("Value", state); //break;
                             }
                             break;
                         }
@@ -273,7 +302,13 @@ namespace WaterMonitorSystem.WebServices
                         {
                             if ( !device.DeviceType.Equals(DeviceMonitorService.HUWAIDAPING) && !device.DeviceType.Equals(DeviceMonitorService.RUHUGUANGBOZHUANYEBAN))
                             {
-                                obj3.Add("Value", device.PowerVal.ToString()); //break;
+                                 string state = "正常";
+                                 if (device.PowerVal == 1)
+                                 {
+                                    state = "电压低";
+                                  }
+                   // item.Add("Value", state);
+                                obj3.Add("Value", state); //break;
                             }
                             break;
                         }
@@ -428,7 +463,22 @@ namespace WaterMonitorSystem.WebServices
 
                     item = new JavaScriptObject();
                     item.Add("Name", "预警状态");
-                    item.Add("Value", device.YuJingState.ToString());
+                    string state = "正常";
+                    switch ((device.YuJingState & 0xf))
+                    {
+                        case 1:{state+="雨量黄色预警" ;break;}
+                        case 2:{state+="雨量橙色预警";break;}
+                        case 3: { state += "雨量经色预警"; break; }
+                        //case 4:{break;}
+                    }
+                    switch (((device.YuJingState>>4) & 0xf))
+                    {
+                        case 1: { state += "水位黄色预警";break; }
+                        case 2: {state += "水位经色预警" ;break; }
+                        case 3: { state += "水位雨量经色预警"; break; }
+                        //case 4:{break;}
+                    }
+                    item.Add("Value", state);
                     array2.Add(item);
 
                     item = new JavaScriptObject();
@@ -452,7 +502,12 @@ namespace WaterMonitorSystem.WebServices
                     //obj3.Add("Value", device.BeidouState.ToString()); //break;
                     item = new JavaScriptObject();
                     item.Add("Name", "北斗状态");
-                    item.Add("Value", device.BeidouState.ToString());
+                    string state = "正常";
+                    if (device.BeidouState == 1)
+                    {
+                        state = "故障";
+                    }
+                    item.Add("Value", state);
                     array2.Add(item);
                 }
 
@@ -461,7 +516,12 @@ namespace WaterMonitorSystem.WebServices
                     //obj3.Add("Value", device.PowerSupplyWay.ToString()); //break;
                     item = new JavaScriptObject();
                     item.Add("Name", "供电类型");
-                    item.Add("Value", device.PowerSupplyWay.ToString());
+                    string state = "交流";
+                    if (device.PowerSupplyWay == 0)
+                    {
+                        state = "直流";
+                    }
+                    item.Add("Value", state);
                     array2.Add(item);
                 }
 
@@ -470,7 +530,13 @@ namespace WaterMonitorSystem.WebServices
                     //obj3.Add("Value", device.PowerVal.ToString()); //break;
                     item = new JavaScriptObject();
                     item.Add("Name", "电池电压");
-                    item.Add("Value", device.PowerVal.ToString());
+
+                    string state = "正常";
+                    if (device.PowerVal == 1)
+                    {
+                        state = "电压低";
+                    }
+                    item.Add("Value", state);
                     array2.Add(item);
                 }
 
@@ -816,7 +882,23 @@ namespace WaterMonitorSystem.WebServices
                             if (device.DeviceType.Equals(DeviceMonitorService.YULIANGZHAN) || device.DeviceType.Equals(DeviceMonitorService.YULIANGSHUIWEIZHAN))
                             //if (device.DeviceType.Equals("雨量站") || device.DeviceType.Equals("雨量水位站"))
                             {
-                                obj3.Add("Value", device.YuJingState.ToString());
+                                string state = "正常";
+                                switch ((device.YuJingState & 0xf))
+                                {
+                                    case 1: { state += "雨量黄色预警"; break; }
+                                    case 2: { state += "雨量橙色预警"; break; }
+                                    case 3: { state += "雨量经色预警"; break; }
+                                    //case 4:{break;}
+                                }
+                                switch (((device.YuJingState >> 4) & 0xf))
+                                {
+                                    case 1: { state += "水位黄色预警"; break; }
+                                    case 2: { state += "水位经色预警"; break; }
+                                    case 3: { state += "水位雨量经色预警"; break; }
+                                    //case 4:{break;}
+                                }
+                                //item.Add("Value", state);
+                                obj3.Add("Value", state);
                                 // break;
                             }
                             else
@@ -830,7 +912,13 @@ namespace WaterMonitorSystem.WebServices
                             if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI))
                                 //if (device.DeviceType.Equals("动态预警主机"))
                             {
-                                obj3.Add("Value", device.BeidouState.ToString()); //break;
+                                string state = "正常";
+                                if (device.BeidouState == 1)
+                                {
+                                    state = "故障";
+                                }
+                                item.Add("Value", state);
+                                obj3.Add("Value", state); //break;
                             }
                             else
                             {
@@ -843,7 +931,13 @@ namespace WaterMonitorSystem.WebServices
                             if (device.DeviceType.Equals(DeviceMonitorService.DONGTAIYUJINGZHUJI) || device.DeviceType.Equals(DeviceMonitorService.WUXIANGUANGBO))
                                 //if (device.DeviceType.Equals("动态预警主机") || device.DeviceType.Equals("无线预警广播"))
                             {
-                                obj3.Add("Value", device.PowerSupplyWay.ToString()); //break;
+                                string state = "交流";
+                                if (device.PowerSupplyWay == 0)
+                                {
+                                    state = "直流";
+                                }
+                                //item.Add("Value", state);
+                                obj3.Add("Value", state); //break;
                             }
                             else
                             {
@@ -856,7 +950,13 @@ namespace WaterMonitorSystem.WebServices
                             if (!device.DeviceType.Equals(DeviceMonitorService.HUWAIDAPING) && !device.DeviceType.Equals(DeviceMonitorService.RUHUGUANGBOZHUANYEBAN))
                                 //if (!device.DeviceType.Equals("户外大屏") && !device.DeviceType.Equals("入户广播专业版"))
                             {
-                                obj3.Add("Value", device.PowerVal.ToString()); //break;
+                                string state = "正常";
+                                if (device.PowerVal == 1)
+                                {
+                                    state = "电压低";
+                                }
+                                //item.Add("Value", state);
+                                obj3.Add("Value", state); //break;
                             }
                             else
                             {

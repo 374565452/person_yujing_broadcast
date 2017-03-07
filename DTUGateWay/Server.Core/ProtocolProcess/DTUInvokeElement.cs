@@ -17,6 +17,15 @@ namespace Server.Core.ProtocolProcess
 {
     public class DTUInvokeElement : AsyncProtocolInvokeElement//继承
     {
+        /******************add by kqz 2017-3-7**********/
+        public static string YULIANGZHAN = "雨量站";
+        public static string YULIANGSHUIWEIZHAN = "雨量水位站";
+        public static string HUWAIDAPING = "户外大屏";
+        public static string RUHUGUANGBOZHUANYEBAN = "入户广播专业版";
+        public static string DONGTAIYUJINGZHUJI = "动态预警主机";
+        public static string WUXIANGUANGBO = "无线预警广播";
+        /******************add by kqz 2017-3-7**********/
+
         log4net.ILog LogHelper = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static Dictionary<string, DateTime> DictDeviceGetNew = new Dictionary<string, DateTime>();
 
@@ -261,8 +270,35 @@ namespace Server.Core.ProtocolProcess
                             d.LastUpdate = DateTime.Now;
                             d.Remark = message.RawDataStr;
                             d.TerminalState = "状态自报";
+                            
                             if (cmdreceive.WaterUsed > 0)
                                 d.WaterUsed = cmdreceive.WaterUsed;
+                            /*******add by kqz 2017-3-7 *************/
+                            //message.UserDataBytes在这里有用户上报的数据内容
+                            //由于协议中高8位代码的是预警状态
+                            //雨量站与雨量水位站，要进行预警状态数据的解析
+                            if (d.DeviceType.Equals(YULIANGZHAN) || d.DeviceType.Equals(YULIANGSHUIWEIZHAN))
+                            {
+                                int yujing =(int) message.UserDataBytes[0];
+                                d.YuJingState = yujing;
+                            }
+                            //如果为动态预警主机，则进行北斗卫星状态解析
+                            if (d.DeviceType.Equals(DONGTAIYUJINGZHUJI))
+                            {
+                                int tmep = (int)message.UserDataBytes[1];
+                                int beidouStatus = (int)((tmep >> 5) & 0x1);
+                                d.BeidouState = beidouStatus;
+                            }
+                            //如果为动态预警主机，或无线预警主机，则进行电池数据解析
+                            if (d.DeviceType.Equals(DONGTAIYUJINGZHUJI) || d.DeviceType.Equals(WUXIANGUANGBO))
+                            {
+                                int temp = (int)message.UserDataBytes[3];
+                                int way = (int)(temp & 0x01);
+                                int status = (int)((temp >> 1) & 0x01);
+                                d.PowerSupplyWay = way;
+                                d.PowerVal = status;
+                            }
+                            /*******add by kqz 2017-3-7***************/
                             updateDeviceList(d);
                             OnlineDeviceService.AddOnline(deviceNo, d);
                             DeviceEvent deviceEvent = new DeviceEvent();
