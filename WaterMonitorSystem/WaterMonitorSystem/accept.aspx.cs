@@ -134,7 +134,11 @@ namespace WaterMonitorSystem
                     }
                     else
                     {
-                        int packetSize = 230;
+                        
+                        /**********start update by kqz 2017-3-8*****************/
+                        //int packetSize = 230; 
+                        int packetSize = 256;
+                        /**********end update by kqz 2017-3-8 20:27****************/
                         string path = System.Web.HttpContext.Current.Request.MapPath("~/UploadFiles/User/" + loginUser.LoginName + "/");
                         DirectoryInfo dir = new DirectoryInfo(path);
                         if (!dir.Exists)

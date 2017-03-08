@@ -1246,6 +1246,7 @@
     <Content Include="tcpSend.ashx" />
     <None Include="Properties\PublishProfiles\water_monitor.pubxml" />
     <Content Include="UploadRecordFile.ashx" />
+    <None Include="Properties\PublishProfiles\yujing_publish.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
