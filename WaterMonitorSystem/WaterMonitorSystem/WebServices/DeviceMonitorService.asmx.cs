@@ -917,7 +917,7 @@ namespace WaterMonitorSystem.WebServices
                                 {
                                     state = "故障";
                                 }
-                                item.Add("Value", state);
+                                //item.Add("Value", state);
                                 obj3.Add("Value", state); //break;
                             }
                             else

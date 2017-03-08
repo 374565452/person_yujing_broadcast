@@ -34,7 +34,7 @@
       <HintPath>..\..\WaterMonitorSystem\Common\bin\Debug\Common.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
-      <HintPath>..\..\..\log4net.dll</HintPath>
+      <HintPath>..\..\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Model">
       <HintPath>..\..\WaterMonitorSystem\Model\bin\Debug\Model.dll</HintPath>

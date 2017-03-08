@@ -1775,6 +1775,14 @@ namespace Server.Core.ProtocolProcess
                                                 userToken.DeviceList.Rainfall_Total = trf.Rainfall_Total;
                                                 userToken.DeviceList.WaterLevel = trf.WaterLevel;
                                                 userToken.DeviceList.Acq_Time = trf.Acq_Time;
+
+                                                /***********add by kqz 2017-3-8 ********************/
+                                                userToken.DeviceList.CurRainfall = trf.Rainfall;
+                                                userToken.DeviceList.TotalRainfall = trf.Rainfall_Total;
+                                                userToken.DeviceList.RiverLevel = trf.WaterLevel;
+                                                userToken.DeviceList.PowerVal = trf.BV;
+                                                /***********add by kqz 2017-3-8*********************/
+
                                             }
                                         }
                                         catch { }
@@ -1929,6 +1937,13 @@ namespace Server.Core.ProtocolProcess
                                                 userToken.DeviceList.Rainfall_Total = trf.Rainfall_Total;
                                                 userToken.DeviceList.WaterLevel = trf.WaterLevel;
                                                 userToken.DeviceList.Acq_Time = trf.Acq_Time;
+
+                                                /***********add by kqz 2017-3-8 ********************/
+                                                userToken.DeviceList.CurRainfall = trf.Rainfall;
+                                                userToken.DeviceList.TotalRainfall = trf.Rainfall_Total;
+                                                userToken.DeviceList.RiverLevel = trf.WaterLevel;
+                                                userToken.DeviceList.PowerVal = trf.BV;
+                                                /***********add by kqz 2017-3-8*********************/
                                             }
                                         }
                                         catch { }

@@ -298,6 +298,15 @@ namespace Module
             strSql.Append("MainId=@MainId,");
             strSql.Append("DeviceType=@DeviceType,");
             strSql.Append("WaterUsed=@WaterUsed,");
+            /***********start add by kqz 2017-3-8*******************/
+            strSql.Append("CurRainfall=@CurRainfall,");
+            strSql.Append("TotalRainfall=@TotalRainfall,");
+            strSql.Append("RiverLevel=@RiverLevel,");
+            strSql.Append("PowerSupplyWay=@PowerSupplyWay,");
+            strSql.Append("YuJingState=@YuJingState,");
+            strSql.Append("PowerVal=@PowerVal,");
+            strSql.Append("BeidouState=@BeidouState,");
+            /***********end add by kqz 2017-3-8******************/
             strSql.Append("RemoteStation=@RemoteStation");
             /****update by kqz 2017-3-6*******/
            // strSql.Append("Rainfall=@Rainfall,");
@@ -339,6 +348,17 @@ namespace Module
 					new SqlParameter("@DeviceType", SqlDbType.NVarChar,50),
 					new SqlParameter("@WaterUsed", SqlDbType.Decimal,9),
 					new SqlParameter("@RemoteStation", SqlDbType.NVarChar,10),
+
+                     /***********start add by kqz 2017-3-8*******************/
+            new SqlParameter("@CurRainfall",SqlDbType.Decimal,9),
+            new SqlParameter("@TotalRainfall",SqlDbType.Decimal,9),
+           new SqlParameter("@RiverLevel",SqlDbType.Decimal,9),
+            new SqlParameter("@PowerSupplyWay",SqlDbType.Int,4),
+            new SqlParameter("@YuJingState",SqlDbType.Int,4),
+            new SqlParameter("@PowerVal",SqlDbType.Decimal,9),
+            new SqlParameter("@BeidouState",SqlDbType.Int,4),
+            /***********end add by kqz 2017-3-8******************/
+
                     /****update by kqz 2017-3-6*******/
                     //new SqlParameter("@Rainfall", SqlDbType.Decimal,9),
                     //new SqlParameter("@Rainfall_Hour", SqlDbType.Decimal,9),
@@ -378,6 +398,16 @@ namespace Module
             parameters[27].Value = device.DeviceType;
             parameters[28].Value = device.WaterUsed;
             parameters[29].Value = device.RemoteStation;
+            /***********start add by kqz 2017-3-8*******************/
+            parameters[30].Value = device.CurRainfall;
+            parameters[31].Value = device.TotalRainfall;
+            parameters[32].Value = device.RiverLevel;
+            parameters[33].Value = device.PowerSupplyWay;
+            parameters[34].Value = device.YuJingState;
+            parameters[35].Value = device.PowerVal;
+            parameters[36].Value = device.BeidouState;
+            /***********end add by kqz 2017-3-8*******************/
+            
             /****update by kqz 2017-3-6*******/
             //parameters[30].Value = device.Rainfall;
             //parameters[31].Value = device.Rainfall_Hour;
@@ -386,7 +416,7 @@ namespace Module
             //parameters[34].Value = device.WaterLevel;
             //parameters[35].Value = device.Acq_Time;
             /****update by kqz 2017-3-6*******/
-            parameters[30].Value = device.Id;
+            parameters[37].Value = device.Id;
 
             int rows = DbHelperSQL.ExecuteSql(strSql.ToString(), parameters);
             if (rows > 0)

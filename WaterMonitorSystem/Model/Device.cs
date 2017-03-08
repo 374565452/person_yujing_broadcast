@@ -262,5 +262,17 @@ namespace Maticsoft.Model
         /// </summary>
         public int BeidouState { get; set; }
         /***********end add by kqz 2017-3-5***************/
+        /***********start add by kqz 2017-3-8 ****************/
+        public Device()
+        {
+            this.CurRainfall = -1.0M;
+            this.TotalRainfall = -1.0M;
+            this.RiverLevel = -1.00M;
+            this.PowerSupplyWay = -1;
+            this.YuJingState = -1;
+            this.PowerVal = -1.0M;
+            this.BeidouState = -1;
+        }
+        /***********end add by kqz 2017-3-8 *****************/
     }
 }
