@@ -560,7 +560,7 @@ function btn_OK_Click() {
     var StationType = ""
     //var StationCode = $("#cbb_StationCode").combobox('getValue');
     //var StationCode = $("#txt_StationCode").val();
-    var StationCod = "";
+    var StationCode = "";
     //var Frequency = $("#cbb_Frequency").combobox('getValue');
     var MainDevNum = $("#txt_MainDevNum").val();
     var DeviceType = $("#cbb_DeviceType").combobox('getValue');

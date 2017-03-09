@@ -175,8 +175,8 @@ namespace WaterMonitorSystem.WebServices
             }
             try
             {
-                //device.StationCode = int.Parse(obj3["地址码"].ToString());
-                device.StationCode = 0;
+                device.StationCode = int.Parse(obj3["地址码"].ToString());
+                //device.StationCode = 0;
             }
             catch
             {
@@ -452,8 +452,8 @@ namespace WaterMonitorSystem.WebServices
             }
             try
             {
-                //device.StationCode = int.Parse(obj3["地址码"].ToString());
-                device.StationCode = 0;
+                device.StationCode = int.Parse(obj3["地址码"].ToString());
+                //device.StationCode = 0;
             }
             catch
             {
@@ -461,8 +461,8 @@ namespace WaterMonitorSystem.WebServices
             }
             if (device.StationCode < 0 || device.StationCode > 65535)
             {
-                obj2["Message"] = "地址码必须为整数，范围0-65535";
-                return JavaScriptConvert.SerializeObject(obj2);
+                //obj2["Message"] = "地址码必须为整数，范围0-65535";
+                //return JavaScriptConvert.SerializeObject(obj2);
             }
             try
             {
