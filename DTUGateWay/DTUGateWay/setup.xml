@@ -2,7 +2,7 @@
 <configuration>
   <appSettings>
     <!--dtu接入服务端口号-->
-    <add key="dtuServerPort" value="6001"></add>
+    <add key="dtuServerPort" value="7002"></add>
     <!--web接入服务端口号-->
     <add key="webServerPort" value="9010"></add>
     <!--Socket超时 秒-->

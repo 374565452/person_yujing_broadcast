@@ -40,14 +40,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IrisSkin4">
-      <HintPath>..\..\..\IrisSkin4.dll</HintPath>
+      <HintPath>..\..\IrisSkin4.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
-      <HintPath>..\..\..\log4net.dll</HintPath>
+      <HintPath>..\..\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
