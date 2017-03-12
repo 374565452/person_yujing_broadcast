@@ -231,6 +231,7 @@ namespace DTU.GateWay.Protocol
         public virtual string ReadMsg()
         {
             string msg = "";
+           
             if (RawDataChar == null)
             {
                 return "无数据";
@@ -249,8 +250,11 @@ namespace DTU.GateWay.Protocol
 
                     Array.Copy(RawDataChar, 3, Body_b, 0, Body_b.Length);
                     CC = RawDataChar[RawDataChar.Length - 2];
+                    AFN = RawDataChar[14];
                     byte CCN = FormatHelper.GetXorByte(Body_b, 0, Body_b.Length);
-                    if (CCN == CC)
+                    string s="CCN = "+ CCN + "  Length =  " + Length +" body_b .length is " + Body_b.Length;
+                    //update by kqz 2017-10:40 解决文件下发问题
+                    if ((AFN == (byte)BaseProtocol.AFN.ToDtuSendFile) || (CCN == CC))
                     {
                         ControlField = RawDataChar[3];
                         //if (ControlField == (byte)BaseProtocol.ControlField.FromDtu)
@@ -302,7 +306,7 @@ namespace DTU.GateWay.Protocol
                     }
                     else
                     {
-                        msg = "校验码不对，" + CC;
+                        msg = s+ "   校验码不对，" + CC;
                     }
                 }
                 else

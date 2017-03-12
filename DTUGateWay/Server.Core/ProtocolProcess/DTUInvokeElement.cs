@@ -1133,6 +1133,7 @@ namespace Server.Core.ProtocolProcess
                     else if (message.ControlField == (byte)BaseProtocol.ControlField.FromDtu
                         && message.AFN == (byte)BaseProtocol.AFN.FromDtuUploadFile)
                     {
+                        //ShowLogData.add("start ------------终端上传文件-----------");
                         CmdFromDtuUploadFile cmdreceive = new CmdFromDtuUploadFile(message);
                         //cmdreceive.UserData = message.UserData;
                         string msgreceive = cmdreceive.ReadMsg();
@@ -1147,6 +1148,8 @@ namespace Server.Core.ProtocolProcess
                         }
                         else
                         {
+
+                            //ShowLogData.add("----aaaaaaaaaaaaaaaaaaa上传方件出错-----------------");
                             d.Online = 1;
                             d.LastUpdate = DateTime.Now;
                             d.Remark = message.RawDataStr;
@@ -1158,13 +1161,15 @@ namespace Server.Core.ProtocolProcess
                             deviceEvent.DeviceNo = deviceNo;
                             deviceEvent.EventTime = d.LastUpdate;
                             deviceEvent.EventType = d.TerminalState;
-                
+                      
                             deviceEvent.RawData = message.RawDataStr;
                             if (msgreceive != "" || cmdreceive.Sum == 0)
                             {
                                 cmdres.Result = 0;
                                 deviceEvent.DeviceTime = d.LastUpdate;
                                 deviceEvent.Remark = "终端上传文件出错：" + msgreceive;
+                         //ShowLogData.add（""+deviceEvent.Remark);
+                                //ShowLogData.add("终端上传方件出错-----------------");
                             }
                             else
                             {
@@ -1179,7 +1184,7 @@ namespace Server.Core.ProtocolProcess
                                 }
                                 fo[cmdreceive.Curr - 1] = cmdreceive.Content;
                                 FilePathCache.AddFileCacheFromDTU(message.AddressField + "-" + message.AFN, fo);
-
+                                //ShowLogData.add("----bbbbbbbbbbbbbbbbbbbbbb上传方件出错-----------------");
                                 if (cmdreceive.Sum == cmdreceive.Curr)
                                 {
                                     List<byte> list = new List<byte>();
@@ -1194,7 +1199,8 @@ namespace Server.Core.ProtocolProcess
                                     {
                                         pathRoot = FilePathCache.Path;
                                     }
-                                    string path = pathRoot + "/UploadFiles/Device/" + DeviceModule.DeviceNo_Hex2Normal(message.AddressField) + "/";
+                                    string path = pathRoot + "UploadFiles/Device/";
+                                    ShowLogData.add("----ccccccccdddddddddddddddd上传方件出错-----------------"+path);
                                     DirectoryInfo dir = new DirectoryInfo(path);
                                     if (!dir.Exists)
                                         dir.Create();
@@ -1208,7 +1214,7 @@ namespace Server.Core.ProtocolProcess
                                     {
                                         FileName += ".bin";
                                     }
-
+                                    ShowLogData.add("-------------save the file ---------------");
                                     list.RemoveAt(0);
                                     byte[] bs = list.ToArray();
                                     using (FileStream fs = new FileStream(FileName, FileMode.Create))
