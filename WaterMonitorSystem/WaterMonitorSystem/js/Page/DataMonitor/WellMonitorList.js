@@ -176,6 +176,7 @@ function LoadTableData(_devIds) {
                         tableRow["beidouState"] = DevDatas[i].北斗状态.Value;
                         tableRow["powerSupplyWay"] = DevDatas[i].供电类型.Value;
                         tableRow["powerVal"] = DevDatas[i].电池电压.Value;
+                        tableRow["setupAddress"] = DevDatas[i].安装位置.Value;
                         /********end add by kqz 2017-3-6*************/
                         //row++;
                         /*******update by kqz 2017-3-6*******/

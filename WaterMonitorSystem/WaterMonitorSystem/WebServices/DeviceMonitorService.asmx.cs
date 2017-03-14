@@ -757,6 +757,9 @@ namespace WaterMonitorSystem.WebServices
                 realTimeDataColumns.Add("北斗状态");
                 /******end add by kqz 2017-3-5*****/
 
+                /*************start add by kqz 2017-3-14**********************/
+                realTimeDataColumns.Add("安装位置");
+                /*************end add by kqz 2017-3-14*********************/
                 List<string> showLevelAlias = new List<string>();
                 showLevelAlias.Add("村庄");
                 showLevelAlias.Add("设备");
@@ -831,7 +834,7 @@ namespace WaterMonitorSystem.WebServices
                     case "长编号": obj3.Add("Value", DeviceModule.GetFullDeviceNoByID(device.Id)); break;
                     case "更新时间": obj3.Add("Value", device.LastUpdate.ToString("yyyy-MM-dd HH:mm:ss")); break;
                     case "操作": obj3.Add("Value", device.Id); break;
-
+                    case "安装位置": obj3.Add("Value", device.SetupAddress); break;
                     case "累计用水量": obj3.Add("Value", device.WaterUsed); break;
 
                     /**********start add by kqz 2017-3-6 19:47**************/

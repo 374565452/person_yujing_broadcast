@@ -1,16 +1,14 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+﻿<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <title>水资源管理平台</title>
     <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" media="screen" />
     <link rel="stylesheet" type="text/css" href="App_Themes/easyui/themes/default/easyui.css" />
     <link rel="stylesheet" type="text/css" href="App_Themes/easyui/themes/icon.css" />
-
-    <link href="css/styles.css" type="text/css" media="screen" rel="stylesheet" />
-    <link href="css/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
- 
-</head>
+    <link rel="stylesheet" type="text/css" href="css/base.css">
+    <link rel="stylesheet" type="text/css" href="css/animate.min.css">
     <style type="text/css">
         #divMask {
             display: none;
@@ -113,7 +111,7 @@
         }
 
     </style>
-      <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/jquery-1.11.1.min.js"></script>
     <script src="js/easyui/jquery.easyui.min.js"></script>
     <script src="js/CheckBrowser.js"></script>
     <script src="js/wow.min.js"></script>
@@ -135,7 +133,7 @@
         document.onkeydown = function (e) {
             if (!e) e = window.event; //火狐中是 window.event
             if ((e.keyCode || e.which) == 13) {
-                var btlogin = document.getElementById("loginbtn");
+                var btlogin = document.getElementById("btlogin");
                 btlogin.focus();
                 btlogin.click();
             }
@@ -149,19 +147,19 @@
                 return;
             }
             isLogging = true;
-            var userName = $("#user_name").val();
-            var password = $("#user_password").val();
+            var userName = $("#txtaccount").val();
+            var password = $("#txtpassword").val();
             var vcode = "";
             if (userName.trim() == "") {
                 //alert("请输入用户名");
                 $.messager.alert("提示信息", "请输入用户名");
                 isLogging = false;
-                $("#user_name").focus();
+                $("#txtaccount").focus();
                 return;
             }
 
             //ShowMsg('<div style="background:url(Images/loading.gif) no-repeat 10px center;">正在登录请等待...</div>', true, false);
-            //$.ShowMask("<div style=\"background:url(Images/loading.gif) no-repeat 10px center;text-align:center;\">正在登录，请稍等……</div>");
+            $.ShowMask("<div style=\"background:url(Images/loading.gif) no-repeat 10px center;\">正在登录，请稍等……</div>");
             setTimeout(function () {
                 $.ajax(
                 {
@@ -240,7 +238,7 @@
                 {
                     url: "WebServices/GlobalAppService.asmx/GetState",
                     type: "POST",
-                    data: {},
+                    data: { },
                     dataType: "text",
                     cache: false,
                     success: function (responseText) {
@@ -277,7 +275,7 @@
                 }).blur();
             };
 
-           //showImg(0);
+            showImg(0);
         });
 
         function showImg(k) {
@@ -292,46 +290,58 @@
             }, 5000)
         }
 
-        function placeholderSupport() {
+        function placeholderSupport() { 
             return 'placeholder' in document.createElement('input');
         }
     </script>
+</head>
 
-<body id="login">
-    <div id="wrappertop">
+<body>
+    <div id="shade"></div>
+    <div id="ZZDiv">
+        <span id="ZZSpan"></span>
     </div>
-    <div id="wrapper">
-        <div id="content">
-            <div id="header">
-                <h1>
-                    <a href="">
-                       <!--؅׃Logo <img src="logo.png"   height="50"  width="100"  alt="logo">--></a></h1>
+
+    <div id="imgList">
+        <img src="images/第一.jpg" />
+    </div>
+    <div id="divCC"></div>
+    <!--内容-->
+    <div class="bubblingLT wow zoomIn" data-wow-duration="1s" data-wow-delay="1s">
+        <div class="wrapper">
+            <div class="logo" style=" width:210px">
+                <img class="wow fadeInLeft" data-wow-duration="1.5s" data-wow-delay="1s" src="images/mkhy.png" alt="" style="width:200px">
             </div>
-            <div id="darkbanner" class="banner320">
-                <h2>平台登陆</h2>
-            </div>
-            <div id="darkbannerwrap">
-            </div>
-            <form name="form1">
-            <fieldset class="form">
-                <p>
-                    <label class="loginlabel" for="user_name">
-                        账号:</label>
-                    <input class="logininput ui-keyboard-input ui-widget-content ui-corner-all" name="user_name"
-                        id="user_name" type="text" value="" />
-                </p>
-                <p>
-                    <label class="loginlabel" for="user_password">
-                        密码:</label>
-                    <span>
-                        <input class="logininput  logininput ui-keyboard-input ui-widget-content ui-corner-all"   name="user_password" id="user_password" type="password" /></span>
-                </p>
-                <p style="margin-left:100px;">
-                <button id="loginbtn" type="button" class="positive" name="Submit" onclick="LoginInfo()" >
-                    <img src="Images/key.png" alt="Announcement" />登陆</button>
-               </p>
-            </fieldset>
+            <h2 class="wow zoomIn" data-wow-duration="1.5s" data-wow-delay="1.5s">水资源管理平台</h2>
         </div>
     </div>
-   
+
+    <script>
+        if (!(/msie [6|7|8|9]/i.test(navigator.userAgent))) {
+            new WOW().init();
+        };
+    </script>
+
+    <div class="copyright "></div>
+
+    <!--输入框-->
+    <div class="lo" style="height: 60px; width: 800px; left: 50%; margin-left: -420px;">
+        <div class="enter" style="background-color: transparent;">
+            <h1 style="display: none">水资源管理平台</h1>
+            <div class="box" style="margin: 0; width: 800px;">
+                <p style="float: left; margin: 10px;">
+                    <input type="text" id="txtaccount" class="ico" placeholder="账户">
+                </p>
+                <p style="float: left; margin: 10px;">
+                    <input type="password" id="txtpassword" class="ico1" placeholder="密码">
+                </p>
+                <p style="float: left; margin: 10px;">
+                    <input type="button" id="btlogin" class="btn" value="登录" onclick="LoginInfo()">
+                </p>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+    </div>
 </body>
+</html>
+

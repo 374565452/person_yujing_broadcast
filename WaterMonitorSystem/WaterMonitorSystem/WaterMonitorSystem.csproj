@@ -485,7 +485,7 @@
     <Content Include="DataReport\VillageWaterStatistic.html" />
     <Content Include="DataReport\VillageWaterChart2.html" />
     <Content Include="DataReport\VillageWaterStatistic2.html" />
-    <Content Include="default.html" />
+    <Content Include="default_old.html" />
     <Content Include="FileOperate.aspx" />
     <Content Include="Global.asax" />
     <Content Include="GlobalView\BDMap.html" />
@@ -1089,7 +1089,7 @@
     <Content Include="WebServices\WaterRightService.asmx" />
     <Content Include="WebServices\WaterUserService.asmx" />
     <Content Include="default123.html" />
-    <Content Include="default_bak2.html" />
+    <Content Include="default.html" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="accept.aspx.cs">
