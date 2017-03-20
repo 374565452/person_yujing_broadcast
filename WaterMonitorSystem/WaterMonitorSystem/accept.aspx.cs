@@ -148,7 +148,18 @@ namespace WaterMonitorSystem
                         byte[] bsOld = new byte[file.ContentLength];
                         file.InputStream.Read(bsOld, 0, bsOld.Length);
                         file.InputStream.Seek(0, SeekOrigin.Begin);
-                        int count = file.ContentLength / packetSize + 1;
+                        //start update by kqz 2017-3-20
+                        int count = 0;
+                        //int count = file.ContentLength / packetSize + 1;
+                        if ((file.ContentLength % packetSize) == 0)
+                        {
+                            count = file.ContentLength / packetSize;
+                        }
+                        else
+                        {
+                            count = file.ContentLength / packetSize + 1;
+                        }
+                        //end update by kqz 2017-3-20
                         //byte[] bsNew = new byte[file.ContentLength];
                         for (int i = 0; i < count; i++)
                         {
@@ -175,7 +186,8 @@ namespace WaterMonitorSystem
                                 }
                                 else
                                 {
-                                    Array.Copy(bsOld, packetSize * i - 1, bs, 0, bs.Length);
+                                    Array.Copy(bsOld, packetSize * i, bs, 0, bs.Length);
+                                    //Array.Copy(bsOld, packetSize * i - 1, bs, 0, bs.Length);
                                     //Array.Copy(bs, 0, bsNew, packetSize * i - 1, bs.Length);
                                 }
 
