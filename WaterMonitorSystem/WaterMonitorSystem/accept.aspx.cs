@@ -167,7 +167,9 @@ namespace WaterMonitorSystem
                                 if (i == 0)
                                 {
                                     bs[0] = typeStr;
-                                    Array.Copy(bsOld, 0, bs, 1, bs.Length - 1);
+                                    Array.Copy(bsOld, 0, bs, 1, bs.Length);
+                                    //update by kqz 2017-3-20
+                                    //Array.Copy(bsOld, 0, bs, 1, bs.Length - 1);
                                     //Array.Copy(bs, 1, bsNew, 0, bs.Length - 1);
                                 }
                                 else
