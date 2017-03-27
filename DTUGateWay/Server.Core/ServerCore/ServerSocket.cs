@@ -202,72 +202,80 @@ namespace Server.Core.ServerCore
         #region 异步连接成功后，处理逻辑
         private void processAccepte(SocketAsyncEventArgs args)
         {
-            //从池中取出一个空闲的异步操作对象
-            AsyncSocketUserToken token = this.asyncSocketUserTokenPool.pop();
-            //将此对象添加到正在连接集合中
-            this.asyncSocketUserTokenList.add(token);
-
-            //设置保存连接socket
-            token.ConnectedSocket = args.AcceptSocket;
-            token.ConnectedTime = DateTime.Now;
-            token.ActiveDateTime = DateTime.Now;
-
+            //update by kqz 2017-3-27 
             try
             {
-                //对连接后的socket对象投递接收请求
-                //投递异步操作对象AsyncSocketUserToken中的ReceiveAysncEventArgs
-                //进行数据接收处理时，也是用这个ReceiveAysncEventArgs
-                if (SysCache.ShowInfoLog)
+                //从池中取出一个空闲的异步操作对象
+                AsyncSocketUserToken token = this.asyncSocketUserTokenPool.pop();
+                //将此对象添加到正在连接集合中
+                this.asyncSocketUserTokenList.add(token);
+
+                //设置保存连接socket
+                token.ConnectedSocket = args.AcceptSocket;
+                token.ConnectedTime = DateTime.Now;
+                token.ActiveDateTime = DateTime.Now;
+
+                try
                 {
-                    if (token.ConnectedSocket.RemoteEndPoint != null)
+                    //对连接后的socket对象投递接收请求
+                    //投递异步操作对象AsyncSocketUserToken中的ReceiveAysncEventArgs
+                    //进行数据接收处理时，也是用这个ReceiveAysncEventArgs
+                    if (SysCache.ShowInfoLog)
                     {
-                        LogHelper.Info(string.Format("DTU通信服务连接上一个客户端,信息为{0}", token.ConnectedSocket.RemoteEndPoint.ToString()));
-                        ShowLogData.add(string.Format("DTU通信服务连接上一个客户端,信息为{0}", token.ConnectedSocket.RemoteEndPoint.ToString()));
+                        if (token.ConnectedSocket.RemoteEndPoint != null)
+                        {
+                            LogHelper.Info(string.Format("DTU通信服务连接上一个客户端,信息为{0}", token.ConnectedSocket.RemoteEndPoint.ToString()));
+                            ShowLogData.add(string.Format("DTU通信服务连接上一个客户端,信息为{0}", token.ConnectedSocket.RemoteEndPoint.ToString()));
+                        }
                     }
-                }
 
-                //ShowLogData.add(string.Format("剩余线程池数量：{0}", this.asyncSocketUserTokenPool.Count));
+                    //ShowLogData.add(string.Format("剩余线程池数量：{0}", this.asyncSocketUserTokenPool.Count));
 
-                #region add 2015-4-21 当连接上来后，回传一个"%"
-                if (token.InvokeElement == null)
-                {
-                    token.InvokeElement = new DTUInvokeElement(this, token);
-                }
-                //token.InvokeElement.SendData.addData(ProtocolKey.SendHeartThrob);
-                //token.InvokeElement.send();
-                #endregion
-                bool willRaiseEvent = token.ConnectedSocket.ReceiveAsync(token.ReceiveAysncEventArgs);
-
-                if (!willRaiseEvent)
-                {
-                    lock (token)
+                    #region add 2015-4-21 当连接上来后，回传一个"%"
+                    if (token.InvokeElement == null)
                     {
-                        processReceive(token.ReceiveAysncEventArgs);
+                        token.InvokeElement = new DTUInvokeElement(this, token);
                     }
-                }
+                    //token.InvokeElement.SendData.addData(ProtocolKey.SendHeartThrob);
+                    //token.InvokeElement.send();
+                    #endregion
+                    bool willRaiseEvent = token.ConnectedSocket.ReceiveAsync(token.ReceiveAysncEventArgs);
 
+                    if (!willRaiseEvent)
+                    {
+                        lock (token)
+                        {
+                            processReceive(token.ReceiveAysncEventArgs);
+                        }
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    if (SysCache.ShowErrorLog)
+                    {
+                        string error = "";
+                        if (token.ConnectedSocket.RemoteEndPoint != null)
+                        {
+                            error = string.Format("DTU通信服务客户端{0}在投递接收请求时出错，错误信息为{1}", token.ConnectedSocket.RemoteEndPoint.ToString(), e.Message);
+                        }
+                        else
+                        {
+                            error = string.Format("在投递接收请求时出错，错误信息为{0}", e.Message);
+                        }
+                        LogHelper.Error(error);
+                    }
+                    closeClientSocket(token, true);
+                }
+                finally
+                {
+                    //数据是否处理成功，都要进行下一次的异步接收
+                    startAccept(args);
+                }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                if (SysCache.ShowErrorLog)
-                {
-                    string error = "";
-                    if (token.ConnectedSocket.RemoteEndPoint != null)
-                    {
-                        error = string.Format("DTU通信服务客户端{0}在投递接收请求时出错，错误信息为{1}", token.ConnectedSocket.RemoteEndPoint.ToString(), e.Message);
-                    }
-                    else
-                    {
-                        error = string.Format("在投递接收请求时出错，错误信息为{0}", e.Message);
-                    }
-                    LogHelper.Error(error);
-                }
-                closeClientSocket(token, true);
-            }
-            finally
-            {
-                //数据是否处理成功，都要进行下一次的异步接收
-                startAccept(args);
+                LogHelper.Error("----------------异常信息为---------"+ex.Message+"==="+ex.InnerException.Message);
             }
         }
         #endregion

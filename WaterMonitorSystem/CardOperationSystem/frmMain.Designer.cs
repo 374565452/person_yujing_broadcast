@@ -50,6 +50,8 @@
             this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DeviceList = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
             this.btnReOpen = new System.Windows.Forms.Button();
             this.btnCountermandCancel = new System.Windows.Forms.Button();
@@ -96,8 +98,6 @@
             this.lbResult = new System.Windows.Forms.Label();
             this.timerIC = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox5.SuspendLayout();
@@ -330,6 +330,28 @@
             this.groupBox5.TabIndex = 10;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "用户卡查询";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("华文楷体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label12.ForeColor = System.Drawing.Color.White;
+            this.label12.Location = new System.Drawing.Point(505, 54);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(255, 33);
+            this.label12.TabIndex = 14;
+            this.label12.Text = "IC卡网络维护终端";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("华文楷体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label11.ForeColor = System.Drawing.Color.White;
+            this.label11.Location = new System.Drawing.Point(554, 12);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(225, 33);
+            this.label11.TabIndex = 13;
+            this.label11.Text = "水资源管理平台";
             // 
             // button8
             // 
@@ -793,28 +815,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1100, 121);
             this.panel1.TabIndex = 13;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("华文楷体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label11.ForeColor = System.Drawing.Color.White;
-            this.label11.Location = new System.Drawing.Point(554, 12);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(255, 33);
-            this.label11.TabIndex = 13;
-            this.label11.Text = "水资源管理平台";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("华文楷体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label12.ForeColor = System.Drawing.Color.White;
-            this.label12.Location = new System.Drawing.Point(505, 54);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(255, 33);
-            this.label12.TabIndex = 14;
-            this.label12.Text = "IC卡网络维护终端";
             // 
             // frmMain
             // 
