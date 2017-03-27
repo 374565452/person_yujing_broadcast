@@ -749,10 +749,9 @@ namespace CardOperationSystem
             string ResidualElectric = this.dataGridView1.SelectedRows[0].Cells["ResidualElectric"].Value.ToString();
             string TotalWater = this.dataGridView1.SelectedRows[0].Cells["TotalWater"].Value.ToString();
             string TotalElectric = this.dataGridView1.SelectedRows[0].Cells["TotalElectric"].Value.ToString();
-
-            if (MessageBox.Show("确定重新开卡当前选择用户卡？" + Environment.NewLine + "卡号：" + UserNo + "，用户名：" + UserName +
-                Environment.NewLine + "身份证号：" + IdentityNumber,
-                "重新开卡", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            string showInfo="确定重新开卡当前选择用户卡？" + Environment.NewLine + "卡号：" + UserNo + "，用户名：" + UserName +
+                Environment.NewLine + "身份证号：" + IdentityNumber;
+            if ((MessageBox.Show(showInfo, "重新开卡", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)) == DialogResult.Yes)
             {
                 Log(getDateStr() + "开始重新开卡");
 

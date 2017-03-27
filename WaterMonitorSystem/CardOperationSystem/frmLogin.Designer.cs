@@ -163,7 +163,7 @@
             this.label4.ForeColor = System.Drawing.Color.Blue;
             this.label4.Location = new System.Drawing.Point(12, 184);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(255, 33);
+            this.label4.Size = new System.Drawing.Size(225, 33);
             this.label4.TabIndex = 0;
             this.label4.Text = "水资源管理平台";
             // 
@@ -174,6 +174,7 @@
             this.skinEngine1.DisabledMenuFontColor = System.Drawing.SystemColors.GrayText;
             this.skinEngine1.InactiveCaptionColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.skinEngine1.SerialNumber = "";
+            this.skinEngine1.SkinDialogs = false;
             this.skinEngine1.SkinFile = null;
             // 
             // frmLogin
