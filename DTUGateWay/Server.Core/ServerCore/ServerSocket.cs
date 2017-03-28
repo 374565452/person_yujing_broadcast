@@ -655,8 +655,7 @@ namespace Server.Core.ServerCore
                 }
             }
             /*
-            //释放信号量资源
-            this.maxConnection.Release();
+            
             if (showInfoLog)
             {
                 string info = string.Format(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ":[" + token.ConnectedSocket.RemoteEndPoint.ToString() + "]：DTU通信服务，释放信号量资源");
@@ -668,6 +667,8 @@ namespace Server.Core.ServerCore
             //由于在关闭掉客户端的时候，没有将此连接上来的客户端从已经连接的客户端集合中删除掉，所以导致一个客户端成功连接上后，再次断开
             //下次连接，如果IP地址不同则连接不成功现象。
             //并将此客户端资源回收到池中
+            //释放信号量资源
+            this.maxConnection.Release();//update by kqz 2017-3-28 9:34 将原来的注释取消
             this.asyncSocketUserTokenPool.push(token);
             if (showInfoLog)
             {
