@@ -828,11 +828,12 @@ td.support-actions img{
 /* ACCOUNT MANAGEMENT */
 
 h2{
-	font: bold 24px helvetica, arial, sans-serif;
+	font: bold 18px helvetica, arial, sans-serif;
 	color: #fff;
 	display: inline;
-	margin-left: 10px;
+    margin-left:13px;
 }
+
 
 fieldset{
 	background-color: #eaf6f7;

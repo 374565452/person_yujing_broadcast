@@ -504,6 +504,7 @@
     <Content Include="images2\btnbg2.png" />
     <Content Include="images2\buttonbg.png" />
     <Content Include="images2\cloud.png" />
+    <Content Include="images2\logo.png" />
     <Content Include="images2\lbg.png" />
     <Content Include="images2\loginbg1.png" />
     <Content Include="images2\loginbg2.png" />
