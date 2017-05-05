@@ -48,7 +48,7 @@ namespace TestBroadcastProtocol
                 datas[6 + len] = 0x14;
                 datas[7 + len] = 0x55;
                 client.sendCommand(datas);
-                Thread.Sleep(1000 * 3);
+                //Thread.Sleep(1000 * 3);
             }
         }
     }
