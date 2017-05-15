@@ -1560,7 +1560,7 @@
             $.ajax({
                 type: "GET",
                 url: "../WebServices/DeviceMonitorService.asmx/ControlDevice6",
-                data: { 'loginIdentifer': window.parent.guid, 'ctrlName': ctrlName, 'devID': realDevId, 'OrderNum': order, 'Phone': $("#txtPhone_" + order).val() },
+                data: { 'loginIdentifer': window.parent.guid, 'ctrlName': ctrlName, 'devID': realDevId, 'OrderNum': order, 'Phone': $("#extPhone_" + order).val() },
                 contentType: "content",
                 dataType: "text",
                 success: function (responseText) {

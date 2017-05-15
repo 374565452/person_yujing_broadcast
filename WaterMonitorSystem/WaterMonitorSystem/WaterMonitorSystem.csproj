@@ -1242,6 +1242,7 @@
     <Content Include="AjaxjsonData.ashx" />
     <Content Include="md\DownFiles\Excel设备导入模板.xls" />
     <Content Include="md\DownFiles\mysql数库安装.doc" />
+    <None Include="Properties\PublishProfiles\10106_publish.pubxml" />
     <None Include="Properties\PublishProfiles\home_publish.pubxml" />
     <None Include="Properties\PublishProfiles\WaterMonitorSystem.pubxml" />
     <Content Include="tcpSend.ashx" />

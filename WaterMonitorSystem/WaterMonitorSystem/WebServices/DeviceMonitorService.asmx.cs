@@ -935,7 +935,7 @@ namespace WaterMonitorSystem.WebServices
                                 //if (device.DeviceType.Equals("动态预警主机") || device.DeviceType.Equals("无线预警广播"))
                             {
                                 string state = "交流";
-                                if (device.PowerSupplyWay == 0)
+                                if (device.PowerSupplyWay == 1)
                                 {
                                     state = "直流";
                                 }
